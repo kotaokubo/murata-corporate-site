@@ -27,9 +27,9 @@
 
 | 区分 | 例 | 触ってよい場所 | どうするか |
 | --- | --- | --- | --- |
-| A 内容の更新 | お知らせの追加・修正、写真の差し替え、ページ内の文言 | `src/content/news/`、`src/assets/images/`、`public/images/` | 進めてよい |
-| B 見た目と構成の変更 | レイアウト、新しいページ、部品、色や文字 | `src/pages/`、`src/components/`、`src/layouts/`、`src/styles/` | 進めてよい。ほかのページに影響しうるので、事務の方に、影響するページをすべて確かめてもらう必要があると伝える（下の「区分 B のとき」） |
-| C 触らない | 上記以外すべて（設定、`package.json`、`.github/`、`tests/`、`scripts/`、`src/lib/`、`src/content.config.ts`、`src/content/legal/`、このファイル、`CLAUDE.md`、`docs/`、`public/_redirects`） | なし | **断ってください。** 大久保への連絡を勧めてください |
+| A 内容の更新 | お知らせの追加・修正（文言を含む）、写真の差し替え | `src/content/news/`、`src/assets/images/`、`public/images/` | 進めてよい |
+| B 見た目と構成の変更 | レイアウト、新しいページ、部品、色や文字、ページ内の文言 | `src/pages/`、`src/components/`、`src/layouts/`、`src/styles/` | 進めてよい。ほかのページに影響しうるので、事務の方に、影響するページをすべて確かめてもらう必要があると伝える（下の「区分 B のとき」） |
+| C 触らない | 上記以外すべて（設定、`package.json`、`.github/`、`tests/`、`scripts/`、`src/lib/`、`src/content.config.ts`、`src/content/legal/`、`src/pages/privacy.astro`、`src/pages/recruit/entry.astro`、`src/layouts/BaseLayout.astro`、このファイル、`CLAUDE.md`、`docs/`、`public/_redirects`） | なし | **断ってください。** 大久保への連絡を勧めてください |
 
 判断がつかないときは C として扱い、作業を止めてください。
 

@@ -69,7 +69,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 - Rules → Rulesets は次の3つ
   - **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）、**Require conversation resolution before merging**（Codex の指摘をすべて解決しないとマージできない）
   - **main-review**（対象：`main`、bypass：Repository admin）：Require a pull request before merging（Require review from Code Owners、Dismiss stale pull request approvals、Require approval of the most recent reviewable push）
-    - CODEOWNERS で、区分 A（お知らせと画像）と区分 B（`src/pages/`、`src/components/`、`src/layouts/`、`src/styles/`）の持ち主を外している。区分 A・B だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 C を含む PR は大久保の承認が要る
+    - CODEOWNERS で、区分 A（お知らせと画像）と区分 B（`src/pages/`、`src/components/`、`src/layouts/`、`src/styles/`）の持ち主を外している。ただし、その中でも `src/pages/privacy.astro`、`src/pages/recruit/entry.astro`、`src/layouts/BaseLayout.astro` は区分 C として大久保の持ち物に戻している（`scripts/scope.mjs` の `SENSITIVE`）。区分 A・B だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 C を含む PR は大久保の承認が要る
     - 区分 B は承認の代わりに、事務の方が影響するページを検証用の URL で重めに確かめる（AGENTS.md「区分 B のとき」）。全体の動作は必須チェックの Playwright で担保する
     - bypass に大久保（Repository admin）を入れているのは、大久保が自分の PR を承認できないため。bypass は main-review にだけ効き、main-protect の必須チェックは大久保も飛ばせない
   - **staging-protect**（対象：`staging`、bypass：なし）：Restrict deletions、Block force pushes
