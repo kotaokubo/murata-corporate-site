@@ -1,4 +1,5 @@
-# 必須チェック。名前（name）は GitHub の ruleset で「必須」に指定するので変えないこと
+# 必須チェック（ビルド、Playwright、秘密情報）。名前（name）は ruleset で「必須」に指定するので変えないこと
+# 変更範囲と検証済みのチェックは guard.yml（PR 側から書き換えられない形で動かす）
 name: checks
 
 on:
@@ -38,33 +39,6 @@ jobs:
           name: screenshots
           path: test-results/**/screenshots/
           retention-days: 14
-
-  scope:
-    name: scope
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - run: node scripts/check-scope.mjs
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-
-  staging-verified:
-    name: staging-verified
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - run: git fetch origin staging
-      - run: node scripts/check-staging-verified.mjs
-        env:
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          HEAD_REF: ${{ github.head_ref }}
-          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
 
   secrets:
     name: secrets

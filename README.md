@@ -38,13 +38,13 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 
 急ぎの修正は大久保だけが `hotfix/...` で行う（`staging` を通さずに `main` へ入れられる）。
 
-## 必須チェック（`.github/workflows/ci.yml`）
+## 必須チェック（`.github/workflows/ci.yml` と `guard.yml`）
 
 | 名前 | 内容 |
 | --- | --- |
 | `build` | 型の検査（`astro check`）とビルド。お知らせの書式の誤りもここで止まる |
 | `playwright` | 全ページが開くか、ブラウザのエラー、お問い合わせ欄、メニュー、下書きが本番に出ないか、noindex、エントリーフォームの入力チェック。撮影画像を Checks 画面に保存 |
-| `scope` | 変更したファイルを区分 A・B・C に分ける。大久保以外が区分 C を変えたら失敗 |
+| `scope` | 変更したファイルを区分 A・B・C に分ける。大久保以外が区分 C を変えたら失敗。`guard.yml` で動かすので、PR の中から書き換えて緩めることはできない |
 | `staging-verified` | `main` への PR の最新の変更が `staging` に入っているか。入っていなければ失敗（大久保の `hotfix/` は例外） |
 | `secrets` | パスワードや API キーらしき文字列（gitleaks） |
 
@@ -55,13 +55,16 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 ### GitHub（Settings）
 
 - [ ] General：Issues、Wikis、Discussions、Projects を無効にする
+- [ ] General → Pull Requests：「Allow merge commits」だけを有効にし、「Allow squash merging」と「Allow rebase merging」を無効にする。squash や rebase でマージすると、作業ブランチのコミットが `staging` に入らず、`staging-verified` が必ず失敗する
 - [ ] General：「Allow auto-merge」は無効のまま
 - [ ] Actions → General：「Require approval for all external contributors」にする
 - [ ] Rules → Rulesets を作る
-  - [ ] **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（Require review from Code Owners、Dismiss stale approvals）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`）
-  - [ ] **main-lock**（対象：`main`、bypass：Repository admin）：Restrict updates
+  - [ ] **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`）
+  - [ ] **main-lock**（対象：`main`、bypass：Repository admin）：Restrict updates。これで `main` を進められるのは大久保だけになる
+    - main-protect に「Require review from Code Owners」は入れない。大久保は自分の PR を承認できないので、大久保自身の区分 C の変更が止まってしまう。`main` は main-lock で大久保しかマージできないので、承認の仕組みは要らない。CODEOWNERS は、PR に大久保をレビュー依頼として自動で付けるために使う
   - [ ] **staging-protect**（対象：`staging`、bypass：なし）：Restrict deletions、Block force pushes
-    - `staging` は毎朝の自動取り込みが直接 push するので、PR 必須にはしない。作業ブランチからは PR で入れる（AGENTS.md）
+    - `staging` は毎朝の自動取り込みが直接 push するので、PR 必須と必須チェックはかけない。作業ブランチからは PR で入れる（AGENTS.md）
+    - そのため `staging` には、区分 C の変更やチェックが失敗した変更も入りうる。入っても検証環境だけの話で、`main` へは main-protect の必須チェックで止まる
 - [ ] `staging` ブランチを `main` から作る
 
 ### Cloudflare Pages

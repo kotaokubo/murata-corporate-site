@@ -1,0 +1,45 @@
+# 必須チェック「scope」と「staging-verified」。
+# pull_request_target で動かすので、チェックの定義とスクリプトは常に main 側のものが使われる。
+# PR の中でこのファイルや scripts/ を書き換えても、そのPRのチェックには効かない（AI がチェックを緩めて通すことを防ぐ）。
+# 注意：PR 側のコードは一切実行しない（git の差分を見るだけ）。npm ci やビルドをここに足さないこと
+name: guard
+
+on:
+  pull_request_target:
+    branches: [main, staging]
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  scope:
+    name: scope
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: main, persist-credentials: false }
+      - name: PR の変更を取ってくる（実行はしない）
+        run: git fetch origin "pull/${{ github.event.pull_request.number }}/head"
+      - run: node scripts/check-scope.mjs
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+
+  staging-verified:
+    name: staging-verified
+    if: github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: main, persist-credentials: false }
+      - name: PR の変更と staging を取ってくる（実行はしない）
+        run: |
+          git fetch origin "pull/${{ github.event.pull_request.number }}/head"
+          git fetch origin staging
+      - run: node scripts/check-staging-verified.mjs
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.head_ref }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
