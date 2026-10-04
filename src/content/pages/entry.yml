@@ -1,0 +1,74 @@
+# エントリーフォーム（区分 A：事務の方が承認なしで直せる）
+meta:
+  title: エントリーフォーム
+  description: 村田宝飾の採用エントリーフォームです。
+
+hero:
+  eyebrow: ENTRY FORM
+  title: エントリーフォーム
+
+lead:
+  title: 以下のフォームに必要事項をご記入の上、送信してください。
+  body: |
+    採用選考における個人情報の取り扱いについては、厳重に管理いたします。
+    また、ご提供いただいた書類（履歴書等）は返却いたしかねますので、あらかじめご了承ください。
+  sp:
+    title: |
+      以下のフォームに必要事項をご記入の上、
+      送信してください。
+    body: 採用選考における個人情報の取り扱いについては、厳重に管理いたします。また、ご提供いただいた書類（履歴書等）は返却いたしかねますので、あらかじめご了承ください。
+
+form:
+  requiredLabel: 必須
+  optionalLabel: 任意
+  # 各項目の label は、入力チェックのエラー文とテスト（tests/e2e/entry-form.spec.ts）が使う。
+  # 変えるときは開発者に相談する
+  fields:
+    name:
+      label: お名前
+      placeholder: 例：山田 太郎
+    kana:
+      label: フリガナ
+      placeholder: 例：ヤマダ タロウ
+    email:
+      label: メールアドレス
+      placeholder: 例：info@murata-jewelry.co.jp
+    tel:
+      label: 電話番号
+      placeholder: 例：089-941-4135 (半角英数字、ハイフンあり)
+      spPlaceholder: 例：089-941-4135
+    job:
+      label: 希望職種
+      placeholder: 選択してください（セールススタッフ / フロアスタッフ / パートスタッフ）
+      spPlaceholder: 選択してください
+      options:
+        - セールススタッフ
+        - フロアスタッフ
+        - パートスタッフ
+    place:
+      label: 希望勤務地
+      placeholder: 選択してください（松山本社 / 東京本店）
+      spPlaceholder: 選択してください
+      options:
+        - 松山本社
+        - 東京本店
+    pr:
+      label: 自己PR
+      placeholder: これまでの経験や強み、大切にしている仕事への姿勢などをご自由にご記入ください。
+    motive:
+      label: 志望動機
+      placeholder: 弊社を志望される理由や、入社後に挑戦したいことなどをご自由にご記入ください。
+    resume:
+      label: 履歴書添付
+      dropLabel: ファイルをドラッグ＆ドロップするか、パソコンから選択
+      spDropLabel: タップしてファイルを選択
+      hint: ※ PDF、Word、Excel形式（最大10MBまで）
+      spHint: ※ PDF、Word、Excel形式（最大10MB）
+  privacy:
+    title: 個人情報の取り扱いについて
+    body: |
+      村田宝飾は、お預かりした個人情報を採用選考および採用決定後の雇用管理の目的のみに利用いたします。
+      法令に基づく場合を除き、事前の同意なく第三者への提供は行いません。
+      個人情報の開示や訂正をご希望の場合は、お問い合わせ窓口までご連絡ください。
+    agreeLabel: 個人情報の取り扱いについて同意する
+  preparingNote: 【準備中】送信の仕組みは準備中です。

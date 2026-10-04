@@ -1,43 +1,231 @@
 ---
-// エントリーフォーム。項目は Figma（551:162 / 559:398）のとおり。
-// 送信先（Cloudflare の関数 → メール）は U5 で決めてから /functions に作る。それまでは送信ボタンを無効にしておく
+// エントリーフォーム。見た目は Figma どおり。送信先は未実装のためボタンは無効
+import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
+import pageHeroImg from '../../assets/images/recruit/page-hero.png';
+
 const SUBMIT_ENABLED = false;
-// 【要確認】希望職種と希望勤務地の選択肢は Figma の画面から読み取った仮の値
+
+const entry = await getEntry('pages', 'entry');
+if (!entry) throw new Error('src/content/pages/entry.yml が見つかりません');
+const t = entry.data as unknown as {
+  meta: { title: string; description: string };
+  hero: { eyebrow: string; title: string };
+  lead: {
+    title: string;
+    body: string;
+    sp: { title: string; body: string };
+  };
+  form: {
+    requiredLabel: string;
+    optionalLabel: string;
+    fields: {
+      name: { label: string; placeholder: string };
+      kana: { label: string; placeholder: string };
+      email: { label: string; placeholder: string };
+      tel: { label: string; placeholder: string; spPlaceholder: string };
+      job: {
+        label: string;
+        placeholder: string;
+        spPlaceholder: string;
+        options: string[];
+      };
+      place: {
+        label: string;
+        placeholder: string;
+        spPlaceholder: string;
+        options: string[];
+      };
+      pr: { label: string; placeholder: string };
+      motive: { label: string; placeholder: string };
+      resume: {
+        label: string;
+        dropLabel: string;
+        spDropLabel: string;
+        hint: string;
+        spHint: string;
+      };
+    };
+    privacy: {
+      title: string;
+      body: string;
+      agreeLabel: string;
+    };
+    preparingNote: string;
+  };
+};
+if (!t.form || !t.lead) throw new Error('entry.yml の形が違います');
+
+const f = t.form.fields;
+// ページ見出しの背景で、内容を伝えない飾りの写真
+const heroAlt = '';
 ---
-<BaseLayout title="エントリーフォーム" description="村田宝飾の採用エントリーフォームです。">
-  <PageHero title="エントリーフォーム" eyebrow="ENTRY FORM" />
-  <section class="section">
-    <div class="container form-wrap">
-      <p class="lead">以下のフォームに必要事項をご記入の上、送信してください。<br />採用選考における個人情報の取り扱いについては、厳重に管理いたします。また、ご提供いただいた書類（履歴書等）は返却いたしかねますので、あらかじめご了承ください。</p>
-      <form id="entry-form" novalidate data-testid="entry-form">
-        <div class="field"><label for="name">お名前<span class="req">必須</span></label><input id="name" name="name" required autocomplete="name" placeholder="例：山田 太郎" /></div>
-        <div class="field"><label for="kana">フリガナ<span class="req">必須</span></label><input id="kana" name="kana" required placeholder="例：ヤマダ タロウ" pattern="[ァ-ヶー　 ]+" /></div>
-        <div class="field"><label for="email">メールアドレス<span class="req">必須</span></label><input id="email" name="email" type="email" required autocomplete="email" placeholder="例：info@example.com" /></div>
-        <div class="field"><label for="tel">電話番号<span class="req">必須</span></label><input id="tel" name="tel" type="tel" required autocomplete="tel" placeholder="例：089-941-4135" pattern="[0-9\-]{10,13}" /></div>
-        <div class="field"><label for="job">希望職種<span class="req">必須</span></label>
-          <select id="job" name="job" required>
-            <option value="">選択してください</option>
-            <option>セールススタッフ</option><option>ショップスタッフ</option><option>パートスタッフ</option>
-          </select></div>
-        <div class="field"><label for="place">希望勤務地<span class="req">必須</span></label>
-          <select id="place" name="place" required>
-            <option value="">選択してください</option>
-            <option>松山本社</option><option>東京本店</option>
-          </select></div>
-        <div class="field"><label for="pr">自己PR<span class="opt">任意</span></label><textarea id="pr" name="pr" rows="5"></textarea></div>
-        <div class="field"><label for="motive">志望動機<span class="req">必須</span></label><textarea id="motive" name="motive" rows="5" required></textarea></div>
-        <div class="field"><label for="resume">履歴書添付<span class="req">必須</span></label>
-          <input id="resume" name="resume" type="file" required accept=".pdf,.doc,.docx,.xls,.xlsx" />
-          <p class="hint">PDF、Word、Excel 形式（最大10MBまで）</p></div>
-        <div class="consent">
-          <p><strong>個人情報の取り扱いについて</strong><br />ご入力いただいた個人情報は、採用選考および採用選考に関するご連絡のみに使用いたします。詳しくは<a href="/privacy/">プライバシーポリシー</a>をご覧ください。</p>
-          <label><input type="checkbox" id="agree" name="agree" required /> 個人情報の取り扱いについて同意する</label>
+<BaseLayout title={t.meta.title} description={t.meta.description}>
+  <PageHero
+    title={t.hero.title}
+    eyebrow={t.hero.eyebrow}
+    image={pageHeroImg}
+    imageAlt={heroAlt}
+  />
+
+  <section class="lead-section">
+    <div class="inner">
+      <p class="lead-title lead-title-pc">{t.lead.title}</p>
+      <p class="lead-title lead-title-sp">{t.lead.sp.title}</p>
+      <p class="lead-body lead-body-pc">{t.lead.body}</p>
+      <p class="lead-body lead-body-sp">{t.lead.sp.body}</p>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="inner">
+      <form id="entry-form" class="form-card" novalidate data-testid="entry-form">
+        <div class="field">
+          <div class="field-label">
+            <label for="name">{f.name.label}</label>
+            <span class="badge badge-req">{t.form.requiredLabel}</span>
+          </div>
+          <div class="field-input">
+            <input id="name" name="name" required autocomplete="name" placeholder={f.name.placeholder} />
+          </div>
         </div>
-        <p class="errors" role="alert" aria-live="polite" data-testid="form-errors"></p>
-        <button type="submit" disabled={!SUBMIT_ENABLED} data-submit-enabled={String(SUBMIT_ENABLED)}>送信内容を確認する</button>
-        {!SUBMIT_ENABLED && <p class="hint">【準備中】送信の仕組みは準備中です。</p>}
+
+        <div class="field">
+          <div class="field-label">
+            <label for="kana">{f.kana.label}</label>
+            <span class="badge badge-req">{t.form.requiredLabel}</span>
+          </div>
+          <div class="field-input">
+            <input id="kana" name="kana" required placeholder={f.kana.placeholder} pattern="[ァ-ヶー　 ]+" />
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            <label for="email">{f.email.label}</label>
+            <span class="badge badge-req">{t.form.requiredLabel}</span>
+          </div>
+          <div class="field-input">
+            <input id="email" name="email" type="email" required autocomplete="email" placeholder={f.email.placeholder} />
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            <label for="tel">{f.tel.label}</label>
+            <span class="badge badge-req">{t.form.requiredLabel}</span>
+          </div>
+          <div class="field-input">
+            <input
+              id="tel"
+              name="tel"
+              type="tel"
+              required
+              autocomplete="tel"
+              placeholder={f.tel.placeholder}
+              data-placeholder-pc={f.tel.placeholder}
+              data-placeholder-sp={f.tel.spPlaceholder}
+              pattern="0(?:[0-9]-?){8,9}[0-9]"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            <label for="job">{f.job.label}</label>
+            <span class="badge badge-req">{t.form.requiredLabel}</span>
+          </div>
+          <div class="field-input">
+            <select
+              id="job"
+              name="job"
+              required
+              data-placeholder-pc={f.job.placeholder}
+              data-placeholder-sp={f.job.spPlaceholder}
+            >
+              <option value="">{f.job.placeholder}</option>
+              {f.job.options.map((opt) => <option value={opt}>{opt}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">
+            <label for="place">{f.place.label}</label>
+            <span class="badge badge-req">{t.form.requiredLabel}</span>
+          </div>
+          <div class="field-input">
+            <select
+              id="place"
+              name="place"
+              required
+              data-placeholder-pc={f.place.placeholder}
+              data-placeholder-sp={f.place.spPlaceholder}
+            >
+              <option value="">{f.place.placeholder}</option>
+              {f.place.options.map((opt) => <option value={opt}>{opt}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div class="field field-tall">
+          <div class="field-label">
+            <label for="pr">{f.pr.label}</label>
+            <span class="badge badge-opt">{t.form.optionalLabel}</span>
+          </div>
+          <div class="field-input">
+            <textarea id="pr" name="pr" rows="5" placeholder={f.pr.placeholder}></textarea>
+          </div>
+        </div>
+
+        <div class="field field-tall">
+          <div class="field-label">
+            <label for="motive">{f.motive.label}</label>
+            <span class="badge badge-req">{t.form.requiredLabel}</span>
+          </div>
+          <div class="field-input">
+            <textarea id="motive" name="motive" rows="5" required placeholder={f.motive.placeholder}></textarea>
+          </div>
+        </div>
+
+        <div class="field field-file">
+          <div class="field-label">
+            <label for="resume">{f.resume.label}</label>
+            <span class="badge badge-req">{t.form.requiredLabel}</span>
+          </div>
+          <div class="field-input">
+            <label class="file-drop" for="resume">
+              <span class="file-drop-label file-drop-pc">{f.resume.dropLabel}</span>
+              <span class="file-drop-label file-drop-sp">{f.resume.spDropLabel}</span>
+              <input id="resume" name="resume" type="file" required accept=".pdf,.doc,.docx,.xls,.xlsx" />
+            </label>
+            <p class="hint hint-pc">{f.resume.hint}</p>
+            <p class="hint hint-sp">{f.resume.spHint}</p>
+          </div>
+        </div>
+
+        <div class="privacy">
+          <div class="privacy-box">
+            <p class="privacy-title">{t.form.privacy.title}</p>
+            {/* 同意の対象なので、PC と SP で同じ文面を出す */}
+            <p class="privacy-body">{t.form.privacy.body}</p>
+          </div>
+          <label class="agree-row">
+            <input type="checkbox" id="agree" name="agree" required />
+            <span>{t.form.privacy.agreeLabel}</span>
+          </label>
+        </div>
+
+        <p class="errors" role="alert" data-testid="form-errors"></p>
+
+        <div class="submit-row">
+          <button type="submit" disabled={!SUBMIT_ENABLED} data-submit-enabled={String(SUBMIT_ENABLED)}>
+            {/* テストがこの文言でボタンを探すので、YAML に出さずここに置く */}
+            送信内容を確認する
+          </button>
+          {!SUBMIT_ENABLED && <p class="hint preparing">{t.form.preparingNote}</p>}
+        </div>
       </form>
     </div>
   </section>
@@ -52,7 +240,8 @@ const SUBMIT_ENABLED = false;
   function validate(f: HTMLFormElement): string[] {
     const errors: string[] = [];
     f.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[required]').forEach((el) => {
-      const label = f.querySelector(`label[for="${el.id}"]`)?.firstChild?.textContent?.trim() ?? el.name;
+      const label = f.querySelector(`label[for="${el.id}"]`)?.firstChild?.textContent?.trim()
+        ?? (el.id === 'agree' ? '個人情報の取り扱いについて同意する' : el.name);
       if (el instanceof HTMLInputElement && el.type === 'checkbox') {
         if (!el.checked) errors.push('個人情報の取り扱いへの同意が必要です');
       } else if (el instanceof HTMLInputElement && el.type === 'file') {
@@ -78,22 +267,386 @@ const SUBMIT_ENABLED = false;
     const box = form.querySelector('.errors');
     if (box) box.textContent = errors.join('／');
   });
+
   // テストから入力チェックだけを呼べるようにする（送信はしない）
   (window as unknown as { __validateEntry?: () => string[] }).__validateEntry = () => (form ? validate(form) : []);
+
+  // ファイル名表示
+  const resume = document.getElementById('resume') as HTMLInputElement | null;
+  const dropPc = document.querySelector('.file-drop-pc');
+  const dropSp = document.querySelector('.file-drop-sp');
+  const defaultPc = dropPc?.textContent ?? '';
+  const defaultSp = dropSp?.textContent ?? '';
+  resume?.addEventListener('change', () => {
+    const name = resume.files?.[0]?.name;
+    if (dropPc) dropPc.textContent = name || defaultPc;
+    if (dropSp) dropSp.textContent = name || defaultSp;
+  });
+
+  // PC / SP でプレースホルダー文言を切り替える（1100px）
+  const mq = window.matchMedia('(max-width: 1099px)');
+  function applyPlaceholders() {
+    const sp = mq.matches;
+    const tel = document.getElementById('tel') as HTMLInputElement | null;
+    if (tel) {
+      tel.placeholder = sp
+        ? (tel.dataset.placeholderSp ?? tel.placeholder)
+        : (tel.dataset.placeholderPc ?? tel.placeholder);
+    }
+    for (const id of ['job', 'place']) {
+      const sel = document.getElementById(id) as HTMLSelectElement | null;
+      if (!sel || !sel.options.length) continue;
+      const text = sp
+        ? (sel.dataset.placeholderSp ?? sel.options[0].text)
+        : (sel.dataset.placeholderPc ?? sel.options[0].text);
+      sel.options[0].text = text;
+    }
+  }
+  applyPlaceholders();
+  mq.addEventListener('change', applyPlaceholders);
 </script>
 
 <style>
-  .form-wrap { max-width: 800px; }
-  .lead { text-align: center; font-size: 0.9rem; }
-  form { background: var(--color-white); padding: var(--space-5); box-shadow: 0 2px 12px rgb(0 0 0 / 0.05); }
-  .field { display: grid; grid-template-columns: 12em 1fr; gap: var(--space-3); padding-block: var(--space-3); border-bottom: 1px solid var(--color-line); }
-  input:not([type='checkbox']), select, textarea { width: 100%; padding: var(--space-2); border: 1px solid var(--color-line); font: inherit; }
-  .req, .opt { font-size: 0.7rem; margin-left: var(--space-2); padding: 0 var(--space-1); color: #fff; background: var(--color-gold); }
-  .opt { background: var(--color-muted); }
-  .hint { font-size: 0.8rem; color: var(--color-muted); margin: var(--space-1) 0 0; }
-  .consent { background: var(--color-bg-soft); padding: var(--space-3); margin-block: var(--space-4); font-size: 0.85rem; }
-  .errors { color: #c0392b; font-size: 0.85rem; }
-  button { display: block; margin: var(--space-4) auto 0; background: var(--color-navy); color: #fff; border: 0; padding: var(--space-3) var(--space-6); font: inherit; cursor: pointer; }
-  button:disabled { opacity: 0.5; cursor: not-allowed; }
-  @media (max-width: 768px) { .field { grid-template-columns: 1fr; gap: var(--space-1); } form { padding: var(--space-4) var(--space-3); } }
+  .inner {
+    width: min(100% - 48px, var(--content-width));
+    margin-inline: auto;
+  }
+
+  .lead-section {
+    padding: 160px 0 40px;
+    background: var(--color-bg);
+  }
+
+  .lead-title {
+    margin: 0 0 16px;
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 32px;
+    letter-spacing: 0.8px;
+    color: var(--color-navy);
+    text-align: center;
+    white-space: pre-line;
+  }
+
+  .lead-title-sp {
+    display: none;
+  }
+
+  .lead-body {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.7;
+    letter-spacing: 0.4px;
+    color: var(--color-ink);
+    text-align: center;
+    white-space: pre-line;
+  }
+
+  .lead-body-sp {
+    display: none;
+  }
+
+  .form-section {
+    padding: 0 0 120px;
+    background: var(--color-bg);
+  }
+
+  .form-card {
+    background: var(--color-white);
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .field {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 40px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--color-line);
+    align-items: start;
+  }
+
+  .field-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 14px;
+  }
+
+  .field-label label {
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-navy);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-family: var(--font-jp);
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--color-white);
+  }
+
+  .badge-req {
+    background: var(--color-gold);
+  }
+
+  .badge-opt {
+    background: var(--color-muted);
+  }
+
+  .field-input input:not([type='checkbox']):not([type='file']),
+  .field-input select,
+  .field-input textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--color-line);
+    background: var(--color-white);
+    font: inherit;
+    font-family: var(--font-jp);
+    font-size: 14px;
+    color: var(--color-ink);
+    box-sizing: border-box;
+  }
+
+  .field-input textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .field-input select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--color-navy) 50%),
+      linear-gradient(135deg, var(--color-navy) 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 36px;
+  }
+
+  .file-drop:focus-within {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  .file-drop {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    padding: 24px 16px;
+    border: 1px dashed var(--color-line);
+    background: var(--color-bg-soft);
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .file-drop input[type='file'] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .file-drop-label {
+    font-family: var(--font-jp);
+    font-size: 14px;
+    color: var(--color-muted);
+  }
+
+  .file-drop-sp {
+    display: none;
+  }
+
+  .hint {
+    margin: 8px 0 0;
+    font-family: var(--font-jp);
+    font-size: 12px;
+    color: var(--color-muted);
+  }
+
+  .hint-sp {
+    display: none;
+  }
+
+  .privacy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 40px 0 20px;
+    align-items: center;
+  }
+
+  .privacy-box {
+    width: 100%;
+    padding: 24px;
+    background: var(--color-bg-soft);
+  }
+
+  .privacy-title {
+    margin: 0 0 12px;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-navy);
+  }
+
+  .privacy-body {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-ink);
+    white-space: pre-line;
+  }
+
+  .agree-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-jp);
+    font-size: 14px;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .agree-row input {
+    width: 18px;
+    height: 18px;
+  }
+
+  .errors {
+    margin: 0;
+    color: #c0392b;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .submit-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0 0;
+  }
+
+  .submit-row button {
+    min-height: 56px;
+    padding: 16px 48px;
+    border: 0;
+    background: var(--color-navy);
+    color: var(--color-white);
+    font-family: var(--font-jp);
+    font-size: 16px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+
+  .submit-row button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .preparing {
+    text-align: center;
+  }
+
+  @media (max-width: 1099px) {
+    .lead-section {
+      padding: 80px 0 24px;
+    }
+
+    .lead-title-pc {
+      display: none;
+    }
+
+    .lead-title-sp {
+      display: block;
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .lead-body-pc {
+      display: none;
+    }
+
+    .lead-body-sp {
+      display: block;
+      text-align: left;
+    }
+
+    .form-section {
+      padding: 0 0 64px;
+    }
+
+    .form-card {
+      padding: 24px;
+      gap: 0;
+    }
+
+    .field {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 20px 0;
+    }
+
+    .field-label {
+      padding-top: 0;
+    }
+
+    .field-label label {
+      font-size: 14px;
+    }
+
+    .file-drop {
+      min-height: 80px;
+    }
+
+    .file-drop-pc {
+      display: none;
+    }
+
+    .file-drop-sp {
+      display: block;
+    }
+
+    .hint-pc {
+      display: none;
+    }
+
+    .hint-sp {
+      display: block;
+    }
+
+    .privacy {
+      padding: 24px 0;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .submit-row {
+      padding: 24px 0;
+    }
+
+    .submit-row button {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1099px) {
+    .form-card {
+      padding: 40px;
+    }
+  }
 </style>
