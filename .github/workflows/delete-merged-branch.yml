@@ -32,15 +32,24 @@ jobs:
             echo "ブランチ名 $HEAD_REF は自動では消さない。必要なら手で消す"
             exit 0
           fi
-          # マージのあとにコミットが足されていたら消さない（未マージの変更を失わないため）
-          current=$(gh api "repos/$REPO/git/ref/heads/$HEAD_REF" --jq .object.sha 2>/dev/null || true)
-          if [ -z "$current" ]; then
+          # マージのあとにコミットが足されていたら消さない（未マージの変更を失わないため）。
+          # 「先端がマージしたコミットのときだけ消す」を --force-with-lease で1回の push にまとめ、確認と削除のあいだの隙をなくす
+          git init -q work && cd work
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          url="https://github.com/$REPO.git"
+          set -o pipefail
+          # ls-remote が失敗したら（認証や通信の障害）、ジョブを失敗させる
+          if ! remote=$(git -c http.extraheader="$auth" ls-remote --heads "$url" "refs/heads/$HEAD_REF"); then
+            echo "ブランチの状態を取得できなかった"
+            exit 1
+          fi
+          if [ -z "$remote" ]; then
             echo "ブランチ $HEAD_REF は既に無い"
             exit 0
           fi
-          if [ "$current" != "$HEAD_SHA" ]; then
-            echo "ブランチ $HEAD_REF にマージ後のコミットがあるので消さない（$current）"
-            exit 0
+          if git -c http.extraheader="$auth" push --force-with-lease="refs/heads/$HEAD_REF:$HEAD_SHA" "$url" ":refs/heads/$HEAD_REF"; then
+            echo "ブランチ $HEAD_REF を消した"
+          else
+            echo "ブランチ $HEAD_REF を消せなかった。マージ後のコミットがあるか、push に失敗した。必要なら手で確かめて消す"
+            exit 1
           fi
-          gh api -X DELETE "repos/$REPO/git/refs/heads/$HEAD_REF"
-          echo "ブランチ $HEAD_REF を消した"
