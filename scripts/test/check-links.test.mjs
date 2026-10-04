@@ -236,6 +236,23 @@ describe('check-links', () => {
     );
   });
 
+  it('形の壊れた入口 sitemap を失敗にする', () => {
+    writeFileSync(join(tmp, 'sitemap-index.xml'), `not-xml <loc>${SITE}/sitemap-0.xml</loc>`);
+    const { errors } = checkDist(tmp, { siteOrigin: SITE });
+    assert.ok(errors.some((e) => e.includes('sitemap') && e.includes('不正')));
+    // 戻す
+    writeFileSync(
+      join(tmp, 'sitemap-index.xml'),
+      `<?xml version="1.0"?><sitemapindex><sitemap><loc>${SITE}/sitemap-0.xml</loc></sitemap></sitemapindex>`,
+    );
+  });
+
+  it('正しい形の入口 sitemap は成功する', () => {
+    const errs = checkSitemapLocs(tmp, join(tmp, 'sitemap-index.xml'), '/', SITE);
+    assert.ok(!errs.some((e) => e.includes('不正')));
+    assert.equal(errs.length, 0);
+  });
+
   it('site が読めないと失敗する', () => {
     const { errors, checked } = checkDist(tmp, { siteOrigin: null });
     assert.equal(checked, 0);

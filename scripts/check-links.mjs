@@ -293,7 +293,7 @@ function resolveSitemapTarget(distDir, pathname) {
 }
 
 /**
- * 子の sitemap XML が最低限の形をしているか確かめる。
+ * sitemap XML が最低限の形をしているか確かめる（入口・子とも）。
  * - （任意の XML 宣言のあと）`<urlset` または `<sitemapindex` で始まる
  * - 対応する閉じタグで終わる
  * - `<loc>` の開きと閉じの数が一致し、1 つ以上ある
@@ -330,7 +330,7 @@ export function validateSitemapXmlShape(xml) {
  * - ホストは siteOrigin と一致必須
  * - パスは dist に存在すること
  * - サイトマップインデックスの子 XML 内の <loc> はページとして解決する
- * - 子 XML は形（urlset/sitemapindex・loc の対応）を満たすこと
+ * - 入口・子とも形（urlset/sitemapindex・loc の対応）を満たすこと
  * @param {string} distDir
  * @param {string} xmlPath
  * @param {string} fromPage
@@ -347,13 +347,12 @@ export function checkSitemapLocs(distDir, xmlPath, fromPage, siteOrigin, opts = 
   }
   const xml = readFileSync(xmlPath, 'utf8');
 
-  // 子 XML（asPages）は形を確かめてから loc を読む
-  if (asPages) {
-    const shapeError = validateSitemapXmlShape(xml);
-    if (shapeError) {
-      errors.push(`${fromPage} の sitemap 子 XML（${xmlPath}）が不正です: ${shapeError}。`);
-      return errors;
-    }
+  // 入口・子とも形を確かめてから loc を読む
+  const shapeError = validateSitemapXmlShape(xml);
+  if (shapeError) {
+    const label = asPages ? 'sitemap 子 XML' : 'sitemap';
+    errors.push(`${fromPage} の ${label}（${xmlPath}）が不正です: ${shapeError}。`);
+    return errors;
   }
 
   const isIndex = /<sitemapindex\b/i.test(xml);
