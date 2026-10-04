@@ -47,7 +47,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 | `scope` | 変更したファイルを区分 A・B・C に分ける。大久保以外が区分 C を変えたら失敗。`guard.yml` で動かすので、PR の中から書き換えて緩めることはできない |
 | `staging-verified` | `main` への PR の最新の変更が `staging` に入っているか。入っていなければ失敗（大久保の `hotfix/` は例外） |
 | `secrets` | パスワードや API キーらしき文字列（gitleaks） |
-| `codex-review` | PR の最新のコミットに Codex のレビュー（または指摘なしの 👍）が付いているか。付くまで最大25分待つ。付かなければ失敗するので、`@codex review` とコメントしてから再実行する。指摘は「会話の解決」の設定で、すべて解決するまでマージできない |
+| `codex-review` | PR の最新のコミットに Codex のレビュー（または指摘なしの 👍）が付いているか。付くまで最大25分待つ。PR を出したら必ず `@codex review` とコメントしてレビューを依頼する（自動では付かないことがある）。間に合わずに失敗したら、レビューが付いてから再実行する。指摘は「会話の解決」の設定で、すべて解決するまでマージできない |
 
 ## 初回の設定（大久保が GitHub と Cloudflare の画面で行う）
 
@@ -72,7 +72,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 ### Codex（ChatGPT の設定画面）
 
 - [ ] Codex に GitHub を接続し、このリポジトリへのアクセスを許可する
-- [ ] Codex の設定 → Code review で、このリポジトリの「Code review」と「Automatic reviews」を有効にする（PR を開くと自動でレビューが付く）
+- [ ] Codex の設定 → Code review で、このリポジトリの「Code review」と「Automatic reviews」を有効にする。自動のレビューは付かないことがあるので、運用では PR ごとに `@codex review` とコメントする（`AGENTS.md`）
 - [ ] 試験で、Codex のアカウント名が `chatgpt-codex-connector[bot]` であることと、指摘がないときの振る舞い（レビューか 👍 か）を確かめる。違えば `scripts/check-codex-review.mjs` を直す
 
 ### Cloudflare Pages
