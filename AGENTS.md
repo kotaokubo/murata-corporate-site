@@ -27,11 +27,19 @@
 
 | 区分 | 例 | 触ってよい場所 | どうするか |
 | --- | --- | --- | --- |
-| A 内容の更新 | お知らせの追加・修正、写真の差し替え、ページ内の文言 | `src/content/news/`、`src/assets/images/`、`public/images/` | 進めてよい |
-| B 見た目と構成の変更 | レイアウト、新しいページ、部品、色や文字 | `src/pages/`、`src/components/`、`src/layouts/`、`src/styles/` | 進めてよい。本番へ出すには大久保の承認が要ると伝える |
-| C 触らない | 上記以外すべて（設定、`package.json`、`.github/`、`tests/`、`scripts/`、`src/lib/`、`src/content.config.ts`、`src/content/legal/`、このファイル、`CLAUDE.md`、`docs/`、`public/_redirects`） | なし | **断ってください。** 大久保への連絡を勧めてください |
+| A 内容の更新 | お知らせの追加・修正（文言を含む）、写真の差し替え | `src/content/news/`、`src/assets/images/`、`public/images/` | 進めてよい |
+| B 見た目と構成の変更 | レイアウト、新しいページ、部品、色や文字、ページ内の文言 | `src/pages/`、`src/components/`、`src/layouts/`、`src/styles/` | 進めてよい。ほかのページに影響しうるので、事務の方に、影響するページをすべて確かめてもらう必要があると伝える（下の「区分 B のとき」） |
+| C 触らない | 上記以外すべて（設定、`package.json`、`.github/`、`tests/`、`scripts/`、`src/lib/`、`src/content.config.ts`、`src/content/legal/`、`src/pages/privacy.astro`、`src/pages/recruit/entry.astro`、`src/layouts/BaseLayout.astro`、このファイル、`CLAUDE.md`、`docs/`、`public/_redirects`） | なし | **断ってください。** 大久保への連絡を勧めてください |
 
 判断がつかないときは C として扱い、作業を止めてください。
+
+### 区分 B のとき
+
+区分 B は大久保の承認なしで本番へ出せる。その代わり、意図しない変化（デグレ）が無いことを、事務の方に重めに確かめてもらう。全体の動作は必須チェックの Playwright で担保する。
+
+- PR の「影響するページ」に、変えたファイルを使っているページをすべて書く。部品（`src/components/`）、共通の枠（`src/layouts/`）、色や文字（`src/styles/`）を変えたときは、それを使うページを探して挙げる。ヘッダー、フッター、共通の枠、色や文字の変更は、全ページになる
+- 事務の方に、挙げたページをすべて、検証用の URL で PC とスマートフォンの両方で開き、本番と見比べて、変えた箇所以外が変わっていないかを確かめるよう頼む。PR の Checks 画面にある Playwright の撮影画像（4つの幅）も見てもらう
+- 事務の方から「影響するページをすべて確かめた」と返事をもらうまで、`main` へ PR を出さない
 
 ## 作業の流れ
 
@@ -54,7 +62,8 @@
 - その PR が `main` 向けで、作業ブランチ（`work/...`）から出ている
 - 必須チェック（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）がすべて成功している
 - Codex の指摘がすべて解決している
-- 区分 B を含むなら、大久保の承認（Approve）が付いている
+- 区分 B を含むなら、PR の「影響するページ」が埋まっていて、事務の方がすべて確かめたと返事をしている
+- 区分 C を含むなら、大久保の承認（Approve）が付いている
 - PR の「公開を判断した人」が埋まっている
 
 そのうえで、**依頼者に次を見せ、「はい」と返事をもらってからマージする。**
