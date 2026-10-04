@@ -22,7 +22,7 @@ const { title, eyebrow, image, imageAlt = '' } = Astro.props;
       fetchpriority="high"
     />
   )}
-  <div class="page-hero-overlay" aria-hidden="true"></div>
+  {image && <div class="page-hero-overlay" aria-hidden="true"></div>}
   <div class="page-hero-inner">
     <p class="page-hero-eyebrow">{eyebrow}</p>
     <span class="page-hero-line" aria-hidden="true"></span>
@@ -107,13 +107,13 @@ const { title, eyebrow, image, imageAlt = '' } = Astro.props;
     .page-hero-eyebrow {
       font-size: 14px;
       line-height: 23px;
-      letter-spacing: 3.84px;
+      letter-spacing: 2px;
     }
 
     .page-hero-title {
       font-size: 20px;
       line-height: 30px;
-      letter-spacing: 0;
+      letter-spacing: 3px;
     }
   }
 </style>

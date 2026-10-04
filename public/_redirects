@@ -1,0 +1,161 @@
+# 旧サイト（WordPress）の URL から新サイトへの転送（301）。区分 C
+# 一覧は 2026-10-04 に旧サイトを巡回して作った（設計書 13章）。
+# Cloudflare Pages は末尾スラッシュの有無を区別するので、両方を書く。
+# * を使う行（動的、上限 100 件）は最後にまとめる。それより前はふつうの行（静的、上限 2000 件）
+
+# 会社、沿革、事業所
+/company-1/  /company/  301
+/company-1  /company/  301
+/company-2/  /company/  301
+/company-2  /company/  301
+/company-4/  /company/  301
+/company-4  /company/  301
+/offices/  /company/  301
+/offices  /company/  301
+/company-3/  /history/  301
+/company-3  /history/  301
+
+# 事業と商材
+/features/  /business/  301
+/features  /business/  301
+/services-1/  /business/  301
+/services-1  /business/  301
+/services-3/  /business/  301
+/services-3  /business/  301
+/services-12/  /business/  301
+/services-12  /business/  301
+/services-13/  /business/  301
+/services-13  /business/  301
+/new_services-3/  /business/  301
+/new_services-3  /business/  301
+/ja/services-1/  /business/  301
+/ja/services-1  /business/  301
+/ja/services-3/  /business/  301
+/ja/services-3  /business/  301
+
+# お問い合わせ、サイトのご利用について
+/contacts/  /#contact  301
+/contacts  /#contact  301
+/operation-policy/  /  301
+/operation-policy  /  301
+
+# イベント情報（お知らせへ）
+/events/  /news/  301
+/events  /news/  301
+/2-2/  /news/  301
+/2-2  /news/  301
+/jewellery-gem-asia-hong-kong/  /news/  301
+/jewellery-gem-asia-hong-kong  /news/  301
+
+# 英語、中国語のトップ（多言語は未決定のため、トップへ）
+/en/  /  301
+/en  /  301
+/zh/  /  301
+/zh  /  301
+
+# イベントの記事（URL が日本語。ブラウザによって %xx の大文字と小文字が違うので両方書く）
+/%e3%82%b8%e3%83%a3%e3%83%91%e3%83%b3%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a2%ef%bc%88jjf2023%ef%bc%89/  /news/  301
+/%e3%82%b8%e3%83%a3%e3%83%91%e3%83%b3%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a2%ef%bc%88jjf2023%ef%bc%89  /news/  301
+/%E3%82%B8%E3%83%A3%E3%83%91%E3%83%B3%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A2%EF%BC%88jjf2023%EF%BC%89/  /news/  301
+/%E3%82%B8%E3%83%A3%E3%83%91%E3%83%B3%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A2%EF%BC%88jjf2023%EF%BC%89  /news/  301
+/%e3%82%b8%e3%83%a3%e3%83%91%e3%83%b3%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a22022/  /news/  301
+/%e3%82%b8%e3%83%a3%e3%83%91%e3%83%b3%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a22022  /news/  301
+/%E3%82%B8%E3%83%A3%E3%83%91%E3%83%B3%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A22022/  /news/  301
+/%E3%82%B8%E3%83%A3%E3%83%91%E3%83%B3%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A22022  /news/  301
+/%e3%82%b8%e3%83%a3%e3%83%91%e3%83%b3%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a22024%ef%bc%88jjf2024%ef%bc%89/  /news/  301
+/%e3%82%b8%e3%83%a3%e3%83%91%e3%83%b3%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a22024%ef%bc%88jjf2024%ef%bc%89  /news/  301
+/%E3%82%B8%E3%83%A3%E3%83%91%E3%83%B3%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A22024%EF%BC%88jjf2024%EF%BC%89/  /news/  301
+/%E3%82%B8%E3%83%A3%E3%83%91%E3%83%B3%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A22024%EF%BC%88jjf2024%EF%BC%89  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%82%a2%e3%82%b8%e3%82%a2%e3%80%80%e9%a6%99%e6%b8%af%ef%bc%88jewellery-gem-asia-hong-kong/  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%82%a2%e3%82%b8%e3%82%a2%e3%80%80%e9%a6%99%e6%b8%af%ef%bc%88jewellery-gem-asia-hong-kong  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%82%A2%E3%82%B8%E3%82%A2%E3%80%80%E9%A6%99%E6%B8%AF%EF%BC%88jewellery-gem-asia-hong-kong/  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%82%A2%E3%82%B8%E3%82%A2%E3%80%80%E9%A6%99%E6%B8%AF%EF%BC%88jewellery-gem-asia-hong-kong  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%82%a2%e3%82%b8%e3%82%a2%e9%a6%99%e6%b8%af/  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%82%a2%e3%82%b8%e3%82%a2%e9%a6%99%e6%b8%af  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%82%A2%E3%82%B8%E3%82%A2%E9%A6%99%E6%B8%AF/  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%82%A2%E3%82%B8%E3%82%A2%E9%A6%99%E6%B8%AF  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%83%af%e3%83%bc%e3%83%ab%e3%83%89%e9%a6%99%e6%b8%af/  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%83%af%e3%83%bc%e3%83%ab%e3%83%89%e9%a6%99%e6%b8%af  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%83%AF%E3%83%BC%E3%83%AB%E3%83%89%E9%A6%99%E6%B8%AF/  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%83%AF%E3%83%BC%E3%83%AB%E3%83%89%E9%A6%99%E6%B8%AF  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%83%af%e3%83%bc%e3%83%ab%e3%83%89%e9%a6%99%e6%b8%af2024-2/  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%83%af%e3%83%bc%e3%83%ab%e3%83%89%e9%a6%99%e6%b8%af2024-2  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%83%AF%E3%83%BC%E3%83%AB%E3%83%89%E9%A6%99%E6%B8%AF2024-2/  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%83%AF%E3%83%BC%E3%83%AB%E3%83%89%E9%A6%99%E6%B8%AF2024-2  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%83%af%e3%83%bc%e3%83%ab%e3%83%89%e9%a6%99%e6%b8%af2024/  /news/  301
+/%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%83%af%e3%83%bc%e3%83%ab%e3%83%89%e9%a6%99%e6%b8%af2024  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%83%AF%E3%83%BC%E3%83%AB%E3%83%89%E9%A6%99%E6%B8%AF2024/  /news/  301
+/%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%83%AF%E3%83%BC%E3%83%AB%E3%83%89%E9%A6%99%E6%B8%AF2024  /news/  301
+/%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%952023/  /news/  301
+/%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%952023  /news/  301
+/%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%952023/  /news/  301
+/%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%952023  /news/  301
+/%e5%b1%b1%e6%a2%a8%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a2%e3%83%bc2023/  /news/  301
+/%e5%b1%b1%e6%a2%a8%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a2%e3%83%bc2023  /news/  301
+/%E5%B1%B1%E6%A2%A8%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A2%E3%83%BC2023/  /news/  301
+/%E5%B1%B1%E6%A2%A8%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A2%E3%83%BC2023  /news/  301
+/%e5%b1%b1%e6%a2%a8%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a22024/  /news/  301
+/%e5%b1%b1%e6%a2%a8%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a22024  /news/  301
+/%E5%B1%B1%E6%A2%A8%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A22024/  /news/  301
+/%E5%B1%B1%E6%A2%A8%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A22024  /news/  301
+/%e5%b1%b1%e6%a2%a8%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a22025/  /news/  301
+/%e5%b1%b1%e6%a2%a8%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a22025  /news/  301
+/%E5%B1%B1%E6%A2%A8%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A22025/  /news/  301
+/%E5%B1%B1%E6%A2%A8%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%95%E3%82%A7%E3%82%A22025  /news/  301
+/%e7%a5%9e%e6%88%b8%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95/  /news/  301
+/%e7%a5%9e%e6%88%b8%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95  /news/  301
+/%E7%A5%9E%E6%88%B8%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95/  /news/  301
+/%E7%A5%9E%E6%88%B8%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95  /news/  301
+/%e7%ac%ac%ef%bc%91%ef%bc%90%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95%e7%a7%8b/  /news/  301
+/%e7%ac%ac%ef%bc%91%ef%bc%90%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95%e7%a7%8b  /news/  301
+/%E7%AC%AC%EF%BC%91%EF%BC%90%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95%E7%A7%8B/  /news/  301
+/%E7%AC%AC%EF%BC%91%EF%BC%90%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95%E7%A7%8B  /news/  301
+/%e7%ac%ac11%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95%e7%a7%8b/  /news/  301
+/%e7%ac%ac11%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95%e7%a7%8b  /news/  301
+/%E7%AC%AC11%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95%E7%A7%8B/  /news/  301
+/%E7%AC%AC11%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95%E7%A7%8B  /news/  301
+/%e7%ac%ac13%e5%9b%9e%e3%80%80%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95%e7%a7%8bijt%e7%a7%8b2025/  /news/  301
+/%e7%ac%ac13%e5%9b%9e%e3%80%80%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95%e7%a7%8bijt%e7%a7%8b2025  /news/  301
+/%E7%AC%AC13%E5%9B%9E%E3%80%80%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95%E7%A7%8Bijt%E7%A7%8B2025/  /news/  301
+/%E7%AC%AC13%E5%9B%9E%E3%80%80%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95%E7%A7%8Bijt%E7%A7%8B2025  /news/  301
+/%e7%ac%ac26%e5%9b%9e%e7%a5%9e%e6%88%b8%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95/  /news/  301
+/%e7%ac%ac26%e5%9b%9e%e7%a5%9e%e6%88%b8%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95  /news/  301
+/%E7%AC%AC26%E5%9B%9E%E7%A5%9E%E6%88%B8%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95/  /news/  301
+/%E7%AC%AC26%E5%9B%9E%E7%A5%9E%E6%88%B8%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95  /news/  301
+/%e7%ac%ac28%e5%9b%9e%e7%a5%9e%e6%88%b8%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95%ef%bc%88ijk2024%ef%bc%89/  /news/  301
+/%e7%ac%ac28%e5%9b%9e%e7%a5%9e%e6%88%b8%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95%ef%bc%88ijk2024%ef%bc%89  /news/  301
+/%E7%AC%AC28%E5%9B%9E%E7%A5%9E%E6%88%B8%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95%EF%BC%88ijk2024%EF%BC%89/  /news/  301
+/%E7%AC%AC28%E5%9B%9E%E7%A5%9E%E6%88%B8%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95%EF%BC%88ijk2024%EF%BC%89  /news/  301
+/%e7%ac%ac29%e5%9b%9e%e7%a5%9e%e6%88%b8%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95ijk/  /news/  301
+/%e7%ac%ac29%e5%9b%9e%e7%a5%9e%e6%88%b8%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95ijk  /news/  301
+/%E7%AC%AC29%E5%9B%9E%E7%A5%9E%E6%88%B8%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95ijk/  /news/  301
+/%E7%AC%AC29%E5%9B%9E%E7%A5%9E%E6%88%B8%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95ijk  /news/  301
+/%e7%ac%ac35%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95ijt/  /news/  301
+/%e7%ac%ac35%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95ijt  /news/  301
+/%E7%AC%AC35%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95ijt/  /news/  301
+/%E7%AC%AC35%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95ijt  /news/  301
+/%e7%ac%ac36%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95ijt2025/  /news/  301
+/%e7%ac%ac36%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95ijt2025  /news/  301
+/%E7%AC%AC36%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95ijt2025/  /news/  301
+/%E7%AC%AC36%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95ijt2025  /news/  301
+/%e7%ac%ac37%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95ijt/  /news/  301
+/%e7%ac%ac37%e5%9b%9e%e5%9b%bd%e9%9a%9b%e5%ae%9d%e9%a3%be%e5%b1%95ijt  /news/  301
+/%E7%AC%AC37%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95ijt/  /news/  301
+/%E7%AC%AC37%E5%9B%9E%E5%9B%BD%E9%9A%9B%E5%AE%9D%E9%A3%BE%E5%B1%95ijt  /news/  301
+/%e9%a6%99%e6%b8%af%e3%82%a4%e3%83%b3%e3%82%bf%e3%83%bc%e3%83%8a%e3%82%b7%e3%83%a7%e3%83%8a%e3%83%ab%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%bc/  /news/  301
+/%e9%a6%99%e6%b8%af%e3%82%a4%e3%83%b3%e3%82%bf%e3%83%bc%e3%83%8a%e3%82%b7%e3%83%a7%e3%83%8a%e3%83%ab%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%bc  /news/  301
+/%E9%A6%99%E6%B8%AF%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%BC%E3%83%8A%E3%82%B7%E3%83%A7%E3%83%8A%E3%83%AB%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%BC/  /news/  301
+/%E9%A6%99%E6%B8%AF%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%BC%E3%83%8A%E3%82%B7%E3%83%A7%E3%83%8A%E3%83%AB%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%BC  /news/  301
+/%ef%bc%99%e6%9c%88%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%83%af%e3%83%bc%e3%83%ab%e3%83%89%e9%a6%99%e6%b8%af/  /news/  301
+/%ef%bc%99%e6%9c%88%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%ef%bc%86%e3%82%b8%e3%82%a7%e3%83%a0%e3%83%af%e3%83%bc%e3%83%ab%e3%83%89%e9%a6%99%e6%b8%af  /news/  301
+/%EF%BC%99%E6%9C%88%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%83%AF%E3%83%BC%E3%83%AB%E3%83%89%E9%A6%99%E6%B8%AF/  /news/  301
+/%EF%BC%99%E6%9C%88%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%EF%BC%86%E3%82%B8%E3%82%A7%E3%83%A0%E3%83%AF%E3%83%BC%E3%83%AB%E3%83%89%E9%A6%99%E6%B8%AF  /news/  301
+/jma%e9%a6%99%e6%b8%af%e5%9b%bd%e9%9a%9b%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%bc/  /news/  301
+/jma%e9%a6%99%e6%b8%af%e5%9b%bd%e9%9a%9b%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%bc  /news/  301
+/jma%E9%A6%99%E6%B8%AF%E5%9B%BD%E9%9A%9B%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%BC/  /news/  301
+/jma%E9%A6%99%E6%B8%AF%E5%9B%BD%E9%9A%9B%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%BC  /news/  301
+
+# ここから下は * を使う行
+/events/*  /news/  301
+/en/*  /  301
+/zh/*  /  301
