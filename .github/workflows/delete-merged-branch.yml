@@ -1,0 +1,28 @@
+# main へマージされた作業ブランチを消す（設計書 7章「作業ブランチは、main へマージしたら消す」）。
+# staging へのマージでは消さない。staging は確認の場所で、同じ作業ブランチから main へ PR を出すため。
+# リポジトリ設定の「Automatically delete head branches」はオフにしておくこと（オンだと staging へのマージで消える）。
+name: delete-merged-branch
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    # このリポジトリの work/ と hotfix/ だけを消す。main と staging は ruleset でも削除を禁止している
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (startsWith(github.event.pull_request.head.ref, 'work/') || startsWith(github.event.pull_request.head.ref, 'hotfix/'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: 作業ブランチを消す
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: gh api -X DELETE "repos/$REPO/git/refs/heads/$HEAD_REF"

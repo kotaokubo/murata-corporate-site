@@ -34,7 +34,8 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 2. 手元で `npm run build` と `npm run test:e2e` を通す
 3. `staging` へ PR → マージ → 検証用 URL で確認
 4. 同じ作業ブランチから `main` へ PR → 必須チェックが通り、区分 B を含むなら大久保が承認 → **事務の方（または大久保）がマージ** → 本番に出る
-5. `staging` は毎朝 `main` を自動で取り込む（`.github/workflows/sync-staging.yml`）
+5. `main` へマージすると、作業ブランチは自動で消える（`.github/workflows/delete-merged-branch.yml`）。`staging` へのマージでは消えない
+6. `staging` は毎朝 `main` を自動で取り込む（`.github/workflows/sync-staging.yml`）
 
 急ぎの修正は大久保だけが `hotfix/...` で行う（`staging` を通さずに `main` へ入れられる）。
 
@@ -58,6 +59,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 - [ ] General：Issues、Wikis、Discussions、Projects を無効にする
 - [ ] General → Pull Requests：「Allow merge commits」だけを有効にし、「Allow squash merging」と「Allow rebase merging」を無効にする。squash や rebase でマージすると、作業ブランチのコミットが `staging` に入らず、`staging-verified` が必ず失敗する
 - [ ] General：「Allow auto-merge」は無効のまま
+- [ ] General：「Automatically delete head branches」は無効にする。有効だと `staging` へのマージで作業ブランチが消え、同じブランチから `main` へ PR を出せなくなる。`main` へのマージ後の削除は `delete-merged-branch.yml` が行う
 - [ ] Actions → General：「Require approval for all external contributors」にする
 - [ ] Rules → Rulesets を作る
   - [ ] **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）、**Require conversation resolution before merging**（Codex の指摘をすべて解決しないとマージできない）
