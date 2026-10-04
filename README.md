@@ -47,6 +47,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 | `scope` | 変更したファイルを区分 A・B・C に分ける。大久保以外が区分 C を変えたら失敗。`guard.yml` で動かすので、PR の中から書き換えて緩めることはできない |
 | `staging-verified` | `main` への PR の最新の変更が `staging` に入っているか。入っていなければ失敗（大久保の `hotfix/` は例外） |
 | `secrets` | パスワードや API キーらしき文字列（gitleaks） |
+| `codex-review` | PR の最新のコミットに Codex のレビュー（または指摘なしの 👍）が付いているか。付くまで最大25分待つ。付かなければ失敗するので、`@codex review` とコメントしてから再実行する。指摘は「会話の解決」の設定で、すべて解決するまでマージできない |
 
 ## 初回の設定（大久保が GitHub と Cloudflare の画面で行う）
 
@@ -59,7 +60,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 - [ ] General：「Allow auto-merge」は無効のまま
 - [ ] Actions → General：「Require approval for all external contributors」にする
 - [ ] Rules → Rulesets を作る
-  - [ ] **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`）
+  - [ ] **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）、**Require conversation resolution before merging**（Codex の指摘をすべて解決しないとマージできない）
   - [ ] **main-review**（対象：`main`、bypass：Repository admin）：Require a pull request before merging（Require review from Code Owners、Dismiss stale pull request approvals、Require approval of the most recent reviewable push）
     - CODEOWNERS で、区分 A（お知らせと画像）だけ持ち主を外している。区分 A だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 B を含む PR は大久保の承認が要る
     - bypass に大久保（Repository admin）を入れるのは、大久保が自分の PR を承認できないため。bypass は main-review にだけ効き、main-protect の必須チェックは大久保も飛ばせない
@@ -67,6 +68,12 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
     - `staging` は毎朝の自動取り込みが直接 push するので、PR 必須と必須チェックはかけない。作業ブランチからは PR で入れる（AGENTS.md）
     - そのため `staging` には、区分 C の変更やチェックが失敗した変更も入りうる。入っても検証環境だけの話で、`main` へは main-protect の必須チェックで止まる
 - [ ] `staging` ブランチを `main` から作る
+
+### Codex（ChatGPT の設定画面）
+
+- [ ] Codex に GitHub を接続し、このリポジトリへのアクセスを許可する
+- [ ] Codex の設定 → Code review で、このリポジトリの「Code review」と「Automatic reviews」を有効にする（PR を開くと自動でレビューが付く）
+- [ ] 試験で、Codex のアカウント名が `chatgpt-codex-connector[bot]` であることと、指摘がないときの振る舞い（レビューか 👍 か）を確かめる。違えば `scripts/check-codex-review.mjs` を直す
 
 ### Cloudflare Pages
 

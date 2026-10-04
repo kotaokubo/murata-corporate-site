@@ -1,4 +1,4 @@
-# 必須チェック「scope」と「staging-verified」。
+# 必須チェック「scope」「staging-verified」「codex-review」。
 # pull_request_target で動かすので、チェックの定義とスクリプトは常に main 側のものが使われる。
 # PR の中でこのファイルや scripts/ を書き換えても、そのPRのチェックには効かない（AI がチェックを緩めて通すことを防ぐ）。
 # 注意：PR 側のコードは一切実行しない（git の差分を見るだけ）。npm ci やビルドをここに足さないこと
@@ -7,10 +7,12 @@ name: guard
 on:
   pull_request_target:
     branches: [main, staging]
-    types: [opened, synchronize, reopened, edited]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
+  pull-requests: read
+  issues: read
 
 jobs:
   scope:
@@ -43,3 +45,19 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           HEAD_REF: ${{ github.head_ref }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+
+  # Codex のレビューが最新のコミットに付いているか（付くまで最大25分待つ）
+  codex-review:
+    name: codex-review
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, persist-credentials: false }
+      - run: node scripts/check-codex-review.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_UPDATED_AT: ${{ github.event.pull_request.updated_at }}
