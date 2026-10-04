@@ -60,6 +60,18 @@ test.describe('エントリーフォームの入力チェック', () => {
     expect(mailto).toContain(encodeURIComponent('（自己PRと志望動機は、このメールに書き足してください）'));
   });
 
+  test('名前とメールアドレスを上限いっぱいに入れても、URL は 1800 文字に収まる', async ({ page }) => {
+    // maxlength を超える分は入力されない
+    await page.fill('#name', '山'.repeat(40));
+    await page.fill('#kana', 'ヤ'.repeat(40));
+    await page.fill('#email', `${'a'.repeat(120)}@example.co.jp`);
+    await page.selectOption('#job', { index: 1 });
+    await page.selectOption('#place', { index: 1 });
+    await page.fill('#motive', 'あ'.repeat(1000));
+    const mailto: string = await page.evaluate(() => (window as any).__buildEntryMailto());
+    expect(mailto.length).toBeLessThanOrEqual(1800);
+  });
+
   test('送信ボタン（メールを作成する）が押せる', async ({ page }) => {
     await expect(page.getByRole('button', { name: 'メールを作成する' })).toBeEnabled();
   });

@@ -40,7 +40,7 @@ const heroAlt = '';
             <span class="badge badge-req">{t.form.requiredLabel}</span>
           </div>
           <div class="field-input">
-            <input id="name" name="name" required maxlength="40" autocomplete="name" placeholder={f.name.placeholder} />
+            <input id="name" name="name" required maxlength="20" autocomplete="name" placeholder={f.name.placeholder} />
           </div>
         </div>
 
@@ -50,7 +50,7 @@ const heroAlt = '';
             <span class="badge badge-req">{t.form.requiredLabel}</span>
           </div>
           <div class="field-input">
-            <input id="kana" name="kana" required maxlength="40" placeholder={f.kana.placeholder} pattern="[ァ-ヶー　 ]+" />
+            <input id="kana" name="kana" required maxlength="20" placeholder={f.kana.placeholder} pattern="[ァ-ヶー　 ]+" />
           </div>
         </div>
 
@@ -60,7 +60,7 @@ const heroAlt = '';
             <span class="badge badge-req">{t.form.requiredLabel}</span>
           </div>
           <div class="field-input">
-            <input id="email" name="email" type="email" required autocomplete="email" placeholder={f.email.placeholder} />
+            <input id="email" maxlength="100" name="email" type="email" required autocomplete="email" placeholder={f.email.placeholder} />
           </div>
         </div>
 
