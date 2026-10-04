@@ -42,6 +42,15 @@ const metaSchema = z.object({
 // サイト内のパス（/ で始まる）だけを許す。外部 URL や javascript: を書けないようにする
 const internalPath = z.string().trim().regex(/^\/(?![\/\\])[^\s\\]*$/, 'サイト内のパス（/ で始まる）を書いてください');
 
+const stepEnJa = z.object({
+  en: nonEmpty,
+  ja: nonEmpty,
+});
+
+const captionSlide = z.object({
+  caption: nonEmpty,
+});
+
 const subnavSchema = z
   .array(
     z.object({
@@ -268,12 +277,114 @@ const pages = defineCollection({
       }),
     });
 
+    const businessPageSchema = z.object({
+      meta: metaSchema,
+      hero: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+      }),
+      wholesale: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        intro: nonEmpty,
+        body: nonEmpty,
+        steps: z.array(stepEnJa).length(6),
+        slides: z.array(captionSlide).length(4),
+        sp: z
+          .object({
+            steps: z.array(stepEnJa).length(6),
+            body: nonEmpty,
+          })
+          .optional(),
+      }),
+      craft: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        steps: z
+          .array(
+            z.object({
+              num: nonEmpty,
+              label: nonEmpty,
+            }),
+          )
+          .length(8),
+        // 製作工程の写真は、使える写真が届くまで置かない（届いたら写真と見出しを足す）
+      }),
+      repair: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        body: nonEmpty,
+        slides: z.array(captionSlide).length(2),
+        sp: z
+          .object({
+            lead: nonEmpty,
+            services: nonEmpty,
+            closing: nonEmpty,
+            slides: z.array(captionSlide).length(2).optional(),
+          })
+          .optional(),
+      }),
+      endToEnd: z.object({
+        title: nonEmpty,
+        body: nonEmpty,
+        sp: z
+          .object({
+            eyebrow: nonEmpty,
+            body: nonEmpty,
+          })
+          .optional(),
+      }),
+      strength: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        cards: z
+          .array(
+            z.object({
+              title: nonEmpty,
+              body: nonEmpty,
+            }),
+          )
+          .length(4),
+      }),
+      tokyo: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        company: nonEmpty,
+        branch: nonEmpty,
+        postal: nonEmpty,
+        address: nonEmpty,
+        building: nonEmpty,
+        telLabel: nonEmpty,
+        telHref: z.string().trim().regex(/^tel:\+?[0-9-]+$/, 'tel: で始まる電話番号を書いてください'),
+        mapLabel: nonEmpty,
+        mapHref: z.string().trim().regex(/^https:\/\/[^\s]+$/, 'https:// で始まる地図の URL を書いてください'),
+        galleryLabel: nonEmpty,
+        features: z
+          .array(
+            z.object({
+              title: nonEmpty,
+              body: nonEmpty,
+            }),
+          )
+          .length(2),
+      }),
+      onlineShop: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        overlay: nonEmpty,
+        body: nonEmpty,
+        ...ctaFields,
+        note: nonEmpty,
+      }),
+    });
+
     // 実行時はページごとの形を検証する。型はトップページ形に固定し、
     // index.astro を変えずに済むようにする（各下層ページは入口で絞り込む）
     return z.union([
       homePageSchema,
       companyPageSchema,
       historyPageSchema,
+      businessPageSchema,
     ]) as unknown as typeof homePageSchema;
   },
 });
