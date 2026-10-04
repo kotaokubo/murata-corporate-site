@@ -22,7 +22,8 @@ interface Props {
   lang?: Lang;
   alternates?: Alternate[];
 }
-const { title, description, ogImage, lang = 'ja', alternates = [] } = Astro.props;
+// SNS で共有したときの画像。ページで指定が無ければ、ロゴの画像（public/og.png）を使う
+const { title, description, ogImage = '/og.png', lang = 'ja', alternates = [] } = Astro.props;
 const fullTitle = buildFullTitle(title, lang);
 // canonical は常に本番の URL を指す（pages.dev と重複扱いされないように）
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -57,6 +58,9 @@ const showAlternates = alternates.length >= 2;
     <meta property="og:site_name" content={t(lang, 'siteName')} />
     <meta property="og:locale" content={ogLocale[lang]} />
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {ogImage === '/og.png' && <meta property="og:image:width" content="1200" />}
+    {ogImage === '/og.png' && <meta property="og:image:height" content="630" />}
+    <meta property="og:image:alt" content={t(lang, 'siteName')} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
