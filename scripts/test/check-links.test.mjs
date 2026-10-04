@@ -12,6 +12,7 @@ import {
   normalizePathname,
   readSiteOrigin,
   checkSitemapLocs,
+  validateSitemapXmlShape,
 } from '../check-links.mjs';
 
 const tmp = join(dirname(fileURLToPath(import.meta.url)), '.tmp-links');
@@ -119,6 +120,15 @@ describe('check-links', () => {
     );
   });
 
+  it('記述子の無い data: 候補の後ろの候補を落とさない', () => {
+    // data: URL はカンマを含み、記述子なしでカンマ＋空白のあと次候補が続く形
+    assert.deepEqual(parseSrcset('data:image/png;base64,AAAA, /missing.png 2x'), ['/missing.png']);
+    assert.deepEqual(
+      parseSrcset('data:image/png;base64,AAAA, /a.png 1x, /b.png 2x'),
+      ['/a.png', '/b.png'],
+    );
+  });
+
   it('/company と /company/ の両方を index.html に解決する', () => {
     assert.ok(resolveDistFile(tmp, '/company/').endsWith('company/index.html'));
     assert.ok(resolveDistFile(tmp, '/company').endsWith('company/index.html'));
@@ -191,6 +201,31 @@ describe('check-links', () => {
     );
     const { errors: errs2 } = checkDist(tmp, { siteOrigin: SITE });
     assert.ok(errs2.some((e) => e.includes('/no-such-page/') && e.includes('sitemap')));
+    // 戻す
+    writeFileSync(
+      join(tmp, 'sitemap-0.xml'),
+      `<?xml version="1.0"?><urlset>
+        <url><loc>${SITE}/</loc></url>
+        <url><loc>${SITE}/company/</loc></url>
+      </urlset>`,
+    );
+  });
+
+  it('子 sitemap XML の形を確かめる', () => {
+    assert.equal(
+      validateSitemapXmlShape(`<?xml version="1.0"?><urlset><url><loc>${SITE}/</loc></url></urlset>`),
+      null,
+    );
+    assert.ok(validateSitemapXmlShape('<html></html>'));
+    assert.ok(validateSitemapXmlShape('<urlset></urlset>')); // loc なし
+    assert.ok(validateSitemapXmlShape(`<urlset><loc>${SITE}/</loc>`)); // 閉じタグなし
+    assert.ok(validateSitemapXmlShape(`<urlset><loc>${SITE}/</urlset>`)); // loc 閉じ不一致
+  });
+
+  it('形の壊れた子 sitemap XML を失敗にする', () => {
+    writeFileSync(join(tmp, 'sitemap-0.xml'), `not-xml <loc>${SITE}/</loc>`);
+    const { errors } = checkDist(tmp, { siteOrigin: SITE });
+    assert.ok(errors.some((e) => e.includes('sitemap') && e.includes('不正')));
     // 戻す
     writeFileSync(
       join(tmp, 'sitemap-0.xml'),

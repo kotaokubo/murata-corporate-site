@@ -185,41 +185,39 @@ export function pageUrlFromFile(distDir, htmlFile) {
 }
 
 /**
- * srcset の各候補を「URL 空白 記述子」として分ける。
- * data: で始まる候補は丸ごと飛ばす（base64 内のカンマで壊れないようにする）。
+ * srcset の各候補を HTML の解析規則どおりに分ける。
+ * 候補 URL は空白まで読み（data: URL はカンマを含みうる）、
+ * その後の記述子はカンマまで読む。data: の候補は検査対象外。
  * @param {string} srcset
  * @returns {string[]}
  */
 export function parseSrcset(srcset) {
   if (!srcset || !String(srcset).trim()) return [];
-  const s = String(srcset).trim();
+  const s = String(srcset);
   /** @type {string[]} */
   const urls = [];
   let pos = 0;
 
   while (pos < s.length) {
-    while (pos < s.length && /[\s,]/.test(s[pos])) pos++;
+    // 先頭の空白を飛ばす
+    while (pos < s.length && /\s/.test(s[pos])) pos++;
     if (pos >= s.length) break;
 
-    const rest = s.slice(pos);
+    // 候補 URL = 空白以外の連続（data: はカンマを含みうる）
+    const urlStart = pos;
+    while (pos < s.length && !/\s/.test(s[pos])) pos++;
+    let url = s.slice(urlStart, pos);
 
-    if (rest.startsWith('data:')) {
-      // data: 候補を丸ごとスキップ。記述子（Nx / Nw）のあとか、次の候補の手前まで進む
-      const desc = /\s+\d+(?:\.\d+)?[wx](?=\s*,|\s*$)/i.exec(rest);
-      if (desc) {
-        pos += desc.index + desc[0].length;
-      } else {
-        const next = /,(?=\s*(?:\/|https?:|data:|[.#]|[^\s,]+\s+\d))/i.exec(rest);
-        pos += next ? next.index : rest.length;
-      }
-      continue;
+    if (url.endsWith(',')) {
+      // 末尾カンマは記述子なしの候補区切り。カンマを除く
+      url = url.replace(/,+$/, '');
+    } else {
+      // 記述子は次のカンマ（または終端）まで。カンマは消費する
+      while (pos < s.length && s[pos] !== ',') pos++;
+      if (pos < s.length && s[pos] === ',') pos++;
     }
 
-    // URL（空白・カンマ以外）+ 任意の記述子
-    const m = /^([^\s,]+)(?:\s+(\d+(?:\.\d+)?[wx]))?/i.exec(rest);
-    if (!m) break;
-    urls.push(m[1]);
-    pos += m[0].length;
+    if (url && !url.startsWith('data:')) urls.push(url);
   }
   return urls;
 }
@@ -295,10 +293,44 @@ function resolveSitemapTarget(distDir, pathname) {
 }
 
 /**
+ * 子の sitemap XML が最低限の形をしているか確かめる。
+ * - （任意の XML 宣言のあと）`<urlset` または `<sitemapindex` で始まる
+ * - 対応する閉じタグで終わる
+ * - `<loc>` の開きと閉じの数が一致し、1 つ以上ある
+ * @param {string} xml
+ * @returns {string | null} 問題があれば理由、なければ null
+ */
+export function validateSitemapXmlShape(xml) {
+  const trimmed = String(xml).replace(/^\uFEFF/, '').trim();
+  // 先頭の XML 宣言は許す
+  const body = trimmed.replace(/^<\?xml\b[^>]*\?>\s*/i, '');
+  const openUrlset = /^<urlset\b/i.test(body);
+  const openIndex = /^<sitemapindex\b/i.test(body);
+  if (!openUrlset && !openIndex) {
+    return '先頭が <urlset> または <sitemapindex> ではありません';
+  }
+  const closeTag = openUrlset ? '</urlset>' : '</sitemapindex>';
+  const closeRe = openUrlset ? /<\/urlset>\s*$/i : /<\/sitemapindex>\s*$/i;
+  if (!closeRe.test(body)) {
+    return `対応する閉じタグ ${closeTag} で終わっていません`;
+  }
+  const openLocs = (body.match(/<loc\b/gi) || []).length;
+  const closeLocs = (body.match(/<\/loc>/gi) || []).length;
+  if (openLocs !== closeLocs) {
+    return `<loc> の開き（${openLocs}）と閉じ（${closeLocs}）の数が一致しません`;
+  }
+  if (openLocs < 1) {
+    return '<loc> が 1 つもありません';
+  }
+  return null;
+}
+
+/**
  * sitemap XML の <loc> を確かめる。
  * - ホストは siteOrigin と一致必須
  * - パスは dist に存在すること
  * - サイトマップインデックスの子 XML 内の <loc> はページとして解決する
+ * - 子 XML は形（urlset/sitemapindex・loc の対応）を満たすこと
  * @param {string} distDir
  * @param {string} xmlPath
  * @param {string} fromPage
@@ -314,6 +346,16 @@ export function checkSitemapLocs(distDir, xmlPath, fromPage, siteOrigin, opts = 
     return errors;
   }
   const xml = readFileSync(xmlPath, 'utf8');
+
+  // 子 XML（asPages）は形を確かめてから loc を読む
+  if (asPages) {
+    const shapeError = validateSitemapXmlShape(xml);
+    if (shapeError) {
+      errors.push(`${fromPage} の sitemap 子 XML（${xmlPath}）が不正です: ${shapeError}。`);
+      return errors;
+    }
+  }
+
   const isIndex = /<sitemapindex\b/i.test(xml);
   const locRe = /<loc>\s*([^<]+?)\s*<\/loc>/gi;
   let m;

@@ -24,6 +24,7 @@ export function detectFormat(buf) {
 
 /**
  * PNG: チャンクを長さでたどり、IHDR から寸法を読む。
+ * IHDR の後に IDAT が少なくとも 1 つあり、IEND の前にあること。
  * 最後が IEND で、IEND の終端がファイル終端と一致すること。
  * @param {Buffer} buf
  * @returns {{ width: number, height: number } | null}
@@ -34,6 +35,7 @@ function readPngSize(buf) {
   let width = 0;
   let height = 0;
   let sawIhdr = false;
+  let sawIdat = false;
   let sawIend = false;
 
   while (offset + 8 <= buf.length) {
@@ -51,8 +53,13 @@ function readPngSize(buf) {
       height = buf.readUInt32BE(dataStart + 4);
       if (!width || !height) return null;
       sawIhdr = true;
+    } else if (type === 'IDAT') {
+      // IDAT は IHDR の後・IEND の前に少なくとも 1 つ必要
+      if (!sawIhdr || sawIend) return null;
+      sawIdat = true;
     } else if (type === 'IEND') {
       if (chunkLen !== 0) return null;
+      if (!sawIdat) return null;
       sawIend = true;
       // IEND の終端がファイル終端と一致すること
       if (chunkEnd !== buf.length) return null;
@@ -63,7 +70,7 @@ function readPngSize(buf) {
     offset = chunkEnd;
   }
 
-  if (!sawIhdr || !sawIend) return null;
+  if (!sawIhdr || !sawIdat || !sawIend) return null;
   if (offset !== buf.length) return null;
   return { width, height };
 }
@@ -102,12 +109,19 @@ function readJpegSize(buf) {
       continue;
     }
     // SOS: エントロピー符号化データの開始
+    // 長さ = 6 + 2*Ns（Ns は成分数 1〜4）。最低 8、最高 14
     if (marker === 0xda) {
       if (!sawSof) return null;
       if (i + 2 > buf.length) return null;
       const len = buf.readUInt16BE(i);
-      if (len < 2 || i + len > buf.length) return null;
-      // SOS セグメント本体のあとはスキャンデータ。末尾 EOI は冒頭で確認済み
+      if (len < 6 || i + len > buf.length) return null;
+      if (i + 3 > buf.length) return null;
+      const ns = buf[i + 2];
+      if (ns < 1 || ns > 4 || len !== 6 + 2 * ns) return null;
+      // SOS セグメント本体のあとにスキャンデータが 1 バイト以上あり、EOI の前で終わること
+      const scanStart = i + len;
+      const eoiStart = buf.length - 2;
+      if (scanStart >= eoiStart) return null;
       sawSos = true;
       break;
     }
@@ -143,6 +157,7 @@ function readJpegSize(buf) {
 /**
  * WebP: 各チャンクの終端が RIFF の宣言領域（riffEnd）の内側で、
  * riffEnd がファイル長と一致すること。VP8 / VP8L / VP8X から寸法。
+ * VP8X の場合は、VP8 / VP8L / ANMF のいずれかのチャンクが続くこと。
  * @param {Buffer} buf
  * @returns {{ width: number, height: number } | null}
  */
@@ -159,6 +174,8 @@ function readWebpSize(buf) {
   let width = 0;
   let height = 0;
   let sawDim = false;
+  let sawVp8x = false;
+  let sawBitstream = false;
 
   while (offset + 8 <= riffEnd) {
     const fourcc = buf.toString('ascii', offset, offset + 4);
@@ -168,15 +185,18 @@ function readWebpSize(buf) {
     // 各チャンクの終端が riffEnd の内側
     if (dataEnd > riffEnd) return null;
 
-    if (!sawDim && fourcc === 'VP8X') {
+    if (fourcc === 'VP8X') {
       if (size < 10) return null;
-      const w = 1 + (buf[dataStart + 4] | (buf[dataStart + 5] << 8) | (buf[dataStart + 6] << 16));
-      const h = 1 + (buf[dataStart + 7] | (buf[dataStart + 8] << 8) | (buf[dataStart + 9] << 16));
-      if (!w || !h) return null;
-      width = w;
-      height = h;
-      sawDim = true;
-    } else if (!sawDim && fourcc === 'VP8 ') {
+      if (!sawDim) {
+        const w = 1 + (buf[dataStart + 4] | (buf[dataStart + 5] << 8) | (buf[dataStart + 6] << 16));
+        const h = 1 + (buf[dataStart + 7] | (buf[dataStart + 8] << 8) | (buf[dataStart + 9] << 16));
+        if (!w || !h) return null;
+        width = w;
+        height = h;
+        sawDim = true;
+      }
+      sawVp8x = true;
+    } else if (fourcc === 'VP8 ') {
       // キーフレーム: 3 バイトのフレームタグのあと同期コード 9d 01 2a、続く 14 ビット幅・高さ
       if (size < 10) return null;
       const tag = buf[dataStart] | (buf[dataStart + 1] << 8) | (buf[dataStart + 2] << 16);
@@ -187,29 +207,41 @@ function readWebpSize(buf) {
         buf[dataStart + 4] === 0x01 &&
         buf[dataStart + 5] === 0x2a
       ) {
-        const w = buf.readUInt16LE(dataStart + 6) & 0x3fff;
-        const h = buf.readUInt16LE(dataStart + 8) & 0x3fff;
+        if (!sawDim) {
+          const w = buf.readUInt16LE(dataStart + 6) & 0x3fff;
+          const h = buf.readUInt16LE(dataStart + 8) & 0x3fff;
+          if (!w || !h) return null;
+          width = w;
+          height = h;
+          sawDim = true;
+        }
+        sawBitstream = true;
+      } else if (!sawVp8x) {
+        // 単純 VP8 でキーフレームでないのは不正。VP8X 配下なら寸法は VP8X 側
+        return null;
+      } else {
+        sawBitstream = true;
+      }
+    } else if (fourcc === 'VP8L') {
+      // 署名 0x2f のあと 14 ビット + 1
+      if (size < 5 || buf[dataStart] !== 0x2f) return null;
+      if (!sawDim) {
+        const bits =
+          buf[dataStart + 1] |
+          (buf[dataStart + 2] << 8) |
+          (buf[dataStart + 3] << 16) |
+          (buf[dataStart + 4] << 24);
+        const w = (bits & 0x3fff) + 1;
+        const h = ((bits >> 14) & 0x3fff) + 1;
         if (!w || !h) return null;
         width = w;
         height = h;
         sawDim = true;
-      } else {
-        return null;
       }
-    } else if (!sawDim && fourcc === 'VP8L') {
-      // 署名 0x2f のあと 14 ビット + 1
-      if (size < 5 || buf[dataStart] !== 0x2f) return null;
-      const bits =
-        buf[dataStart + 1] |
-        (buf[dataStart + 2] << 8) |
-        (buf[dataStart + 3] << 16) |
-        (buf[dataStart + 4] << 24);
-      const w = (bits & 0x3fff) + 1;
-      const h = ((bits >> 14) & 0x3fff) + 1;
-      if (!w || !h) return null;
-      width = w;
-      height = h;
-      sawDim = true;
+      sawBitstream = true;
+    } else if (fourcc === 'ANMF') {
+      // アニメーションフレーム。VP8X のビットストリーム相当
+      sawBitstream = true;
     }
 
     // チャンクは奇数長ならパディング 1 バイト（パディングも riffEnd 内）
@@ -218,6 +250,8 @@ function readWebpSize(buf) {
   }
 
   if (!sawDim) return null;
+  // VP8X の場合は VP8 / VP8L / ANMF のいずれかが続くこと
+  if (sawVp8x && !sawBitstream) return null;
   // チャンク列の終端が riffEnd（パディングで 1 バイト余ることはチャンク走査で吸収）
   if (offset !== riffEnd) return null;
   return { width, height };

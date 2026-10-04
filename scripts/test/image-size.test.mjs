@@ -113,4 +113,73 @@ describe('image-size', () => {
     assert.equal(detectFormat(buf), 'webp');
     assert.equal(readImageSize(buf), null);
   });
+
+  it('SOS 長さが Ns と一致しない JPEG は null', () => {
+    const base = Buffer.from(readFileSync(join(fixtures, '1x1.jpg')));
+    // SOS マーカーを探し、長さを不正な値（6 未満）にする
+    let i = 2;
+    while (i < base.length - 2) {
+      if (base[i] !== 0xff) break;
+      while (i < base.length && base[i] === 0xff) i++;
+      const marker = base[i++];
+      if (marker === 0xda) {
+        base.writeUInt16BE(4, i); // 6 未満
+        break;
+      }
+      if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) continue;
+      const len = base.readUInt16BE(i);
+      i += len;
+    }
+    assert.equal(readImageSize(base), null);
+  });
+
+  it('SOS の直後が EOI の JPEG（スキャンデータなし）は null', () => {
+    // SOI + SOF0(最小) + SOS(Ns=1) + EOI。スキャンデータ 0 バイト
+    const parts = [];
+    parts.push(Buffer.from([0xff, 0xd8])); // SOI
+    // SOF0: len=11, P=8, Y=1, X=1, Nf=1, C1=1, HV=0x11, Tq=0
+    parts.push(Buffer.from([0xff, 0xc0, 0x00, 0x0b, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11, 0x00]));
+    // SOS: len=8 (=6+2*1), Ns=1, Cs=1, TdTa=0, Ss=0, Se=63, AhAl=0
+    parts.push(Buffer.from([0xff, 0xda, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3f, 0x00]));
+    parts.push(Buffer.from([0xff, 0xd9])); // EOI（スキャンデータなし）
+    const buf = Buffer.concat(parts);
+    assert.equal(detectFormat(buf), 'jpeg');
+    assert.equal(readImageSize(buf), null);
+  });
+
+  it('IDAT の無い PNG は null', () => {
+    // 署名 + IHDR + IEND のみ（IDAT なし）
+    const sig = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const ihdrData = Buffer.alloc(13);
+    ihdrData.writeUInt32BE(1, 0); // width
+    ihdrData.writeUInt32BE(1, 4); // height
+    ihdrData[8] = 8; // bit depth
+    ihdrData[9] = 2; // color type RGB
+    const ihdrLen = Buffer.alloc(4);
+    ihdrLen.writeUInt32BE(13);
+    const ihdr = Buffer.concat([ihdrLen, Buffer.from('IHDR'), ihdrData, Buffer.alloc(4)]);
+    const iend = Buffer.concat([Buffer.alloc(4), Buffer.from('IEND'), Buffer.alloc(4)]);
+    const buf = Buffer.concat([sig, ihdr, iend]);
+    assert.equal(detectFormat(buf), 'png');
+    assert.equal(readImageSize(buf), null);
+  });
+
+  it('VP8X のみでビットストリームが無い WebP は null', () => {
+    // RIFF + WEBP + VP8X(10) のみ
+    const vp8xData = Buffer.alloc(10);
+    const body = Buffer.concat([
+      Buffer.from('VP8X'),
+      (() => {
+        const s = Buffer.alloc(4);
+        s.writeUInt32LE(10);
+        return s;
+      })(),
+      vp8xData,
+    ]);
+    const riffSize = Buffer.alloc(4);
+    riffSize.writeUInt32LE(4 + body.length);
+    const buf = Buffer.concat([Buffer.from('RIFF'), riffSize, Buffer.from('WEBP'), body]);
+    assert.equal(detectFormat(buf), 'webp');
+    assert.equal(readImageSize(buf), null);
+  });
 });
