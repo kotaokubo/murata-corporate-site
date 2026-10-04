@@ -1,12 +1,1168 @@
 ---
+import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import CtaButton from '../../components/CtaButton.astro';
+
+import pageHeroImg from '../../assets/images/recruit/page-hero.png';
+import workspaceImg from '../../assets/images/recruit/workspace.jpg';
+import staffOmoto from '../../assets/images/recruit/staff-omoto.jpg';
+import staffSakamoto from '../../assets/images/recruit/staff-sakamoto.jpg';
+import staffMandal from '../../assets/images/recruit/staff-mandal.jpg';
+import statEmployees from '../../assets/images/recruit/stat-employees.png';
+import statOvertime from '../../assets/images/recruit/stat-overtime.png';
+import statTenure from '../../assets/images/recruit/stat-tenure.png';
+import statAge from '../../assets/images/recruit/stat-age.png';
+import statVacation from '../../assets/images/recruit/stat-vacation.png';
+
+const entry = await getEntry('pages', 'recruit');
+if (!entry) throw new Error('src/content/pages/recruit.yml が見つかりません');
+const t = entry.data as unknown as {
+  meta: { title: string; description: string };
+  hero: { eyebrow: string; title: string };
+  message: {
+    eyebrow: string;
+    title: string;
+    headline: string;
+    body1: string;
+    body2: string;
+    ctaRequirements: string;
+    ctaEntry: string;
+    sp: { title: string; headline: string; body1: string; body2: string };
+  };
+  staffInterview: {
+    eyebrow: string;
+    title: string;
+    items: {
+      role: string;
+      name: string;
+      sections: string[];
+      message: string;
+      spBody: string;
+    }[];
+  };
+  midCta: { message: string; ctaLabel: string };
+  selectionFlow: {
+    eyebrow: string;
+    title: string;
+    steps: { en: string; ja: string }[];
+    sp: { steps: { en: string; ja: string }[] };
+  };
+  jobRequirements: {
+    eyebrow: string;
+    title: string;
+    jobs: { title: string; rows: { label: string; value: string }[] }[];
+    stats: { title: string; value: string; unit: string }[];
+    bottomCta: { message: string; ctaLabel: string };
+  };
+};
+if (!t.message || !t.staffInterview || !t.jobRequirements) {
+  throw new Error('recruit.yml の形が違います');
+}
+
+const heroAlt = 'ダイヤと色石のネックレスを黒い背景に置いた写真';
+const workspaceAlt = '木のテーブルに並べた色石のリングとジュエリー';
+const staffPortraits = [staffOmoto, staffSakamoto, staffMandal];
+const statIcons = [statEmployees, statOvertime, statTenure, statAge, statVacation];
 ---
-<BaseLayout title="採用情報" description="村田宝飾の採用情報です。">
-  <PageHero title="採用情報" eyebrow="RECRUIT" />
-  <section class="section">
-    <div class="container">
-      <p>【仮】Figma（483:173 / 563:179）のデザインを実装する。 <a href="/recruit/entry/">エントリーフォームへ</a></p>
+<BaseLayout title={t.meta.title} description={t.meta.description}>
+  <PageHero
+    title={t.hero.title}
+    eyebrow={t.hero.eyebrow}
+    image={pageHeroImg}
+    imageAlt={heroAlt}
+  />
+
+  <!-- MESSAGE -->
+  <section class="message" aria-labelledby="recruit-message-title">
+    <div class="inner">
+      <div class="message-head">
+        <SectionHeading eyebrow={t.message.eyebrow} align="center" />
+        <h2 id="recruit-message-title" class="message-title message-title-pc">{t.message.title}</h2>
+        <h2 class="message-title message-title-sp">{t.message.sp.title}</h2>
+      </div>
+
+      <div class="message-grid">
+        <div class="message-copy">
+          <p class="message-headline message-headline-pc">{t.message.headline}</p>
+          <p class="message-headline message-headline-sp">{t.message.sp.headline}</p>
+          <p class="body message-body-pc">{t.message.body1}</p>
+          <p class="body message-body-sp">{t.message.sp.body1}</p>
+          <p class="body message-body-pc">{t.message.body2}</p>
+          <p class="body message-body-sp">{t.message.sp.body2}</p>
+        </div>
+        <div class="message-visual">
+          <Image
+            src={workspaceImg}
+            alt={workspaceAlt}
+            class="message-photo"
+            width={540}
+            height={360}
+          />
+        </div>
+      </div>
+
+      <div class="message-ctas">
+        <CtaButton href="#job-requirements" label={t.message.ctaRequirements} />
+        <CtaButton href="/recruit/entry/" label={t.message.ctaEntry} />
+      </div>
+    </div>
+  </section>
+
+  <!-- STAFF INTERVIEW -->
+  <section class="staff">
+    <div class="inner">
+      <SectionHeading
+        eyebrow={t.staffInterview.eyebrow}
+        title={t.staffInterview.title}
+        align="center"
+        titleClass="staff-title"
+      />
+
+      <ul class="staff-list">
+        {t.staffInterview.items.map((item, i) => (
+          <li class="staff-card">
+            <div class="staff-card-inner">
+              <div class="staff-top">
+                <div class="staff-copy">
+                  <div class="staff-identity">
+                    <p class="staff-role">{item.role.trim()}</p>
+                    <p class="staff-name staff-name-sp">{item.name}</p>
+                  </div>
+                  <hr class="staff-divider" />
+                  <div class="staff-sections-pc">
+                    {item.sections.map((section) => (
+                      <p class="body staff-section">{section}</p>
+                    ))}
+                  </div>
+                  <p class="body staff-sections-sp">{item.spBody}</p>
+                </div>
+                <div class="staff-portrait-wrap">
+                  <div class="staff-halo" aria-hidden="true"></div>
+                  <div class="staff-portrait-frame">
+                    <Image
+                      src={staffPortraits[i]}
+                      alt={`${item.name}さんの写真`}
+                      class="staff-portrait"
+                      width={270}
+                      height={270}
+                    />
+                  </div>
+                  <p class="staff-name staff-name-pc">{item.name}</p>
+                </div>
+              </div>
+              {item.message.trim() && (
+                <p class="body staff-message-pc">{item.message}</p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- MID CTA -->
+  <section class="mid-cta" aria-label="エントリー案内">
+    <div class="mid-cta-inner">
+      <p class="mid-cta-message">{t.midCta.message}</p>
+      <CtaButton href="/recruit/entry/" label={t.midCta.ctaLabel} />
+    </div>
+  </section>
+
+  <!-- SELECTION FLOW -->
+  <section class="flow">
+    <div class="inner">
+      <SectionHeading
+        eyebrow={t.selectionFlow.eyebrow}
+        title={t.selectionFlow.title}
+        align="center"
+      />
+
+      <ol class="flow-pc">
+        {t.selectionFlow.steps.map((step, i) => (
+          <li class="flow-pc-step">
+            <span class="flow-en">{step.en}</span>
+            <span class="flow-track" aria-hidden="true">
+              <span class:list={['flow-line', i === 0 && 'is-hidden']}></span>
+              <span class="flow-dot"></span>
+              <span class:list={['flow-line', i === t.selectionFlow.steps.length - 1 && 'is-hidden']}></span>
+            </span>
+            <span class="flow-ja">{step.ja}</span>
+          </li>
+        ))}
+      </ol>
+
+      <ol class="flow-sp">
+        {t.selectionFlow.sp.steps.map((step, i) => (
+          <li class="flow-sp-step">
+            <span class="flow-sp-marker" aria-hidden="true">
+              <span class="flow-dot"></span>
+              {i < t.selectionFlow.sp.steps.length - 1 && <span class="flow-sp-line"></span>}
+            </span>
+            <span class="flow-sp-text">
+              <span class="flow-en">{step.en}</span>
+              <span class="flow-ja">{step.ja}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- JOB REQUIREMENTS -->
+  <section class="jobs" id="job-requirements">
+    <div class="inner">
+      <SectionHeading
+        eyebrow={t.jobRequirements.eyebrow}
+        title={t.jobRequirements.title}
+        align="center"
+      />
+
+      <div class="job-tables">
+        {t.jobRequirements.jobs.map((job) => (
+          <div class="job-table">
+            <div class="job-table-head">
+              <p class="job-table-title">{job.title}</p>
+            </div>
+            <dl class="job-rows">
+              {job.rows.map((row) => (
+                <div class="job-row">
+                  <dt>{row.label}</dt>
+                  <dd>{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))}
+      </div>
+
+      <ul class="stats">
+        {t.jobRequirements.stats.map((stat, i) => (
+          <li class="stat-card">
+            <Image
+              src={statIcons[i]}
+              alt=""
+              class="stat-icon"
+              width={72}
+              height={72}
+              widths={[72, 144, 216]}
+              sizes="72px"
+              loading="eager"
+            />
+            <div class="stat-text">
+              <p class="stat-title">{stat.title}</p>
+              <p class="stat-metric">
+                <span class="stat-value">{stat.value}</span>
+                <span class="stat-unit">{stat.unit}</span>
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div class="jobs-cta">
+        <p class="jobs-cta-message">{t.jobRequirements.bottomCta.message}</p>
+        <CtaButton href="/recruit/entry/" label={t.jobRequirements.bottomCta.ctaLabel} />
+      </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .inner {
+    width: min(100% - 48px, var(--content-width));
+    margin-inline: auto;
+  }
+
+  .body {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.73;
+    letter-spacing: 0.61px;
+    color: var(--color-ink);
+    white-space: pre-line;
+  }
+
+  /* MESSAGE */
+  .message {
+    padding: 160px 0;
+    background: var(--color-bg);
+  }
+
+  .message-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 60px;
+  }
+
+  .message-title {
+    margin: 0;
+    font-family: var(--font-en-serif);
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    color: var(--color-navy);
+    text-align: center;
+  }
+
+  .message-title-sp {
+    display: none;
+    font-family: var(--font-jp);
+    letter-spacing: 1.5px;
+  }
+
+  .message-grid {
+    display: grid;
+    grid-template-columns: 500px 540px;
+    gap: 80px;
+    align-items: center;
+    margin-bottom: 60px;
+  }
+
+  .message-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .message-headline {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.6;
+    letter-spacing: 1.5px;
+    color: var(--color-navy);
+    white-space: pre-line;
+  }
+
+  .message-headline-sp,
+  .message-body-sp {
+    display: none;
+  }
+
+  .message-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .message-ctas {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+  }
+
+  /* STAFF */
+  .staff {
+    padding: 0 0 160px;
+    background: var(--color-bg);
+  }
+
+  .staff :global(.section-heading) {
+    margin-bottom: 56px;
+  }
+
+  .staff-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+
+  .staff-card {
+    background: #fdfcf9;
+    border: 1px solid #d1ccc4;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(3, 22, 85, 0.06);
+  }
+
+  .staff-card-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 40px;
+  }
+
+  .staff-top {
+    display: grid;
+    grid-template-columns: 1fr 270px;
+    gap: 51px;
+    align-items: start;
+  }
+
+  .staff-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+  }
+
+  .staff-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .staff-role {
+    margin: 0;
+    align-self: flex-start;
+    padding: 6px 16px;
+    background: var(--color-navy);
+    color: var(--color-white);
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 19px;
+    letter-spacing: 0.5px;
+  }
+
+  .staff-divider {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid #d1ccc4;
+  }
+
+  .staff-sections-pc {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .staff-sections-sp {
+    display: none;
+  }
+
+  .staff-portrait-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 270px;
+  }
+
+  .staff-halo {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 290px;
+    height: 290px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(176, 141, 87, 0.12);
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .staff-portrait-frame {
+    position: relative;
+    z-index: 1;
+    width: 270px;
+    height: 270px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--color-white);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 1px var(--color-gold);
+    box-sizing: border-box;
+  }
+
+  .staff-portrait {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+
+  .staff-name {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 28px;
+    color: var(--color-navy);
+  }
+
+  .staff-name-pc {
+    width: 100%;
+    text-align: center;
+  }
+
+  .staff-name-sp {
+    display: none;
+  }
+
+  .staff-message-pc {
+    margin: 0;
+  }
+
+  /* MID CTA */
+  .mid-cta {
+    background: var(--color-navy);
+    border-top: 1px solid var(--color-gold);
+    border-bottom: 1px solid var(--color-gold);
+    padding: 40px 24px;
+  }
+
+  .mid-cta-inner {
+    width: min(100%, 1200px);
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .mid-cta-message {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: 0.6px;
+    color: var(--color-white);
+  }
+
+  /* FLOW */
+  .flow {
+    padding: 160px 0;
+    background: var(--color-bg);
+  }
+
+  .flow :global(.section-heading) {
+    margin-bottom: 80px;
+  }
+
+  .flow-pc {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+  }
+
+  .flow-pc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .flow-en {
+    font-family: var(--font-en-serif);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+    color: var(--color-gold);
+    white-space: nowrap;
+  }
+
+  .flow-pc-step:first-child .flow-en {
+    font-size: 14px;
+  }
+
+  .flow-track {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 7px;
+  }
+
+  .flow-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(176, 141, 87, 0.35);
+  }
+
+  .flow-line.is-hidden {
+    visibility: hidden;
+  }
+
+  .flow-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-gold);
+    flex-shrink: 0;
+  }
+
+  .flow-ja {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-navy);
+  }
+
+  .flow-sp {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 8px 20px 8px 30px;
+  }
+
+  /* JOBS */
+  .jobs {
+    padding: 0 0 160px;
+    background: var(--color-bg);
+  }
+
+  .jobs :global(.section-heading) {
+    margin-bottom: 80px;
+  }
+
+  .job-tables {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    margin-bottom: 80px;
+  }
+
+  .job-table {
+    background: var(--color-white);
+    border: 1px solid rgba(209, 204, 196, 0.4);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .job-table-head {
+    background: var(--color-navy);
+    padding: 20px 40px 20px 60px;
+  }
+
+  .job-table-title {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 32px;
+    letter-spacing: 1px;
+    color: var(--color-white);
+  }
+
+  .job-rows {
+    margin: 0;
+  }
+
+  .job-row {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 0;
+    padding: 20px 40px 20px 60px;
+    border-top: 1px solid rgba(209, 204, 196, 0.4);
+    align-items: center;
+  }
+
+  .job-row dt {
+    margin: 0;
+    padding-right: 40px;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 28px;
+    color: var(--color-navy);
+  }
+
+  .job-row dd {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 28px;
+    color: var(--color-ink);
+    white-space: pre-line;
+  }
+
+  .stats {
+    list-style: none;
+    margin: 0 0 80px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 12px;
+    background: var(--color-white);
+    border-radius: 6px;
+    min-height: 132px;
+    box-sizing: border-box;
+  }
+
+  .stat-icon {
+    width: 72px;
+    height: 72px;
+    max-width: none;
+    object-fit: contain;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .stat-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .stat-title {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 1.3;
+    color: rgba(3, 22, 85, 0.7);
+  }
+
+  .stat-metric {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .stat-value {
+    font-family: var(--font-jp);
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--color-navy);
+  }
+
+  .stat-unit {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--color-navy);
+  }
+
+  .jobs-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 32px 40px;
+    background: rgba(255, 255, 255, 0.7);
+    text-align: center;
+  }
+
+  .jobs-cta-message {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.75;
+    letter-spacing: 0.6px;
+    color: var(--color-navy);
+  }
+
+  @media (max-width: 1099px) {
+    .inner {
+      width: min(100% - 48px, var(--content-width));
+    }
+
+    .body {
+      font-size: 14px;
+      line-height: 1.7;
+      letter-spacing: 0.4px;
+    }
+
+    .message {
+      padding: 80px 0;
+    }
+
+    .message-head {
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .message-head :global(.section-heading.is-center) {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .message-head :global(.eyebrow-wrap) {
+      align-items: flex-start;
+    }
+
+    .message-title-pc {
+      display: none;
+    }
+
+    .message-title-sp {
+      display: block;
+      font-size: 20px;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .message-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .message-copy {
+      gap: 20px;
+      order: 1;
+    }
+
+    .message-visual {
+      order: 2;
+    }
+
+    .message-headline-pc,
+    .message-body-pc {
+      display: none;
+    }
+
+    .message-headline-sp,
+    .message-body-sp {
+      display: block;
+    }
+
+    .message-headline-sp {
+      font-size: 20px;
+      line-height: 1.6;
+    }
+
+    .message-ctas {
+      gap: 20px;
+      order: 3;
+    }
+
+    .message-ctas :global(.cta) {
+      flex: 1;
+      min-width: 0;
+      padding-inline: 12px;
+    }
+
+    .staff {
+      padding: 0 0 80px;
+    }
+
+    .staff :global(.section-heading) {
+      margin-bottom: 40px;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .staff :global(.eyebrow-wrap) {
+      align-items: flex-start;
+    }
+
+    .staff-list {
+      gap: 40px;
+    }
+
+    .staff-card {
+      background: var(--color-white);
+      border: 1px solid rgba(153, 143, 128, 0.3);
+      border-radius: 6px;
+      box-shadow: none;
+    }
+
+    .staff-card-inner {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      grid-template-rows: auto auto auto;
+      column-gap: 20px;
+      row-gap: 16px;
+      padding: 16px;
+      align-items: center;
+    }
+
+    .staff-top,
+    .staff-copy {
+      display: contents;
+    }
+
+    .staff-identity {
+      grid-column: 1;
+      grid-row: 1;
+      gap: 10px;
+      align-self: center;
+    }
+
+    .staff-portrait-wrap {
+      grid-column: 2;
+      grid-row: 1;
+      width: 120px;
+      gap: 0;
+      align-self: center;
+      justify-self: end;
+    }
+
+    .staff-halo {
+      display: none;
+    }
+
+    .staff-portrait-frame {
+      width: 120px;
+      height: 120px;
+      border: 0;
+      box-shadow: 0 0 0 1px var(--color-gold);
+    }
+
+    .staff-name-pc {
+      display: none;
+    }
+
+    .staff-name-sp {
+      display: block;
+      width: auto;
+      text-align: left;
+      font-size: 14px;
+      line-height: 23px;
+    }
+
+    .staff-divider {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      border-top-color: rgba(153, 143, 128, 0.3);
+    }
+
+    .staff-role {
+      font-size: 14px;
+      line-height: 1.4;
+      padding: 4px 12px;
+      border-radius: 3px;
+    }
+
+    .staff-sections-pc,
+    .staff-message-pc {
+      display: none;
+    }
+
+    .staff-sections-sp {
+      display: block;
+      grid-column: 1 / -1;
+      grid-row: 3;
+    }
+
+    .mid-cta {
+      padding: 32px 24px;
+    }
+
+    .mid-cta-inner {
+      gap: 16px;
+    }
+
+    .mid-cta-inner :global(.cta) {
+      width: 100%;
+    }
+
+    .flow {
+      padding: 80px 0;
+    }
+
+    .flow :global(.section-heading) {
+      margin-bottom: 32px;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .flow :global(.eyebrow-wrap) {
+      align-items: flex-start;
+    }
+
+    .flow-pc {
+      display: none;
+    }
+
+    .flow-sp {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flow-sp-step {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+      min-height: 76px;
+    }
+
+    .flow-sp-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 6px;
+      width: 8px;
+      flex-shrink: 0;
+    }
+
+    .flow-sp-line {
+      width: 1px;
+      flex: 1;
+      min-height: 63px;
+      background: rgba(176, 141, 87, 0.35);
+      margin-top: 0;
+    }
+
+    .flow-sp-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 2px 0 24px;
+    }
+
+    .flow-sp .flow-en {
+      font-size: 14px;
+      line-height: 23px;
+      white-space: normal;
+    }
+
+    .flow-sp .flow-ja {
+      font-size: 14px;
+      line-height: 23px;
+    }
+
+    .jobs {
+      padding: 0 0 80px;
+    }
+
+    .jobs :global(.section-heading) {
+      margin-bottom: 40px;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .jobs :global(.eyebrow-wrap) {
+      align-items: flex-start;
+    }
+
+    .job-tables {
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .job-table-head {
+      padding: 16px 20px;
+    }
+
+    .job-table-title {
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .job-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 16px 20px;
+      align-items: start;
+    }
+
+    .job-row dt {
+      padding-right: 0;
+      font-weight: 600;
+    }
+
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .stats .stat-card:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .stat-card {
+      min-height: 0;
+      padding: 10px 8px;
+      gap: 10px;
+      border: 1px solid rgba(209, 204, 196, 0.4);
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      max-width: none;
+    }
+
+    .stat-value {
+      font-size: 28px;
+    }
+
+    .jobs-cta {
+      padding: 24px 16px;
+      gap: 16px;
+    }
+
+    .jobs-cta-message {
+      font-size: 14px;
+    }
+
+    .jobs-cta :global(.cta) {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1099px) {
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .message-ctas {
+      justify-content: center;
+    }
+
+    .message-ctas :global(.cta) {
+      flex: 0 1 220px;
+    }
+  }
+
+  @media (min-width: 1100px) and (max-width: 1366px) {
+    .message-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .stats {
+      gap: 12px;
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+    }
+
+    .job-row {
+      grid-template-columns: 200px 1fr;
+      padding: 20px 32px 20px 40px;
+    }
+
+    .job-table-head {
+      padding: 20px 32px 20px 40px;
+    }
+  }
+</style>
