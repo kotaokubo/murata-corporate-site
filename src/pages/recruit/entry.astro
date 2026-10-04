@@ -218,7 +218,7 @@ const heroAlt = '';
           </label>
         </div>
 
-        <p class="errors" role="alert" aria-live="polite" data-testid="form-errors"></p>
+        <p class="errors" role="alert" data-testid="form-errors"></p>
 
         <div class="submit-row">
           <button type="submit" disabled={!SUBMIT_ENABLED} data-submit-enabled={String(SUBMIT_ENABLED)}>
@@ -432,7 +432,13 @@ const heroAlt = '';
     padding-right: 36px;
   }
 
+  .file-drop:focus-within {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
   .file-drop {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
