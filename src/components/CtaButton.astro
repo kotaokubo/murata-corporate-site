@@ -2,7 +2,7 @@
 interface Props {
   href: string;
   label: string;
-  variant?: 'outline' | 'text';
+  variant?: 'outline' | 'text' | 'fill';
   external?: boolean;
   class?: string;
 }
@@ -40,6 +40,24 @@ const { href, label, variant = 'outline', external = false, class: className = '
     background: rgba(176, 141, 87, 0.08);
   }
 
+  .cta--fill {
+    min-height: 59px;
+    padding: 18px 40px;
+    border: 1px solid var(--color-gold);
+    border-radius: 4px;
+    background: var(--color-gold);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: 1.5px;
+    text-align: center;
+  }
+
+  .cta--fill:hover {
+    filter: brightness(1.05);
+  }
+
   .cta--text {
     color: var(--color-ink);
     font-weight: 400;
@@ -58,6 +76,13 @@ const { href, label, variant = 'outline', external = false, class: className = '
   @media (max-width: 1099px) {
     .cta--outline {
       min-height: 52px;
+      font-size: 14px;
+      letter-spacing: 1.2px;
+    }
+
+    .cta--fill {
+      min-height: 52px;
+      padding: 16px 38px;
       font-size: 14px;
       letter-spacing: 1.2px;
     }

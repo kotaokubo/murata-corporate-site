@@ -25,6 +25,7 @@ import iconTruck from '../assets/brand/icons/truck.svg';
 const homeEntry = await getEntry('pages', 'home');
 if (!homeEntry) throw new Error('src/content/pages/home.yml が見つかりません');
 const t = homeEntry.data;
+if (!('hero' in t)) throw new Error('home.yml の形が想定と違います');
 
 const news = (await getCollection('news', ({ data }) => (isProduction ? !data.draft : true)))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())

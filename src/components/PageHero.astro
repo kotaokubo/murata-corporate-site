@@ -1,13 +1,161 @@
 ---
-interface Props { title: string; eyebrow: string }
-const { title, eyebrow } = Astro.props;
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  title: string;
+  titleSp?: string;
+  eyebrow: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+}
+const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
 ---
-<section class="hero">
-  <p>{eyebrow}</p>
-  <h1>{title}</h1>
+<section class:list={['page-hero', image && 'has-image']}>
+  {image && (
+    <Image
+      src={image}
+      alt={imageAlt}
+      class="page-hero-img"
+      widths={[780, 1440, 1920]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
+  )}
+  {image && <div class="page-hero-overlay" aria-hidden="true"></div>}
+  <div class="page-hero-copy">
+    <p class="page-hero-eyebrow">{eyebrow}</p>
+    <span class="page-hero-line" aria-hidden="true"></span>
+    <h1 class="page-hero-title page-hero-title-pc">{title}</h1>
+    <h1 class="page-hero-title page-hero-title-sp">{titleSp ?? title}</h1>
+  </div>
 </section>
+
 <style>
-  .hero { background: var(--color-navy); color: var(--color-white); text-align: center; padding-block: var(--space-6); }
-  p { color: var(--color-gold); letter-spacing: 0.3em; font-size: 0.75rem; margin: 0; }
-  h1 { font-weight: 500; font-size: 1.5rem; margin: var(--space-2) 0 0; }
+  .page-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    overflow: hidden;
+    background: var(--color-navy);
+    color: var(--color-white);
+    text-align: center;
+    box-sizing: border-box;
+    padding: var(--space-6) 24px;
+  }
+
+  .page-hero.has-image {
+    justify-content: flex-end;
+    height: 300px;
+    min-height: 300px;
+    padding: 0 24px 61px;
+  }
+
+  .page-hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .page-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(3, 22, 85, 0.22);
+    pointer-events: none;
+  }
+
+  .page-hero-copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .page-hero-eyebrow {
+    margin: 0;
+    font-family: var(--font-en-serif);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.08;
+    letter-spacing: 3.84px;
+    color: var(--color-gold);
+    text-transform: uppercase;
+  }
+
+  .page-hero:not(.has-image) .page-hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+  }
+
+  .page-hero-line {
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--color-gold);
+  }
+
+  .page-hero:not(.has-image) .page-hero-line {
+    display: none;
+  }
+
+  .page-hero-title {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 42px;
+    letter-spacing: 3px;
+    color: var(--color-white);
+    white-space: pre-line;
+  }
+
+  .page-hero:not(.has-image) .page-hero-title {
+    font-weight: 500;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    margin-top: var(--space-2);
+  }
+
+  .page-hero-title-sp {
+    display: none;
+  }
+
+  @media (max-width: 1099px) {
+    .page-hero.has-image {
+      height: 250px;
+      min-height: 250px;
+      padding: 0 24px 59px;
+    }
+
+    .page-hero.has-image .page-hero-eyebrow {
+      font-size: 14px;
+      line-height: 23px;
+      letter-spacing: 2px;
+    }
+
+    .page-hero.has-image .page-hero-title {
+      font-size: 20px;
+      line-height: 30px;
+      letter-spacing: 3px;
+    }
+
+    .page-hero.has-image .page-hero-title-pc {
+      display: none;
+    }
+
+    .page-hero.has-image .page-hero-title-sp {
+      display: block;
+    }
+  }
 </style>
