@@ -28,7 +28,7 @@
 | 区分 | 例 | 触ってよい場所 | どうするか |
 | --- | --- | --- | --- |
 | A 内容の更新 | お知らせの追加・修正、写真の差し替え、ページ内の文言 | `src/content/news/`、`src/assets/images/`、`public/images/` | 進めてよい |
-| B 見た目と構成の変更 | レイアウト、新しいページ、部品、色や文字 | `src/pages/`、`src/components/`、`src/layouts/`、`src/styles/` | 進めてよい。本番の前に大久保が中身まで確かめると伝える |
+| B 見た目と構成の変更 | レイアウト、新しいページ、部品、色や文字 | `src/pages/`、`src/components/`、`src/layouts/`、`src/styles/` | 進めてよい。本番へ出すには大久保の承認が要ると伝える |
 | C 触らない | 上記以外すべて（設定、`package.json`、`.github/`、`tests/`、`scripts/`、`src/lib/`、`src/content.config.ts`、`src/content/legal/`、このファイル、`CLAUDE.md`、`docs/`、`public/_redirects`） | なし | **断ってください。** 大久保への連絡を勧めてください |
 
 判断がつかないときは C として扱い、作業を止めてください。
@@ -40,7 +40,8 @@
 3. `npm run build` と `npm run test:e2e` を通す。**通らなければ PR を出さない**
 4. 作業ブランチから `staging` へ PR を出す。PR の説明は `.github/pull_request_template.md` の項目を埋める
 5. 事務の方に、検証用の URL で確かめるよう伝える
-6. 「確認が済んだ」と言われたら、**同じ作業ブランチから** `main` へ PR を出す。マージは大久保が行う
+6. 「確認が済んだ」と言われたら、**同じ作業ブランチから** `main` へ PR を出す
+7. マージは**事務の方が** GitHub の画面で行う。区分 A だけなら必須チェックが通ればマージできる。区分 B を含むなら大久保の承認を待つ。**AI はマージしない**
 
 ## してはいけないこと
 

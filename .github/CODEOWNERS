@@ -1,10 +1,8 @@
-# 区分 C：大久保の承認がないと入らない（設計書 15章）。この行より下で持ち主を外したものが区分 A・B
+# main への PR で「コードオーナー（大久保）の承認」が要るファイル（README の ruleset「main-review」と組み合わせて効く）
+# 区分 B・C：大久保の承認がないと main に入らない
 *                         @kotaokubo
 
-# 区分 A・B：持ち主なし（事務の方が staging へ入れられる）
-/src/
-
-# src の中でも区分 C のもの
-/src/lib/                 @kotaokubo
-/src/content.config.ts    @kotaokubo
-/src/content/legal/       @kotaokubo
+# 区分 A：持ち主なし。必須チェックが通れば、事務の方が自分で main へマージできる
+/src/content/news/
+/src/assets/images/
+/public/images/

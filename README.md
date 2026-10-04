@@ -33,7 +33,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 1. `main` から `work/...` を切る
 2. 手元で `npm run build` と `npm run test:e2e` を通す
 3. `staging` へ PR → マージ → 検証用 URL で確認
-4. 同じ作業ブランチから `main` へ PR → **大久保がマージ** → 本番に出る
+4. 同じ作業ブランチから `main` へ PR → 必須チェックが通り、区分 B を含むなら大久保が承認 → **事務の方（または大久保）がマージ** → 本番に出る
 5. `staging` は毎朝 `main` を自動で取り込む（`.github/workflows/sync-staging.yml`）
 
 急ぎの修正は大久保だけが `hotfix/...` で行う（`staging` を通さずに `main` へ入れられる）。
@@ -60,8 +60,9 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 - [ ] Actions → General：「Require approval for all external contributors」にする
 - [ ] Rules → Rulesets を作る
   - [ ] **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`）
-  - [ ] **main-lock**（対象：`main`、bypass：Repository admin）：Restrict updates。これで `main` を進められるのは大久保だけになる
-    - main-protect に「Require review from Code Owners」は入れない。大久保は自分の PR を承認できないので、大久保自身の区分 C の変更が止まってしまう。`main` は main-lock で大久保しかマージできないので、承認の仕組みは要らない。CODEOWNERS は、PR に大久保をレビュー依頼として自動で付けるために使う
+  - [ ] **main-review**（対象：`main`、bypass：Repository admin）：Require a pull request before merging（Require review from Code Owners、Dismiss stale pull request approvals、Require approval of the most recent reviewable push）
+    - CODEOWNERS で、区分 A（お知らせと画像）だけ持ち主を外している。区分 A だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 B を含む PR は大久保の承認が要る
+    - bypass に大久保（Repository admin）を入れるのは、大久保が自分の PR を承認できないため。bypass は main-review にだけ効き、main-protect の必須チェックは大久保も飛ばせない
   - [ ] **staging-protect**（対象：`staging`、bypass：なし）：Restrict deletions、Block force pushes
     - `staging` は毎朝の自動取り込みが直接 push するので、PR 必須と必須チェックはかけない。作業ブランチからは PR で入れる（AGENTS.md）
     - そのため `staging` には、区分 C の変更やチェックが失敗した変更も入りうる。入っても検証環境だけの話で、`main` へは main-protect の必須チェックで止まる
