@@ -1,0 +1,55 @@
+# main へマージされた作業ブランチを消す（設計書 7章「作業ブランチは、main へマージしたら消す」）。
+# staging へのマージでは消さない。staging は確認の場所で、同じ作業ブランチから main へ PR を出すため。
+# リポジトリ設定の「Automatically delete head branches」はオフにしておくこと（オンだと staging へのマージで消える）。
+name: delete-merged-branch
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    # このリポジトリの work/ と hotfix/ だけを消す。main と staging は ruleset でも削除を禁止している
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (startsWith(github.event.pull_request.head.ref, 'work/') || startsWith(github.event.pull_request.head.ref, 'hotfix/'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: 作業ブランチを消す
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # ブランチ名は URL に埋めるので、英数字と . _ - だけを許す（# や ? で別のブランチを指させない）
+          if [[ ! "$HEAD_REF" =~ ^(work|hotfix)/[A-Za-z0-9._-]+$ ]]; then
+            echo "ブランチ名 $HEAD_REF は自動では消さない。必要なら手で消す"
+            exit 0
+          fi
+          # マージのあとにコミットが足されていたら消さない（未マージの変更を失わないため）。
+          # 「先端がマージしたコミットのときだけ消す」を --force-with-lease で1回の push にまとめ、確認と削除のあいだの隙をなくす
+          git init -q work && cd work
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          url="https://github.com/$REPO.git"
+          set -o pipefail
+          # ls-remote が失敗したら（認証や通信の障害）、ジョブを失敗させる
+          if ! remote=$(git -c http.extraheader="$auth" ls-remote --heads "$url" "refs/heads/$HEAD_REF"); then
+            echo "ブランチの状態を取得できなかった"
+            exit 1
+          fi
+          if [ -z "$remote" ]; then
+            echo "ブランチ $HEAD_REF は既に無い"
+            exit 0
+          fi
+          if git -c http.extraheader="$auth" push --force-with-lease="refs/heads/$HEAD_REF:$HEAD_SHA" "$url" ":refs/heads/$HEAD_REF"; then
+            echo "ブランチ $HEAD_REF を消した"
+          else
+            echo "ブランチ $HEAD_REF を消せなかった。マージ後のコミットがあるか、push に失敗した。必要なら手で確かめて消す"
+            exit 1
+          fi
