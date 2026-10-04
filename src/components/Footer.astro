@@ -1,21 +1,98 @@
 ---
-import { company, footerNavPc, footerNavSp, sns } from '../lib/site';
+import { footerNavPc, footerNavSp, sns } from '../lib/site';
+import {
+  type Lang,
+  hrefForLang,
+  htmlLang,
+  hreflangCode,
+  labelWithUntranslatedSuffix, untranslatedSuffix,
+  languageSwitchHref,
+  langs,
+  localizedPath,
+  t,
+} from '../lib/i18n';
 import logoFooter from '../assets/brand/logo-footer.png';
 import iconInstagramFooter from '../assets/brand/icons/instagram-footer.svg';
 import iconFacebook from '../assets/brand/icons/facebook.svg';
 
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'ja' } = Astro.props;
+
 const year = new Date().getFullYear();
-const logoAlt = `${company.name} ${company.nameEn}`;
+const logoAlt = `${t(lang, 'siteName')} ${t(lang, 'companyNameEn')}`;
+const homeHref = localizedPath('/', lang);
+const currentPath = Astro.url.pathname;
+
+const footerLabelKey: Record<string, string> = {
+  '会社概要': 'footerCompany',
+  'オンラインショップ': 'footerShop',
+  '採用情報': 'footerRecruit',
+  'FAQ': 'footerFaq',
+  'お問い合わせ': 'footerContact',
+  '新規取引をご希望の方': 'footerPartners',
+  'プライバシーポリシー': 'footerPrivacy',
+  '事業内容': 'footerBusiness',
+  'お知らせ': 'footerNews',
+};
+
+const pageKeyFromFooterHref = (href: string): string | null => {
+  if (href === '#contact' || href.startsWith('http')) return null;
+  if (href === '/#faq' || href === '/en/#faq' || href === '/zh/#faq') return '/';
+  if (href.startsWith('/')) {
+    const path = href.split('#')[0] || '/';
+    if (path === '' || path === '/') return '/';
+    return path.endsWith('/') ? path : `${path}/`;
+  }
+  return null;
+};
+
+const resolveFooterItem = (item: { href: string; label: string; external?: boolean }) => {
+  const key = footerLabelKey[item.label] ?? 'footerContact';
+  const label = t(lang, key);
+  const pageKey = pageKeyFromFooterHref(item.href);
+
+  if (item.href === '/#faq' || (pageKey === '/' && item.href.includes('#faq'))) {
+    const faqHref = `${localizedPath('/', lang)}#faq`;
+    return { ...item, label, displayLabel: label, hrefResolved: faqHref };
+  }
+
+  if (item.external || pageKey === null) {
+    // 外部のリンク（オンラインショップ）は日本語だけのサイト
+    const displayLabel = item.external ? `${label}${untranslatedSuffix(lang)}` : label;
+    return { ...item, label, displayLabel, hrefResolved: item.href };
+  }
+
+  return {
+    ...item,
+    label,
+    displayLabel: labelWithUntranslatedSuffix(label, pageKey, lang),
+    hrefResolved: hrefForLang(pageKey, lang),
+  };
+};
+
+const pcItems = footerNavPc.map(resolveFooterItem);
+const spItems = footerNavSp.map(resolveFooterItem);
 
 const linkAttrs = (item: { href: string; label: string; external?: boolean }) =>
   item.external ? { target: '_blank', rel: 'noopener' } : {};
 
 const isFaq = (label: string) => label === 'FAQ';
+
+const langItems = langs.map((code) => ({
+  code,
+  label: t(lang, code === 'ja' ? 'langJa' : code === 'en' ? 'langEn' : 'langZh'),
+  href: languageSwitchHref(currentPath, code),
+  current: code === lang,
+  hreflang: hreflangCode[code],
+  htmlLangAttr: htmlLang[code],
+}));
 ---
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-top footer-top--pc">
-      <a href="/" class="footer-logo">
+      <a href={homeHref} class="footer-logo">
         <img
           class="footer-logo-img footer-logo-img--pc"
           src={logoFooter.src}
@@ -24,15 +101,15 @@ const isFaq = (label: string) => label === 'FAQ';
           alt={logoAlt}
         />
       </a>
-      <nav class="footer-nav footer-nav--pc" aria-label="フッターナビゲーション">
+      <nav class="footer-nav footer-nav--pc" aria-label={t(lang, 'navFooter')}>
         <ul>
-          {footerNavPc.map((item) => (
+          {pcItems.map((item) => (
             <li>
               <a
-                href={item.href}
+                href={item.hrefResolved}
                 class:list={[{ 'is-en': isFaq(item.label) }]}
                 {...linkAttrs(item)}
-              >{item.label}</a>
+              >{item.displayLabel}</a>
             </li>
           ))}
         </ul>
@@ -53,7 +130,7 @@ const isFaq = (label: string) => label === 'FAQ';
     </div>
 
     <div class="footer-top footer-top--sp">
-      <a href="/" class="footer-logo">
+      <a href={homeHref} class="footer-logo">
         <img
           class="footer-logo-img footer-logo-img--sp"
           src={logoFooter.src}
@@ -62,15 +139,15 @@ const isFaq = (label: string) => label === 'FAQ';
           alt={logoAlt}
         />
       </a>
-      <nav class="footer-nav footer-nav--sp" aria-label="フッターナビゲーション">
+      <nav class="footer-nav footer-nav--sp" aria-label={t(lang, 'navFooter')}>
         <ul>
-          {footerNavSp.map((item) => (
+          {spItems.map((item) => (
             <li>
               <a
-                href={item.href}
+                href={item.hrefResolved}
                 class:list={[{ 'is-en': isFaq(item.label) }]}
                 {...linkAttrs(item)}
-              >{item.label}</a>
+              >{item.displayLabel}</a>
             </li>
           ))}
         </ul>
@@ -92,12 +169,22 @@ const isFaq = (label: string) => label === 'FAQ';
 
     <hr class="footer-rule" />
 
-    <p class="lang lang--footer" aria-label="言語">
-      <span class="lang-current">日本語</span>
-      <span class="lang-sep" aria-hidden="true">/</span>
-      <span class="lang-other">English</span>
-      <span class="lang-sep" aria-hidden="true">/</span>
-      <span class="lang-other">中文</span>
+    <p class="lang lang--footer" aria-label={t(lang, 'langLabel')}>
+      {langItems.map((item, i) => (
+        <>
+          {i > 0 && <span class="lang-sep" aria-hidden="true">/</span>}
+          {item.current ? (
+            <span class="lang-current" aria-current="true">{item.label}</span>
+          ) : (
+            <a
+              class="lang-other"
+              href={item.href}
+              hreflang={item.hreflang}
+              lang={item.htmlLangAttr}
+            >{item.label}</a>
+          )}
+        </>
+      ))}
     </p>
 
     <p class="copyright">© {year} MURATA JEWELRY All Rights Reserved.</p>
@@ -257,6 +344,7 @@ const isFaq = (label: string) => label === 'FAQ';
 
   .lang-other {
     color: var(--color-white-70);
+    text-decoration: none;
   }
 
   .lang-sep {

@@ -15,6 +15,7 @@
     "check:images": "node scripts/check-images.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:pii": "node scripts/check-pii.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "test:scripts": "node --test scripts/test/*.test.mjs"
   },
   "dependencies": {

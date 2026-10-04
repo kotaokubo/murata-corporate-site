@@ -2,6 +2,9 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html[lang='zh-Hans'] {
+  --font-jp: 'Noto Serif SC', serif;
+}
 body {
   margin: 0;
   font-family: var(--font-jp);
