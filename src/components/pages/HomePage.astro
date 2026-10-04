@@ -8,7 +8,7 @@ import FaqItem from '../FaqItem.astro';
 import { isProduction, nav, sns } from '../../lib/site';
 import {
   type Lang,
-  homeAlternates,
+  alternatesFor,
   homeEntryId,
   hrefForLang,
   labelWithUntranslatedSuffix,
@@ -68,7 +68,7 @@ const recruitSpLabel = labelWithUntranslatedSuffix(
 );
 const recruitCardLink = (label: string) => labelWithUntranslatedSuffix(label, '/recruit/', lang);
 
-const alternates = homeAlternates(Astro.site!);
+const alternates = alternatesFor('/', Astro.site!);
 
 // HERO: PC / SP を picture で排他選択（元画像幅を超えない widths）
 const heroPcImage = await getImage({ src: heroPc, widths: [692, 1385] });

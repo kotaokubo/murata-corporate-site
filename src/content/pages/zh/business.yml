@@ -1,0 +1,153 @@
+# AI による翻訳。日本語（../business.yml）を直したら、この訳も直す
+meta:
+  title: 业务内容
+  description: 村田宝饰的业务内容。从珠宝进口与批发、原创珠宝制作到修理与加工，提供一贯支持。
+
+hero:
+  eyebrow: OUR BUSINESS
+  title: 业务内容
+
+wholesale:
+  eyebrow: BUSINESS FLOW
+  title: 珠宝进口与批发
+  intro: |
+    甄别可靠品质，精选，制造。
+    以一贯的制作，送达可跨越世代传承的珠宝。
+  body: |
+    我们从国内外严选钻石、彩色宝石、珍珠等，备齐高品质珠宝，并向全国的珠宝零售店送达。
+    活用多年来积累的采购网络与可靠的鉴赏力，精选注重品质的商品，提出有价值的产品。
+    将一件件珠宝所蕴含的魅力，传递给更远的顾客。
+    我们重视送达长久被珍爱、可跨越世代传承的珠宝。
+  steps:
+    - en: 01 SOURCING
+      ja: 采购
+    - en: 02 QUALITY CHECK
+      ja: 品质检查
+    - en: 03 CRAFTING
+      ja: 制作
+    - en: 04 WHOLESALE
+      ja: 批发
+    - en: 05 PROCESSING
+      ja: 加工
+    - en: 06 DELIVERY
+      ja: 交货
+  slides:
+    - caption: 钻石戒指 - 使用严选的最高品质钻石
+    - caption: 珍珠项链 - 一颗一颗精心挑选高品质珍珠
+    - caption: 彩色宝石手链 - 从世界各地汇集的稀有石
+    - caption: 裸石系列 - 备有丰富的石号
+  sp:
+    steps:
+      - en: "01  SOURCING"
+        ja: 采购
+      - en: "02  QUALITY CHECK"
+        ja: 品质检查
+      - en: "03  CRAFTING"
+        ja: 制作
+      - en: "04  WHOLESALE"
+        ja: 批发
+      - en: "05  PROCESSING"
+        ja: 加工
+      - en: "06  DELIVERY"
+        ja: 交货
+    body: |
+      我们从国内外严选钻石、彩色宝石、珍珠等，备齐高品质珠宝，并向全国的珠宝零售店送达。
+      活用多年来积累的采购网络与可靠的鉴赏力，精选注重品质的商品，提出有价值的产品。
+
+craft:
+  eyebrow: CRAFT
+  title: 原创珠宝制作
+  steps:
+    - num: "01"
+      label: 设计制作（3DCAD）
+    - num: "02"
+      label: 树脂原型输出（3D打印机）
+    - num: "03"
+      label: 基于树脂原型铸造
+    - num: "04"
+      label: 制作银原型
+    - num: "05"
+      label: 橡胶模具制作・量产对应
+    - num: "06"
+      label: 铸造后的精加工
+    - num: "07"
+      label: 镶石加工
+    - num: "08"
+      label: 抛光・完成
+
+repair:
+  eyebrow: REPAIR
+  title: 修理与加工
+  body: |
+    熟练工匠将顾客珍贵的珠宝一件一件精心修理与加工。
+    「购买的店铺已经关闭了」「被其他店拒绝了」
+    此类困扰也请随时咨询我们。
+
+    改尺寸／如新抛光／镶石／链条断裂・手链修理／重新串线／刻字・消字／耳钉・耳环加工／戒指变形・歪斜修正／改造等
+
+    将装满回忆的珠宝传给下一代。
+    从接收到送达，我们负责任地对应。
+  slides:
+    - caption: 镀铑加工
+    - caption: 激光焊接
+  sp:
+    lead: 熟练工匠将顾客珍贵的珠宝一件一件精心修理与加工。「购买的店铺已经关闭了」「被其他店拒绝了」此类困扰也请随时咨询我们。
+    services: 改尺寸／如新抛光／镶石／链条断裂・手链修理／重新串线／刻字・消字／耳钉・耳环加工／改造
+    closing: |
+      将装满回忆的珠宝传给下一代。
+      从接收到送达，我们负责任地对应。
+    slides:
+      - caption: 镀铑加工
+      - caption: 精密激光焊接
+
+endToEnd:
+  title: 从购买到售后护理，请一贯托付给我们。
+  body: |
+    村田宝饰以珠宝批发为中心，从原创珠宝制作到修理与改造，
+    提供一贯支持。
+    关于珍贵珠宝的任何事宜，都请随时咨询我们。
+  sp:
+    eyebrow: VALUE PROPOSITION
+    body: 村田宝饰以珠宝批发为中心，从原创珠宝制作到修理与改造，提供一贯支持。关于珍贵珠宝的任何事宜，都请随时咨询我们。
+
+strength:
+  eyebrow: STRENGTH
+  title: 村田宝饰的优势
+  cards:
+    - title: 商品开发
+      body: 我们进行契合现代生活方式、引领时代的商品开发。
+    - title: 采购网络
+      body: 我们与国内外主要市场构建稳固网络，采购高品质素材。
+    - title: 自社工房
+      body: 在自社工房，熟练工匠以细致的手工一件一件制作与加工。
+    - title: 商品鲜度
+      body: 我们始终展望时代潮流，追求品质与价值。
+
+tokyo:
+  eyebrow: RETAIL STORE
+  title: 东京门店
+  company: 村田宝饰株式会社
+  branch: 东京总公司
+  postal: 〒110-0005
+  address: 东京都台东区上野5-7-5
+  building: 村田宝饰大厦1F
+  telLabel: TEL：03-5807-4345
+  telHref: tel:0358074345
+  mapLabel: MAP
+  mapHref: https://maps.google.com/?q=%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8F%B0%E6%9D%B1%E5%8C%BA%E4%B8%8A%E9%87%8E5-7-5+%E6%9D%91%E7%94%B0%E5%AE%9D%E9%A3%BE
+  galleryLabel: GALLERY
+  features:
+    - title: 可用中文或英语购物
+      body: 常驻可应对中文与英语的员工。对日语不够自信的顾客也可安心洽谈。
+    - title: 也备有直播销售空间
+      body: 在东京总店4层及5层备有配备免费WiFi的直播销售空间。可轻松进行直播销售或拍摄。使用需预约。
+
+onlineShop:
+  eyebrow: ONLINE SHOP
+  title: 网上商店
+  overlay: The Jewelry Concierge
+  body: |
+    「The Jewelry Concierge」是珠宝零售店专用的网上商店。
+    一般顾客无法购买，敬请注意。
+  ctaLabel: BtoB Online Shop >
+  note: ※ 使用BtoB商店需要注册账户

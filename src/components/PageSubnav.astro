@@ -1,4 +1,11 @@
 ---
+import {
+  type Lang,
+  hrefForLang,
+  pageKeyFromPath,
+  t as i18n,
+} from '../lib/i18n';
+
 interface Item {
   label: string;
   href: string;
@@ -6,21 +13,23 @@ interface Item {
 interface Props {
   items: Item[];
   currentPath: string;
+  lang?: Lang;
 }
-const { items, currentPath } = Astro.props;
+const { items, currentPath, lang = 'ja' } = Astro.props;
 const normalize = (path: string) => (path.endsWith('/') ? path : `${path}/`);
-const current = normalize(currentPath);
+const currentKey = pageKeyFromPath(currentPath);
 ---
-<nav class="page-subnav" aria-label="関連ページ">
+<nav class="page-subnav" aria-label={i18n(lang, 'subnavAria')}>
   <ul class="page-subnav-list">
     {items.map((item) => {
-      const active = normalize(item.href) === current;
+      const active = normalize(item.href) === currentKey;
+      const href = hrefForLang(item.href, lang);
       return (
         <li>
           {active ? (
             <span class="page-subnav-item is-current" aria-current="page">{item.label}</span>
           ) : (
-            <a class="page-subnav-item" href={item.href}>{item.label}</a>
+            <a class="page-subnav-item" href={href}>{item.label}</a>
           )}
         </li>
       );

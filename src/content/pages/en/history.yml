@@ -1,0 +1,107 @@
+# AI による翻訳。日本語（../history.yml）を直したら、この訳も直す
+meta:
+  title: History
+  description: The history of Murata Jewelry and the journey of our house brands.
+
+hero:
+  eyebrow: HISTORY
+  title: History
+
+subnav:
+  - label: About Us
+    href: /company/
+  - label: History
+    href: /history/
+
+intro:
+  eyebrow: OUR HISTORY
+  title: History
+  body: |
+    Since our founding in 1979, Murata Jewelry has continued as a jewelry manufacturer and wholesaler.
+    From Matsuyama, Ehime—a land rich in nature and history—across Japan, and out into the world.
+    Trade that began with exhibitions in Shikoku has grown through milestones including our expansion into Okachimachi, Tokyo, the industry’s first ISO 9001 certification, and the opening of our own atelier and online shop. Here we introduce the path we have walked with the changing times.
+  sp:
+    eyebrow: OUR HISTORY
+    body: |
+      Since our founding in 1979, Murata Jewelry has continued as a jewelry manufacturer and wholesaler.
+      From Matsuyama, Ehime—a land rich in nature and history—across Japan, and out into the world.
+      Trade that began with exhibitions in Shikoku has grown through milestones including our expansion into Okachimachi, Tokyo, the industry’s first ISO 9001 certification, and the opening of our own atelier and online shop. Here we introduce the history of Murata Jewelry as it has walked with the changing times.
+
+timeline:
+  - date: "1979"
+    text: Murata Jewelry Co., Ltd. established in Tachibana, Matsuyama, Ehime (capital ¥10 million)
+  - date: Apr 1983
+    text: Held the comprehensive exhibition “Shining Fair”
+  - date: Mar 1995
+    text: Renamed from “Shining Fair” to “Sambi Ten,” held at 9 venues in major cities across Shikoku
+    sp:
+      text: Renamed from “Shining Fair” to “Sambi Ten,” held at 9 venues in major cities across Shikoku
+  - date: Apr 1995
+    text: Head office relocated to Asoda, Matsuyama
+  - date: Oct 1997
+    text: Established local subsidiary “Santamates Gem” in Bangkok
+  - date: Apr 1999
+    text: New head office building completed in Nakamura, Matsuyama
+  - date: Dec 1999
+    text: Held 20th anniversary founding party
+  - date: Apr 2001
+    text: Opened Tokyo Branch in Okachimachi; joined Jewelry Town Okachimachi and exhibited at JTO
+  - date: Jul 2002
+    text: Koichiro Murata assumed the presidency
+  - date: Dec 2004
+    text: Obtained the industry’s first ISO 9001 certification.
+  - date: Oct 2005
+    text: Reorganized Tokyo Branch into Tokyo Head Office
+  - date: Apr 2006
+    text: Opened Kofu Branch
+  - date: Feb 2012
+    text: Tokyo Head Office expanded and relocated
+  - date: Nov 2015
+    text: Introduced a laser welding machine in the head office processing department
+  - date: Dec 2015
+    text: Began “We Love Jewelry” awareness activities to revitalize the jewelry market
+  - date: Mar 2016
+    text: Increased capital to ¥30 million
+  - date: May 2016
+    text: Introduced 3D CAD and a 3D printer in the head office processing department
+  - date: Aug 2016
+    text: Issued bank-guaranteed private placement bonds (issue amount ¥100 million)
+  - date: Sep 2016
+    text: Built / relocated atelier building with expansion of the head office production division
+  - date: Mar 2018
+    text: Tokyo Head Office relocated to a new building in Okachimachi
+  - date: Nov 2018
+    text: Established Murata Jewelry Hong Kong Limited
+  - date: Mar 2020
+    text: Closed Murata Jewelry Hong Kong Limited
+  - date: Apr 2020
+    text: Established membership online shop “The Jewelry Concierge” for jewelry retailers
+    sp:
+      text: Established online shop “The Jewelry Concierge” for jewelry retailers
+  - date: Jan 2023
+    text: Introduced a solar power system at the head office building aiming to be a sustainable company in line with the SDGs
+
+houseBrands:
+  eyebrow: HOUSE BRANDS
+  title: House Brands
+  items:
+    - date: "1996"
+      text: Launched “Earth Story,” “Kokoro,” “Afrodite,” “Jupitar,” and “FAVORITE”
+    - date: "2006"
+      text: Launched “Victorian’s Gate” and “DESIGRE”
+    - date: "2009"
+      text: Launched “Quadrille”
+    - date: "2010"
+      text: Launched “Love & Piece” (social contribution activities)
+      sp:
+        text: |
+          Launched “Love & Piece”
+          (social contribution activities)
+    - date: "2011"
+      text: Launched “Quadrille × Italy”
+    - date: "2014"
+      text: Launched “minette”
+  noteBefore: '* For details on each brand, see the “'
+  noteLinkLabel: Our Business
+  noteAfter: '” page.'
+  noteHref: /business/
