@@ -8,7 +8,8 @@
   --color-gold: #b08d57;
   --color-sub: #2c2c2e;
   --color-ink: #2c2c2e;
-  --color-muted: #8a8fa3;
+  --color-muted: #6b6b6b;
+  --color-muted-on-navy: #8a8fa3; /* メニューの言語表示（Figma） */
   --color-bg: #fdfcf9;
   --color-bg-soft: #f7f4ee;
   --color-bg-cream: #eceadf;
