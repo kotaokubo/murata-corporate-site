@@ -153,6 +153,7 @@ const faqVisible = t.faq.items.filter((item) => item.answer.trim().length > 0);
   <hr class="section-rule" />
 
   <!-- FAQ -->
+  {faqVisible.length > 0 && (
   <section class="faq">
     <div class="inner">
       <SectionHeading eyebrow={t.faq.eyebrow} title={t.faq.title} align="center" />
@@ -163,6 +164,7 @@ const faqVisible = t.faq.items.filter((item) => item.answer.trim().length > 0);
       </div>
     </div>
   </section>
+  )}
 </BaseLayout>
 
 <style>

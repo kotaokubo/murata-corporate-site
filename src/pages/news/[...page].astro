@@ -28,6 +28,8 @@ if (!t.breadcrumb) throw new Error('news.yml の形が想定と違います');
 
 const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
 const pageNumbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);
+// サイトの URL は末尾に / を付ける形にそろえる
+const withSlash = (url: string) => (url.endsWith('/') ? url : `${url}/`);
 ---
 <BaseLayout title={t.meta.title} description={t.meta.description}>
   <PageHero
@@ -70,11 +72,12 @@ const pageNumbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);
           </li>
         ))}
       </ul>
+      {page.data.length === 0 && <p class="news-empty">お知らせはまだありません。</p>}
 
       {page.lastPage > 1 && (
         <nav class="pagination" aria-label="ページ送り">
           {page.url.prev ? (
-            <a class="page-btn" href={page.url.prev} aria-label="前のページ">&lt;</a>
+            <a class="page-btn" href={withSlash(page.url.prev)} aria-label="前のページ">&lt;</a>
           ) : (
             <span class="page-btn is-disabled" aria-disabled="true">&lt;</span>
           )}
@@ -86,7 +89,7 @@ const pageNumbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);
             )
           ))}
           {page.url.next ? (
-            <a class="page-btn" href={page.url.next} aria-label="次のページ">&gt;</a>
+            <a class="page-btn" href={withSlash(page.url.next)} aria-label="次のページ">&gt;</a>
           ) : (
             <span class="page-btn is-disabled" aria-disabled="true">&gt;</span>
           )}
@@ -97,6 +100,12 @@ const pageNumbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);
 </BaseLayout>
 
 <style>
+  .news-empty {
+    margin: 40px 0 0;
+    text-align: center;
+    color: var(--color-ink);
+  }
+
   .inner {
     width: min(100% - 48px, var(--content-width));
     margin-inline: auto;
