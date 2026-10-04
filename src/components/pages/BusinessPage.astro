@@ -243,9 +243,19 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
           <div class="tokyo-address">
             <p class="tokyo-company">{t.tokyo.company}</p>
             <p class="tokyo-branch">{t.tokyo.branch}</p>
-            <p class="tokyo-line">{t.tokyo.postal}</p>
-            <p class="tokyo-line">{t.tokyo.address}</p>
-            <p class="tokyo-line">{t.tokyo.building}</p>
+            {lang !== 'en' ? (
+              <>
+                <p class="tokyo-line">{t.tokyo.postal}</p>
+                <p class="tokyo-line">{t.tokyo.address}</p>
+                <p class="tokyo-line">{t.tokyo.building}</p>
+              </>
+            ) : (
+              <>
+                {/* 英語は、建物、番地と市、郵便番号の順に書く（中国語は日本語と同じ順） */}
+                <p class="tokyo-line">{t.tokyo.building}</p>
+                <p class="tokyo-line">{t.tokyo.address} {t.tokyo.postal}</p>
+              </>
+            )}
             <p class="tokyo-tel">
               <a href={t.tokyo.telHref}>{t.tokyo.telLabel}</a>
             </p>

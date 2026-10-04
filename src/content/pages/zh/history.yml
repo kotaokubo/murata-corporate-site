@@ -31,11 +31,11 @@ timeline:
   - date: 1979年
     text: 于爱媛县松山市立花设立村田宝饰株式会社（资本金1,000万日元）
   - date: 1983年4月
-    text: 举办综合展会「Sanaki Fair」
+    text: 举办综合展会「灿煌展」
   - date: 1995年3月
-    text: 由「Sanaki Fair」更名为「灿美展」，于四国主要城市9个会场举办
+    text: 由「灿煌展」更名为「灿美展」，于四国主要城市9个会场举办
     sp:
-      text: 由「Sanaki Fair」更名为「灿美展」，于四国主要城市9个会场举办
+      text: 由「灿煌展」更名为「灿美展」，于四国主要城市9个会场举办
   - date: 1995年4月
     text: 总公司迁至松山市朝生田
   - date: 1997年10月
@@ -88,19 +88,19 @@ houseBrands:
     - date: 1996年
       text: 推出「Earth Story」「心」「Afrodite」「Jupitar」「FAVORITE」
     - date: 2006年
-      text: 推出「Victorians Gate」「Desire」
+      text: 推出「Victorian’s Gate」「DESIGRE」
     - date: 2009年
-      text: 推出「Cadriille」
+      text: 推出「Quadrille」
     - date: 2010年
-      text: 推出「Love and Peace」（社会贡献活动）
+      text: 推出「Love＆Piece」（社会贡献活动）
       sp:
         text: |
-          推出「Love and Peace」
+          推出「Love＆Piece」
           （社会贡献活动）
     - date: 2011年
-      text: 推出「Cadriille × Italy」
+      text: 推出「Quadrille × Italy」
     - date: 2014年
-      text: 推出「Minette」
+      text: 推出「minette」
   noteBefore: ※ 各品牌详情请参阅「
   noteLinkLabel: 业务内容
   noteAfter: 」页面。

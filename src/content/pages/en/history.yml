@@ -31,11 +31,11 @@ timeline:
   - date: "1979"
     text: Murata Jewelry Co., Ltd. established in Tachibana, Matsuyama, Ehime (capital ¥10 million)
   - date: Apr 1983
-    text: Held the comprehensive exhibition “Sanaki no Fair”
+    text: Held the comprehensive exhibition “Shining Fair”
   - date: Mar 1995
-    text: Renamed from “Sanaki no Fair” to “Sanbi Exhibition,” held at 9 venues in major cities across Shikoku
+    text: Renamed from “Shining Fair” to “Sambi Ten,” held at 9 venues in major cities across Shikoku
     sp:
-      text: Renamed from “Sanaki no Fair” to “Sanbi Exhibition,” held at 9 venues in major cities across Shikoku
+      text: Renamed from “Shining Fair” to “Sambi Ten,” held at 9 venues in major cities across Shikoku
   - date: Apr 1995
     text: Head office relocated to Asoda, Matsuyama
   - date: Oct 1997
@@ -88,19 +88,19 @@ houseBrands:
     - date: "1996"
       text: Launched “Earth Story,” “Kokoro,” “Afrodite,” “Jupitar,” and “FAVORITE”
     - date: "2006"
-      text: Launched “Victorians Gate” and “Desire”
+      text: Launched “Victorian’s Gate” and “DESIGRE”
     - date: "2009"
-      text: Launched “Cadriille”
+      text: Launched “Quadrille”
     - date: "2010"
-      text: Launched “Love and Peace” (social contribution activities)
+      text: Launched “Love & Piece” (social contribution activities)
       sp:
         text: |
-          Launched “Love and Peace”
+          Launched “Love & Piece”
           (social contribution activities)
     - date: "2011"
-      text: Launched “Cadriille × Italy”
+      text: Launched “Quadrille × Italy”
     - date: "2014"
-      text: Launched “Minette”
+      text: Launched “minette”
   noteBefore: '* For details on each brand, see the “'
   noteLinkLabel: Our Business
   noteAfter: '” page.'
