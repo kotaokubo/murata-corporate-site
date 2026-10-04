@@ -1,5 +1,5 @@
 ---
-// 全ページ共通の枠。区分 B（見た目）だが、head の中の公開設定は src/lib/site.ts（区分 C）が決める
+// 全ページ共通の枠。head（アクセス解析、noindex、canonical、読み込むスクリプト）を持つので区分 C（scripts/scope.mjs の SENSITIVE）。公開設定の値は src/lib/site.ts（区分 C）が決める
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
