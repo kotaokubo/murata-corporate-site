@@ -1,0 +1,102 @@
+---
+interface Props {
+  eyebrow: string;
+  title?: string;
+  align?: 'left' | 'center';
+  titleClass?: string;
+  dark?: boolean;
+}
+const { eyebrow, title, align = 'left', titleClass = '', dark = false } = Astro.props;
+---
+<div class:list={['section-heading', `is-${align}`, dark && 'is-dark']}>
+  <div class="eyebrow-wrap">
+    <p class="eyebrow">{eyebrow}</p>
+    <span class="eyebrow-line" aria-hidden="true"></span>
+  </div>
+  {title && <h2 class:list={['sec-title', titleClass]} set:html={title.replace(/\n/g, '<br />')} />}
+</div>
+
+<style>
+  .section-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .section-heading.is-center {
+    align-items: center;
+    text-align: center;
+  }
+
+  .section-heading.is-left {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .eyebrow-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .is-center .eyebrow-wrap {
+    align-items: center;
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-family: var(--font-en-serif);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.08;
+    letter-spacing: 3.84px;
+    color: var(--color-gold);
+    text-transform: uppercase;
+  }
+
+  .eyebrow-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--color-gold);
+  }
+
+  .sec-title {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 48px;
+    letter-spacing: 3px;
+    color: var(--color-navy);
+  }
+
+  .is-dark .sec-title {
+    color: var(--color-white);
+  }
+
+  @media (max-width: 1099px) {
+    .section-heading {
+      gap: 12px;
+    }
+
+    .eyebrow-wrap {
+      gap: 6px;
+    }
+
+    .eyebrow {
+      font-size: 16px;
+      letter-spacing: 2.5px;
+    }
+
+    .eyebrow-line {
+      width: 24px;
+    }
+
+    .sec-title {
+      font-size: 20px;
+      line-height: 1.45;
+      letter-spacing: 1.5px;
+    }
+  }
+</style>
