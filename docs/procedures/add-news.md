@@ -20,6 +20,8 @@ draft: false
 
 4. 画像は `src/assets/images/news/` に置く。形式は jpg、png、webp。長い辺 2000px 程度まで縮めてから置く
 5. `npm run build` と `npm run test:e2e` を通す
-6. `staging` へ PR を出し、検証用の URL で確かめてもらう
+6. `staging` へ PR を出し、すぐに PR へ `@codex review` とコメントする
+7. Codex の指摘を直すか、直さない理由を返信して、すべて解決（Resolve）する。直しを足したら、もう一度 `@codex review` とコメントし、再レビューが付いて新しい指摘もすべて解決するまで待つ
+8. `staging` へマージし、検証用の URL で確かめてもらう
 
 **公開日前に漏れて困る内容は、公開日になってから作業する**（リポジトリは公開されている）。

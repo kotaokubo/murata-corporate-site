@@ -4,4 +4,5 @@
 2. 差し替える写真が `src/assets/images/` か `public/images/` のどこにあるかを探す
 3. **同じファイル名**で上書きする。形式（jpg / png / webp）を変える場合は、その写真を使っている箇所も直す（区分 B になることがある）
 4. 長い辺 2000px 程度まで縮めてから置く。写真は自社で撮ったものか、使用許諾のあるものに限る
-5. `npm run build` と `npm run test:e2e` を通し、`staging` へ PR を出す
+5. `npm run build` と `npm run test:e2e` を通し、`staging` へ PR を出す。出したらすぐに PR へ `@codex review` とコメントする
+6. Codex の指摘を直すか、直さない理由を返信して、すべて解決（Resolve）する。直しを足したら、もう一度 `@codex review` とコメントし、再レビューが付いて新しい指摘もすべて解決するまで待つ。そのあと `staging` へマージする
