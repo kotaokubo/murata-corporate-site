@@ -1,8 +1,19 @@
-# main への PR で「コードオーナー（大久保）の承認」が要るファイル（README の ruleset「main-review」と組み合わせて効く）
-# 区分 B・C：大久保の承認がないと main に入らない
+# main への PR で「コードオーナー（大久保）の承認」が要るファイル（docs/development.md の ruleset「main-review」と組み合わせて効く）
+# 区分 C：大久保の承認がないと main に入らない
 *                         @kotaokubo
 
 # 区分 A：持ち主なし。必須チェックが通れば、事務の方が自分で main へマージできる
 /src/content/news/
 /src/assets/images/
 /public/images/
+
+# 区分 B：持ち主なし。大久保の承認は要らない。代わりに、事務の方が影響するページを検証用の URL で重めに確かめる（AGENTS.md）
+/src/pages/
+/src/components/
+/src/layouts/
+/src/styles/
+
+# 区分 B の場所にあっても、個人情報や公開設定に関わるものは区分 C（scripts/scope.mjs の SENSITIVE と揃える）
+/src/pages/privacy.astro          @kotaokubo
+/src/pages/recruit/entry.astro    @kotaokubo
+/src/layouts/BaseLayout.astro     @kotaokubo

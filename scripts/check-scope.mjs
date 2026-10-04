@@ -10,7 +10,9 @@ if (!BASE_SHA || !HEAD_SHA) {
   console.error('BASE_SHA と HEAD_SHA が必要です');
   process.exit(2);
 }
-const files = execFileSync('git', ['diff', '--name-only', `${BASE_SHA}...${HEAD_SHA}`], { encoding: 'utf8' })
+// --no-renames：リネームを「元の削除」と「先の追加」に分けて両方を数える。区分 C のファイルを区分 B の場所へ
+// 移して判定を逃れることを防ぐ
+const files = execFileSync('git', ['diff', '--name-only', '--no-renames', `${BASE_SHA}...${HEAD_SHA}`], { encoding: 'utf8' })
   .split('\n').filter(Boolean);
 const groups = { A: [], B: [], C: [] };
 for (const f of files) groups[classify(f)].push(f);
