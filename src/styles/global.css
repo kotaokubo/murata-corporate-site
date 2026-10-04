@@ -4,11 +4,14 @@
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  font-family: var(--font-serif);
+  font-family: var(--font-jp);
   color: var(--color-ink);
   background: var(--color-bg);
   line-height: 1.9;
   letter-spacing: 0.04em;
+}
+body.is-menu-open {
+  overflow: hidden;
 }
 img { max-width: 100%; height: auto; }
 a { color: inherit; }
