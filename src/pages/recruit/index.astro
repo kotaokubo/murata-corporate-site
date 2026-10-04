@@ -38,6 +38,7 @@ const t = entry.data as unknown as {
     items: {
       role: string;
       name: string;
+      photo: 'omoto' | 'sakamoto' | 'mandal';
       sections: string[];
       message: string;
       spBody: string;
@@ -62,9 +63,10 @@ if (!t.message || !t.staffInterview || !t.jobRequirements) {
   throw new Error('recruit.yml の形が違います');
 }
 
-const heroAlt = 'ダイヤと色石のネックレスを黒い背景に置いた写真';
-const workspaceAlt = '木のテーブルに並べた色石のリングとジュエリー';
-const staffPortraits = [staffOmoto, staffSakamoto, staffMandal];
+// ページ見出しの背景で、内容を伝えない飾りの写真
+const heroAlt = '';
+const workspaceAlt = '淡い色の布の上に並べた色石のリングとペンダント、パールのネックレス';
+const staffPortraits = { omoto: staffOmoto, sakamoto: staffSakamoto, mandal: staffMandal };
 const statIcons = [statEmployees, statOvertime, statTenure, statAge, statVacation];
 ---
 <BaseLayout title={t.meta.title} description={t.meta.description}>
@@ -143,7 +145,7 @@ const statIcons = [statEmployees, statOvertime, statTenure, statAge, statVacatio
                   <div class="staff-halo" aria-hidden="true"></div>
                   <div class="staff-portrait-frame">
                     <Image
-                      src={staffPortraits[i]}
+                      src={staffPortraits[item.photo]}
                       alt={`${item.name}さんの写真`}
                       class="staff-portrait"
                       width={270}

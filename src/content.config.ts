@@ -164,6 +164,8 @@ const pages = defineCollection({
             z.object({
               role: nonEmpty,
               name: nonEmpty,
+              // 写真のファイル（src/assets/images/recruit/staff-<photo>.jpg）。順序を入れ替えても写真が人に付いていく
+              photo: z.enum(['omoto', 'sakamoto', 'mandal']),
               sections: z.array(nonEmpty).min(1).max(4),
               // PC で一言がカード下部に無い場合は空文字
               message: z.string().trim(),
@@ -287,7 +289,6 @@ const pages = defineCollection({
           spBody: nonEmpty,
           agreeLabel: nonEmpty,
         }),
-        submitLabel: nonEmpty,
         preparingNote: nonEmpty,
       }),
     });

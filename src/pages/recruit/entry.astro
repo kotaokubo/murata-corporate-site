@@ -53,14 +53,14 @@ const t = entry.data as unknown as {
       spBody: string;
       agreeLabel: string;
     };
-    submitLabel: string;
     preparingNote: string;
   };
 };
 if (!t.form || !t.lead) throw new Error('entry.yml の形が違います');
 
 const f = t.form.fields;
-const heroAlt = 'ダイヤと色石のネックレスを黒い背景に置いた写真';
+// ページ見出しの背景で、内容を伝えない飾りの写真
+const heroAlt = '';
 ---
 <BaseLayout title={t.meta.title} description={t.meta.description}>
   <PageHero
@@ -127,7 +127,7 @@ const heroAlt = 'ダイヤと色石のネックレスを黒い背景に置いた
               placeholder={f.tel.placeholder}
               data-placeholder-pc={f.tel.placeholder}
               data-placeholder-sp={f.tel.spPlaceholder}
-              pattern="[0-9\-]{10,13}"
+              pattern="0(?:[0-9]-?){8,9}[0-9]"
             />
           </div>
         </div>
@@ -222,7 +222,8 @@ const heroAlt = 'ダイヤと色石のネックレスを黒い背景に置いた
 
         <div class="submit-row">
           <button type="submit" disabled={!SUBMIT_ENABLED} data-submit-enabled={String(SUBMIT_ENABLED)}>
-            {t.form.submitLabel}
+            {/* テストがこの文言でボタンを探すので、YAML に出さずここに置く */}
+            送信内容を確認する
           </button>
           {!SUBMIT_ENABLED && <p class="hint preparing">{t.form.preparingNote}</p>}
         </div>
