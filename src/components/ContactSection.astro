@@ -1,34 +1,42 @@
 ---
 // ページ下部のお問い合わせ欄。ヘッダーの「お問い合わせ」はここへ移る（id="contact"）
 import { company } from '../lib/site';
+import { type Lang, t } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'ja' } = Astro.props;
+
 const telHref = (tel: string) => `tel:${tel.replace(/-/g, '')}`;
+const branchLabels = [t(lang, 'contactBranchMatsuyama'), t(lang, 'contactBranchTokyo')];
 ---
 <section id="contact" class="contact" data-testid="contact-section">
   <div class="contact-inner">
     <div class="contact-heading">
       <p class="eyebrow">CONTACT</p>
       <span class="eyebrow-line" aria-hidden="true"></span>
-      <h2 class="title-sp">お問い合わせ</h2>
+      <h2 class="title-sp">{t(lang, 'contactTitle')}</h2>
     </div>
 
     <div class="contact-body">
       <div class="contact-intro">
-        <h2 class="title-pc">お問い合わせ</h2>
-        <p class="lead-pc">ご質問・ご相談はお電話またはメールにてお問い合わせください。</p>
-        <p class="lead-sp">ご質問・ご相談はお電話またはメールにてお気軽にお問い合わせください。</p>
+        <h2 class="title-pc">{t(lang, 'contactTitle')}</h2>
+        <p class="lead-pc">{t(lang, 'contactLeadPc')}</p>
+        <p class="lead-sp">{t(lang, 'contactLeadSp')}</p>
       </div>
 
       <dl class="contact-list">
-        {company.contacts.map((c) => (
+        {company.contacts.map((c, i) => (
           <div class="contact-row">
-            <dt>{c.label}</dt>
+            <dt>{branchLabels[i] ?? c.label}</dt>
             <dd><a href={telHref(c.tel)} data-testid="contact-tel">{c.tel}</a></dd>
           </div>
         ))}
         <div class="contact-row contact-row--mail">
           <dt>
-            <span class="label-pc">メール</span>
-            <span class="label-sp">メールアドレス</span>
+            <span class="label-pc">{t(lang, 'contactMail')}</span>
+            <span class="label-sp">{t(lang, 'contactMailSp')}</span>
           </dt>
           <dd><a href={`mailto:${company.email}`} data-testid="contact-mail">{company.email}</a></dd>
         </div>

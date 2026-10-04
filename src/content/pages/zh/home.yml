@@ -1,0 +1,120 @@
+# AI による翻訳。日本語（../home.yml）を直したら、この訳も直す
+meta:
+  title: 村田宝饰
+  description: 人因闪耀而辉映世界。村田宝饰株式会社的企业网站。
+
+hero:
+  catchphrase: |
+    陪伴永恒的瞬间
+    美丽的光辉
+  scroll: SCROLL
+
+concept:
+  eyebrow: CONCEPT
+  title: |
+    成为客户
+    最信赖的伙伴
+  body: |
+    将工匠手工与最高品质素材融合的独一无二珠宝，一件件倾注心意。
+    村田宝饰以扎实技术与独特采购网络，持续作为支撑全国珠宝零售店的“珠宝礼宾”。
+  sp:
+    title: 成为客户最信赖的伙伴
+    body: |
+      将工匠手工与最高品质素材融合的独一无二珠宝，一件件倾注心意。
+
+      村田宝饰以扎实技术与独特采购网络，持续作为支撑全国珠宝零售店的“珠宝礼宾”。
+
+ourBusiness:
+  eyebrow: OUR BUSINESS
+  title: 从购买到售后，一切放心交给我们。
+  body: |
+    村田宝饰以珠宝批发为核心，从原创珠宝制作到修理与改造，提供一站式支持。
+
+    我们的优势是“材料采购力”“新品开发力”“自有工房加工力”“丰富品类力”“商品鲜度力”。
+    发挥这五项优势，满足客户的各种需求。任何事宜都欢迎随时咨询。
+  ctaLabel: 了解更多 >
+  steps:
+    - en: 01 SOURCING
+      ja: 采购
+    - en: 02 QUALITY CHECK
+      ja: 品质检查
+    - en: 03 CRAFTING
+      ja: 制作
+    - en: 04 WHOLESALE
+      ja: 批发
+    - en: 05 PROCESSING
+      ja: 加工
+    - en: 06 DELIVERY
+      ja: 交付
+  sp:
+    title: |
+      从购买到售后，
+      一切放心交给我们。
+
+about:
+  eyebrow: ABOUT
+  title: 关于村田宝饰
+  body: 自1979年创业以来，我们以爱媛县松山市为据点，持续提供高品质珠宝。凭借扎实技术与审美眼光，不断呈现跨越世代仍受喜爱的光辉与价值。
+  ctaLabel: 了解更多 >
+  sp:
+    eyebrow: ABOUT US
+    body: |
+      自1979年创业以来，我们以爱媛县松山市为据点，持续提供高品质珠宝。
+
+      凭借扎实技术与审美眼光，不断呈现跨越世代仍受喜爱的光辉与价值。
+
+recruit:
+  eyebrow: RECRUIT
+  title: 招聘信息
+  lead: |
+    诚招与我们一同
+    传递光辉的伙伴
+  ctaLabel: 招聘信息 >
+  cards:
+    - title: 销售职员
+      linkLabel: 详情 →
+    - title: 卖场职员
+      linkLabel: 详情 →
+    - title: 兼职职员
+      linkLabel: 详情 →
+  sp:
+    lead: 诚招与我们一同传递光辉的伙伴
+    ctaLabel: 招聘信息  >
+
+news:
+  eyebrow: NEWS
+  title: 通知
+  ctaLabel: 查看全部 >
+
+onlineShop:
+  eyebrow: ONLINE SHOP
+  title: 网上商店
+  overlay: The Jewelry Concierge
+  body: |
+    “The Jewelry Concierge”是珠宝零售店专用的网上商店。
+    一般顾客无法购买，敬请注意。
+  ctaLabel: BtoB Online Shop >
+  note: ※ 使用 BtoB 商店需要注册账户
+  sp:
+    body: “The Jewelry Concierge”是珠宝零售店专用的网上商店。一般顾客无法购买，敬请注意。
+
+instagram:
+  eyebrow: INSTAGRAM
+  title: Instagram
+  ctaLabel: 查看 Instagram >
+  images: []
+
+faq:
+  eyebrow: FAQ
+  title: 常见问题
+  items:
+    - question: 可以定制珠宝吗？
+      answer: 可以，我们承接定制。根据您希望的设计，制作世上独一无二的定制珠宝。也支持 CAD 设计，以及使用您已有的 CAD 数据进行制作。我们备有丰富的彩色宝石，欢迎随时咨询。
+    - question: 关于新的交易
+      answer: ''
+    - question: 经销商展会销售哪些商品
+      answer: ''
+    - question: 想亲眼看看商品
+      answer: ''
+    - question: 关于售后服务与修理
+      answer: ''

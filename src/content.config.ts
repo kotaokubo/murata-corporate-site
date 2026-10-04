@@ -65,7 +65,7 @@ const subnavSchema = z
   .max(6);
 
 const homePage = defineCollection({
-  loader: glob({ pattern: 'home.yml', base: './src/content/pages' }),
+  loader: glob({ pattern: '{home,en/home,zh/home}.yml', base: './src/content/pages' }),
   schema: ({ image }) =>
     obj({
       meta: metaSchema,
@@ -176,7 +176,7 @@ const homePage = defineCollection({
 });
 
 const companyPage = defineCollection({
-  loader: glob({ pattern: 'company.yml', base: './src/content/pages' }),
+  loader: glob({ pattern: '{company,en/company,zh/company}.yml', base: './src/content/pages' }),
   schema: obj({
     meta: metaSchema,
     hero: obj({
@@ -217,7 +217,7 @@ const companyPage = defineCollection({
 });
 
 const historyPage = defineCollection({
-  loader: glob({ pattern: 'history.yml', base: './src/content/pages' }),
+  loader: glob({ pattern: '{history,en/history,zh/history}.yml', base: './src/content/pages' }),
   schema: obj({
     meta: metaSchema,
     hero: obj({
@@ -270,7 +270,7 @@ const historyPage = defineCollection({
 });
 
 const businessPage = defineCollection({
-  loader: glob({ pattern: 'business.yml', base: './src/content/pages' }),
+  loader: glob({ pattern: '{business,en/business,zh/business}.yml', base: './src/content/pages' }),
   schema: obj({
     meta: metaSchema,
     hero: obj({
@@ -531,7 +531,7 @@ const entryPage = defineCollection({
 });
 
 const partnersPage = defineCollection({
-  loader: glob({ pattern: 'partners.yml', base: './src/content/pages' }),
+  loader: glob({ pattern: '{partners,en/partners,zh/partners}.yml', base: './src/content/pages' }),
   schema: obj({
     meta: metaSchema,
     pageHero: obj({

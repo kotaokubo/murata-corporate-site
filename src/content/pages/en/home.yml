@@ -1,0 +1,120 @@
+# AI による翻訳。日本語（../home.yml）を直したら、この訳も直す
+meta:
+  title: Murata Jewelry
+  description: People shine, the world shines. The corporate website of Murata Jewelry Co., Ltd.
+
+hero:
+  catchphrase: |
+    Beside every lasting moment
+    a beautiful radiance
+  scroll: SCROLL
+
+concept:
+  eyebrow: CONCEPT
+  title: |
+    Your foremost
+    partner
+  body: |
+    One by one, with care—unique jewelry where artisan handwork meets materials of the highest quality.
+    With solid craftsmanship and our own sourcing network, Murata Jewelry continues to support jewelry retailers nationwide as a “Jewelry Concierge.”
+  sp:
+    title: Your foremost partner
+    body: |
+      One by one, with care—unique jewelry where artisan handwork meets materials of the highest quality.
+
+      With solid craftsmanship and our own sourcing network, Murata Jewelry continues to support jewelry retailers nationwide as a “Jewelry Concierge.”
+
+ourBusiness:
+  eyebrow: OUR BUSINESS
+  title: From purchase to aftercare, leave it all to us.
+  body: |
+    Centered on wholesale jewelry, Murata Jewelry supports you end to end—from original jewelry production to repair and remodeling.
+
+    Our strengths are sourcing power, new product development, in-house atelier processing, a wide assortment, and product freshness.
+    Drawing on these five strengths, we meet every customer need. Please feel free to consult us about anything.
+  ctaLabel: Learn more >
+  steps:
+    - en: 01 SOURCING
+      ja: Sourcing
+    - en: 02 QUALITY CHECK
+      ja: Quality check
+    - en: 03 CRAFTING
+      ja: Crafting
+    - en: 04 WHOLESALE
+      ja: Wholesale
+    - en: 05 PROCESSING
+      ja: Processing
+    - en: 06 DELIVERY
+      ja: Delivery
+  sp:
+    title: |
+      From purchase to aftercare,
+      leave it all to us.
+
+about:
+  eyebrow: ABOUT
+  title: About Murata Jewelry
+  body: Since our founding in 1979, we have delivered high-quality jewelry from our base in Matsuyama, Ehime. With solid craftsmanship and an eye for beauty, we continue to offer radiance and value loved across generations.
+  ctaLabel: Learn more >
+  sp:
+    eyebrow: ABOUT US
+    body: |
+      Since our founding in 1979, we have delivered high-quality jewelry from our base in Matsuyama, Ehime.
+
+      With solid craftsmanship and an eye for beauty, we continue to offer radiance and value loved across generations.
+
+recruit:
+  eyebrow: RECRUIT
+  title: Careers
+  lead: |
+    We are looking for people
+    to share brilliance with us
+  ctaLabel: Careers >
+  cards:
+    - title: Sales staff
+      linkLabel: Details →
+    - title: Floor staff
+      linkLabel: Details →
+    - title: Part-time staff
+      linkLabel: Details →
+  sp:
+    lead: We are looking for people to share brilliance with us
+    ctaLabel: Careers  >
+
+news:
+  eyebrow: NEWS
+  title: News
+  ctaLabel: View all >
+
+onlineShop:
+  eyebrow: ONLINE SHOP
+  title: Online shop
+  overlay: The Jewelry Concierge
+  body: |
+    “The Jewelry Concierge” is an online shop exclusively for jewelry retailers.
+    Please note that general customers cannot make purchases.
+  ctaLabel: BtoB Online Shop >
+  note: ※ An account is required to use the BtoB shop
+  sp:
+    body: “The Jewelry Concierge” is an online shop exclusively for jewelry retailers. Please note that general customers cannot make purchases.
+
+instagram:
+  eyebrow: INSTAGRAM
+  title: Instagram
+  ctaLabel: View Instagram >
+  images: []
+
+faq:
+  eyebrow: FAQ
+  title: Frequently asked questions
+  items:
+    - question: Can you make custom-order jewelry?
+      answer: Yes, we accept custom orders. Based on your preferred design, we create one-of-a-kind custom jewelry. We also support CAD design and production using your own CAD data. We have a wide range of colored stones available, so please feel free to consult us.
+    - question: About new business partnerships
+      answer: ''
+    - question: What products are handled at dealer exhibitions?
+      answer: ''
+    - question: I would like to see the products in person
+      answer: ''
+    - question: About after-sales service and repairs
+      answer: ''

@@ -1,5 +1,16 @@
 ---
 import { company, nav, sns } from '../lib/site';
+import {
+  type Lang,
+  hrefForLang,
+  htmlLang,
+  hreflangCode,
+  labelWithUntranslatedSuffix,
+  languageSwitchHref,
+  langs,
+  localizedPath,
+  t,
+} from '../lib/i18n';
 import logoHeader from '../assets/brand/logo-header.png';
 import iconClose from '../assets/brand/icons/close.svg';
 import iconChevron from '../assets/brand/icons/chevron-right.svg';
@@ -8,12 +19,65 @@ import iconMail from '../assets/brand/icons/mail.svg';
 import iconInstagramMenu from '../assets/brand/icons/instagram-menu.svg';
 import iconFacebook from '../assets/brand/icons/facebook.svg';
 
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'ja' } = Astro.props;
+
 const telHref = (tel: string) => `tel:${tel.replace(/-/g, '')}`;
-const logoAlt = `${company.name} ${company.nameEn}`;
+const logoAlt = `${t(lang, 'siteName')} ${t(lang, 'companyNameEn')}`;
+const homeHref = localizedPath('/', lang);
+const currentPath = Astro.url.pathname;
+
+const navKeyByHref: Record<string, string> = {
+  '/company/': 'navAbout',
+  '/business/': 'navBusiness',
+  'http://mns.murata-ibrain.jp/': 'navShop',
+  '/news/': 'navNews',
+  '/recruit/': 'navRecruit',
+};
+
+const pageKeyByHref: Record<string, string> = {
+  '/company/': '/company/',
+  '/business/': '/business/',
+  '/news/': '/news/',
+  '/recruit/': '/recruit/',
+};
+
+const localizedNav = nav.map((item) => {
+  const key = navKeyByHref[item.href] ?? 'navAbout';
+  const pageKey = pageKeyByHref[item.href];
+  const label = t(lang, key);
+  if (item.external || !pageKey) {
+    return {
+      ...item,
+      label,
+      displayLabel: label,
+      hrefResolved: item.href,
+    };
+  }
+  return {
+    ...item,
+    label,
+    displayLabel: labelWithUntranslatedSuffix(label, pageKey, lang),
+    hrefResolved: hrefForLang(pageKey, lang),
+  };
+});
+
+const branchLabels = [t(lang, 'contactBranchMatsuyama'), t(lang, 'contactBranchTokyo')];
+
+const langItems = langs.map((code) => ({
+  code,
+  label: t(lang, code === 'ja' ? 'langJa' : code === 'en' ? 'langEn' : 'langZh'),
+  href: languageSwitchHref(currentPath, code),
+  current: code === lang,
+  hreflang: hreflangCode[code],
+  htmlLangAttr: htmlLang[code],
+}));
 ---
 <header class="header">
   <div class="header-inner">
-    <a href="/" class="logo">
+    <a href={homeHref} class="logo">
       <img
         class="logo-img logo-img--pc"
         src={logoHeader.src}
@@ -30,18 +94,18 @@ const logoAlt = `${company.name} ${company.nameEn}`;
       />
     </a>
 
-    <nav class="pc-nav" aria-label="グローバルナビゲーション">
+    <nav class="pc-nav" aria-label={t(lang, 'navGlobal')}>
       <ul class="pc-nav-list">
-        {nav.map((item) => (
+        {localizedNav.map((item) => (
           <li>
             <a
-              href={item.href}
+              href={item.hrefResolved}
               {...(item.external ? { target: '_blank', rel: 'noopener' } : {})}
-            >{item.label}</a>
+            >{item.displayLabel}</a>
           </li>
         ))}
       </ul>
-      <a href="#contact" class="contact-button" data-testid="header-contact">お問い合わせ</a>
+      <a href="#contact" class="contact-button" data-testid="header-contact">{t(lang, 'headerContact')}</a>
     </nav>
 
     <button
@@ -49,7 +113,7 @@ const logoAlt = `${company.name} ${company.nameEn}`;
       type="button"
       aria-controls="global-nav"
       aria-expanded="false"
-      aria-label="メニューを開く"
+      aria-label={t(lang, 'menuOpen')}
     >
       <span class="menu-button-bars" aria-hidden="true">
         <span></span><span></span><span></span>
@@ -63,11 +127,11 @@ const logoAlt = `${company.name} ${company.nameEn}`;
   class="mobile-menu"
   role="dialog"
   aria-modal="true"
-  aria-label="メニュー"
+  aria-label={t(lang, 'menuLabel')}
   hidden
 >
   <div class="mobile-menu-bar">
-    <a href="/" class="logo logo--menu">
+    <a href={homeHref} class="logo logo--menu">
       <img
         class="logo-img logo-img--sp"
         src={logoHeader.src}
@@ -76,24 +140,24 @@ const logoAlt = `${company.name} ${company.nameEn}`;
         alt={logoAlt}
       />
     </a>
-    <button type="button" class="menu-close" aria-label="メニューを閉じる">
+    <button type="button" class="menu-close" aria-label={t(lang, 'menuClose')}>
       <img src={iconClose.src} width="24" height="24" alt="" />
     </button>
   </div>
 
   <div class="mobile-menu-body">
-    <nav class="mobile-nav" aria-label="グローバルナビゲーション">
+    <nav class="mobile-nav" aria-label={t(lang, 'navGlobal')}>
       <ul class="mobile-nav-list">
-        {nav.map((item) => (
+        {localizedNav.map((item) => (
           <li>
             <a
               class="mobile-nav-link"
-              href={item.href}
+              href={item.hrefResolved}
               {...(item.external ? { target: '_blank', rel: 'noopener' } : {})}
             >
               <span class="mobile-nav-text">
                 <span class="mobile-nav-en">{item.en}</span>
-                <span class="mobile-nav-jp">{item.label}</span>
+                <span class="mobile-nav-jp">{item.displayLabel}</span>
               </span>
               <img class="mobile-nav-chevron" src={iconChevron.src} width="20" height="20" alt="" />
             </a>
@@ -109,9 +173,9 @@ const logoAlt = `${company.name} ${company.nameEn}`;
     </div>
 
     <div class="mobile-phones">
-      {company.contacts.map((c) => (
+      {company.contacts.map((c, i) => (
         <a class="phone-card" href={telHref(c.tel)}>
-          <span class="phone-card-label">{c.label}</span>
+          <span class="phone-card-label">{branchLabels[i] ?? c.label}</span>
           <span class="phone-card-row">
             <img src={iconPhone.src} width="16" height="16" alt="" />
             <span class="phone-card-tel">{c.tel}</span>
@@ -122,7 +186,7 @@ const logoAlt = `${company.name} ${company.nameEn}`;
 
     <a class="mail-button" href={`mailto:${company.email}`}>
       <img src={iconMail.src} width="16" height="16" alt="" />
-      <span>メールで問い合わせ</span>
+      <span>{t(lang, 'mailInquiry')}</span>
     </a>
 
     <div class="ornament" aria-hidden="true">
@@ -145,12 +209,22 @@ const logoAlt = `${company.name} ${company.nameEn}`;
       ))}
     </ul>
 
-    <p class="lang lang--menu" aria-label="言語">
-      <span class="lang-current">日本語</span>
-      <span class="lang-sep" aria-hidden="true">│</span>
-      <span class="lang-other">English</span>
-      <span class="lang-sep" aria-hidden="true">│</span>
-      <span class="lang-other">中文</span>
+    <p class="lang lang--menu" aria-label={t(lang, 'langLabel')}>
+      {langItems.map((item, i) => (
+        <>
+          {i > 0 && <span class="lang-sep" aria-hidden="true">│</span>}
+          {item.current ? (
+            <span class="lang-current" aria-current="true">{item.label}</span>
+          ) : (
+            <a
+              class="lang-other"
+              href={item.href}
+              hreflang={item.hreflang}
+              lang={item.htmlLangAttr}
+            >{item.label}</a>
+          )}
+        </>
+      ))}
     </p>
   </div>
 </div>
@@ -597,6 +671,7 @@ const logoAlt = `${company.name} ${company.nameEn}`;
 
   .lang--menu .lang-other {
     color: var(--color-muted-on-navy);
+    text-decoration: none;
   }
 
   .lang-sep {

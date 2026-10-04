@@ -5,41 +5,73 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ContactSection from '../components/ContactSection.astro';
 import { isProduction, ga4Id } from '../lib/site';
+import {
+  type Alternate,
+  type Lang,
+  buildFullTitle,
+  hreflangCode,
+  htmlLang,
+  ogLocale,
+  t,
+} from '../lib/i18n';
 
 interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  lang?: Lang;
+  alternates?: Alternate[];
 }
-const { title, description, ogImage } = Astro.props;
-const fullTitle = title === '村田宝飾' ? title : `${title}｜村田宝飾`;
+const { title, description, ogImage, lang = 'ja', alternates = [] } = Astro.props;
+const fullTitle = buildFullTitle(title, lang);
 // canonical は常に本番の URL を指す（pages.dev と重複扱いされないように）
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+const documentLang = htmlLang[lang];
+const showAlternates = alternates.length >= 2;
 ---
 <!doctype html>
-<html lang="ja">
+<html lang={documentLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {showAlternates &&
+      alternates.map((alt) => (
+        <link rel="alternate" hreflang={hreflangCode[alt.lang]} href={alt.href} />
+      ))}
+    {showAlternates && (
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={alternates.find((a) => a.lang === 'ja')?.href ?? canonical}
+      />
+    )}
     {!isProduction && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content="村田宝飾" />
+    <meta property="og:site_name" content={t(lang, 'siteName')} />
+    <meta property="og:locale" content={ogLocale[lang]} />
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Jost:wght@400&family=Shippori+Mincho:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    {lang === 'zh' ? (
+      <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Jost:wght@400&family=Noto+Serif+SC:wght@400;600&family=Shippori+Mincho:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
+    ) : (
+      <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Jost:wght@400&family=Shippori+Mincho:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
+    )}
     {isProduction && ga4Id && (
       <>
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>
@@ -53,11 +85,11 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined;
     )}
   </head>
   <body>
-    <Header />
+    <Header lang={lang} />
     <main>
       <slot />
     </main>
-    <ContactSection />
-    <Footer />
+    <ContactSection lang={lang} />
+    <Footer lang={lang} />
   </body>
 </html>
