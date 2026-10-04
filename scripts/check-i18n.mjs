@@ -24,20 +24,22 @@ export function findStaleTranslations(changedPaths, existsFn = (rel) => existsSy
 
   for (const page of TRANSLATABLE_PAGES) {
     const ja = `src/content/pages/${page}.yml`;
-    if (!changed.has(ja)) continue;
-
     const en = `src/content/pages/en/${page}.yml`;
     const zh = `src/content/pages/zh/${page}.yml`;
-    // 訳ファイルがまだ無いページは対象外（この PR で消した訳は対象にする）
-    const hasEn = existsFn(en) || changed.has(en);
-    const hasZh = existsFn(zh) || changed.has(zh);
-    if (!hasEn && !hasZh) continue;
+    // この PR で消した訳（差分にあるが、もう存在しない）
+    const deleted = [en, zh].filter((p) => changed.has(p) && !existsFn(p));
 
     /** @type {string[]} */
-    const missing = [];
-    // 変えていない訳と、この PR で消した訳を挙げる
-    if (!changed.has(en) || !existsFn(en)) missing.push(en);
-    if (!changed.has(zh) || !existsFn(zh)) missing.push(zh);
+    const missing = [...deleted];
+    if (changed.has(ja)) {
+      // 訳ファイルがまだ無いページは対象外
+      const hasTranslation = [en, zh].some((p) => existsFn(p) || changed.has(p));
+      if (!hasTranslation) continue;
+      // 変えていない訳を挙げる
+      for (const p of [en, zh]) {
+        if (!changed.has(p) && !missing.includes(p)) missing.push(p);
+      }
+    }
     if (missing.length) stale.push({ page, ja, missing });
   }
   return stale;
@@ -93,7 +95,7 @@ function main() {
   summary += `警告：${stale.length} 件（このチェックでは失敗しません）\n\n`;
   for (const row of stale) {
     const missingList = row.missing.map((m) => `\`${m}\``).join('、');
-    const message = `日本語の \`${row.ja}\` を変えたのに、同じ PR で ${missingList} が変わっていません。訳も直すか、直さない理由を PR に書いてください。`;
+    const message = `\`${row.ja}\` の英語と中国語の訳が、日本語と合っていないおそれがあります（${missingList} が変わっていないか、消えています）。訳も直すか、直さない理由を PR に書いてください。`;
     console.log(`::warning file=${row.ja}::${message}`);
     summary += `- ${message}\n`;
   }

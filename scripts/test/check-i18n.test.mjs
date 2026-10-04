@@ -28,6 +28,13 @@ describe('check-i18n', () => {
     ]);
   });
 
+  it('日本語を変えずに訳だけを消したときも警告する', () => {
+    const exists = (p) => p === 'src/content/pages/zh/home.yml';
+    const stale = findStaleTranslations(['src/content/pages/en/home.yml'], exists);
+    assert.equal(stale.length, 1);
+    assert.deepEqual(stale[0].missing, ['src/content/pages/en/home.yml']);
+  });
+
   it('この PR で訳を消したときも警告する', () => {
     // en は消した（差分にあるが、もう存在しない）。zh は変えていない
     const exists = (p) => p === 'src/content/pages/zh/home.yml';
