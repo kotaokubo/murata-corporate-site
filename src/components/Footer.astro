@@ -1,22 +1,302 @@
 ---
-import { company, footerNav } from '../lib/site';
+import { company, footerNavPc, footerNavSp, sns } from '../lib/site';
+import logoFooter from '../assets/brand/logo-footer.png';
+import iconInstagramFooter from '../assets/brand/icons/instagram-footer.svg';
+import iconFacebook from '../assets/brand/icons/facebook.svg';
+
 const year = new Date().getFullYear();
+const logoAlt = `${company.name} ${company.nameEn}`;
+
+const linkAttrs = (item: { href: string; label: string; external?: boolean }) =>
+  item.external ? { target: '_blank', rel: 'noopener' } : {};
+
+const isFaq = (label: string) => label === 'FAQ';
 ---
 <footer class="footer">
-  <div class="container">
-    <p class="logo">{company.name}<span>{company.nameEn}</span></p>
-    <nav aria-label="フッターナビゲーション">
-      <ul>{footerNav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}</ul>
-    </nav>
+  <div class="footer-inner">
+    <div class="footer-top footer-top--pc">
+      <a href="/" class="footer-logo">
+        <img
+          class="footer-logo-img footer-logo-img--pc"
+          src={logoFooter.src}
+          width="240"
+          height="55"
+          alt={logoAlt}
+        />
+      </a>
+      <nav class="footer-nav footer-nav--pc" aria-label="フッターナビゲーション">
+        <ul>
+          {footerNavPc.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={[{ 'is-en': isFaq(item.label) }]}
+                {...linkAttrs(item)}
+              >{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <ul class="footer-sns">
+        {sns.map((item) => (
+          <li>
+            <a href={item.href} target="_blank" rel="noopener" aria-label={item.name}>
+              {item.name === 'Instagram' ? (
+                <img src={iconInstagramFooter.src} width="24" height="24" alt="" />
+              ) : (
+                <img src={iconFacebook.src} width="24" height="24" alt="" />
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="footer-top footer-top--sp">
+      <a href="/" class="footer-logo">
+        <img
+          class="footer-logo-img footer-logo-img--sp"
+          src={logoFooter.src}
+          width="150"
+          height="34"
+          alt={logoAlt}
+        />
+      </a>
+      <nav class="footer-nav footer-nav--sp" aria-label="フッターナビゲーション">
+        <ul>
+          {footerNavSp.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={[{ 'is-en': isFaq(item.label) }]}
+                {...linkAttrs(item)}
+              >{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <ul class="footer-sns">
+        {sns.map((item) => (
+          <li>
+            <a href={item.href} target="_blank" rel="noopener" aria-label={item.name}>
+              {item.name === 'Instagram' ? (
+                <img src={iconInstagramFooter.src} width="24" height="24" alt="" />
+              ) : (
+                <img src={iconFacebook.src} width="24" height="24" alt="" />
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <hr class="footer-rule" />
+
+    <p class="lang lang--footer" aria-label="言語">
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep" aria-hidden="true">/</span>
+      <span class="lang-other">English</span>
+      <span class="lang-sep" aria-hidden="true">/</span>
+      <span class="lang-other">中文</span>
+    </p>
+
     <p class="copyright">© {year} MURATA JEWELRY All Rights Reserved.</p>
   </div>
 </footer>
 
 <style>
-  .footer { background: var(--color-navy-deep); color: var(--color-white); padding-block: var(--space-5); text-align: center; }
-  .logo { font-size: 1.25rem; letter-spacing: 0.2em; display: flex; flex-direction: column; line-height: 1.2; margin: 0 0 var(--space-4); }
-  .logo span { font-size: 0.6rem; }
-  ul { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-4); padding: 0; margin: 0 0 var(--space-4); }
-  a { text-decoration: none; font-size: 0.8rem; }
-  .copyright { font-size: 0.7rem; opacity: 0.7; margin: 0; }
+  .footer {
+    background: var(--color-navy-deep);
+    color: var(--color-white);
+    padding: 64px 0 38px;
+  }
+
+  .footer-inner {
+    width: min(100% - 32px, var(--content-width));
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+  }
+
+  .footer-top--pc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    width: 100%;
+  }
+
+  .footer-top--sp {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .footer-logo {
+    display: block;
+    line-height: 0;
+    text-decoration: none;
+  }
+
+  .footer-logo-img {
+    display: block;
+    max-width: none;
+  }
+
+  .footer-logo-img--pc {
+    width: 240px;
+    height: 54.545px;
+  }
+
+  .footer-logo-img--sp {
+    width: 150px;
+    height: 34px;
+  }
+
+  .footer-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer-nav--pc ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 26px;
+  }
+
+  .footer-nav a {
+    text-decoration: none;
+    color: var(--color-white-70);
+    font-family: var(--font-jp);
+    font-weight: 400;
+  }
+
+  .footer-nav--pc a {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .footer-nav a.is-en {
+    font-family: var(--font-en-serif);
+  }
+
+  .footer-nav--sp ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .footer-nav--sp li {
+    line-height: 23px;
+  }
+
+  .footer-nav--sp a {
+    display: block;
+    padding: 0;
+    min-height: 0;
+    font-size: 13px;
+    letter-spacing: 1.024px;
+    line-height: 23px;
+  }
+
+  .footer-sns {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer-sns a {
+    display: block;
+    line-height: 0;
+  }
+
+  .footer-sns img {
+    width: 24px;
+    height: 24px;
+    max-width: none;
+  }
+
+  .footer-rule {
+    width: 100%;
+    height: 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--color-white-45);
+  }
+
+  .lang {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-family: var(--font-en-sans);
+    font-weight: 400;
+  }
+
+  .lang--footer {
+    align-self: flex-start;
+    height: 32px;
+    gap: 10px;
+    font-size: 14px;
+    letter-spacing: 3.84px;
+  }
+
+  .lang-current {
+    color: var(--color-white);
+  }
+
+  .lang-other {
+    color: var(--color-white-70);
+  }
+
+  .lang-sep {
+    color: var(--color-white-45);
+  }
+
+  .copyright {
+    margin: 0;
+    font-family: var(--font-en-sans);
+    font-weight: 400;
+    font-size: 10px;
+    color: var(--color-white-45);
+    text-align: center;
+  }
+
+  @media (max-width: 1099px) {
+    .footer {
+      padding: 60px 24px 40px;
+    }
+
+    .footer-inner {
+      width: 100%;
+      gap: 20px;
+    }
+
+    .footer-top--pc {
+      display: none;
+    }
+
+    .footer-top--sp {
+      display: flex;
+    }
+
+    .lang--footer {
+      align-self: center;
+      height: auto;
+      gap: 16px;
+      letter-spacing: normal;
+      line-height: 23px;
+      justify-content: center;
+    }
+  }
 </style>

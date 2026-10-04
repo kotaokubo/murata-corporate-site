@@ -1,56 +1,641 @@
 ---
-import { company, nav } from '../lib/site';
+import { company, nav, sns } from '../lib/site';
+import logoHeader from '../assets/brand/logo-header.png';
+import iconClose from '../assets/brand/icons/close.svg';
+import iconChevron from '../assets/brand/icons/chevron-right.svg';
+import iconPhone from '../assets/brand/icons/phone.svg';
+import iconMail from '../assets/brand/icons/mail.svg';
+import iconInstagramMenu from '../assets/brand/icons/instagram-menu.svg';
+import iconFacebook from '../assets/brand/icons/facebook.svg';
+
+const telHref = (tel: string) => `tel:${tel.replace(/-/g, '')}`;
+const logoAlt = `${company.name} ${company.nameEn}`;
 ---
 <header class="header">
   <div class="header-inner">
-    <a href="/" class="logo">{company.name}<span>{company.nameEn}</span></a>
-    <button class="menu-button" type="button" aria-controls="global-nav" aria-expanded="false" aria-label="メニューを開く">
-      <span></span><span></span><span></span>
-    </button>
-    <nav id="global-nav" class="nav" aria-label="グローバルナビゲーション">
-      <ul>
+    <a href="/" class="logo">
+      <img
+        class="logo-img logo-img--pc"
+        src={logoHeader.src}
+        width="202"
+        height="49"
+        alt={logoAlt}
+      />
+      <img
+        class="logo-img logo-img--sp"
+        src={logoHeader.src}
+        width="150"
+        height="36"
+        alt={logoAlt}
+      />
+    </a>
+
+    <nav class="pc-nav" aria-label="グローバルナビゲーション">
+      <ul class="pc-nav-list">
         {nav.map((item) => (
           <li>
-            <a href={item.href} {...(item.external ? { target: '_blank', rel: 'noopener' } : {})}>{item.label}</a>
+            <a
+              href={item.href}
+              {...(item.external ? { target: '_blank', rel: 'noopener' } : {})}
+            >{item.label}</a>
           </li>
         ))}
       </ul>
       <a href="#contact" class="contact-button" data-testid="header-contact">お問い合わせ</a>
     </nav>
+
+    <button
+      class="menu-button"
+      type="button"
+      aria-controls="global-nav"
+      aria-expanded="false"
+      aria-label="メニューを開く"
+    >
+      <span class="menu-button-bars" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+    </button>
   </div>
 </header>
 
+<div
+  id="global-nav"
+  class="mobile-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="メニュー"
+  hidden
+>
+  <div class="mobile-menu-bar">
+    <a href="/" class="logo logo--menu">
+      <img
+        class="logo-img logo-img--sp"
+        src={logoHeader.src}
+        width="150"
+        height="36"
+        alt={logoAlt}
+      />
+    </a>
+    <button type="button" class="menu-close" aria-label="メニューを閉じる">
+      <img src={iconClose.src} width="24" height="24" alt="" />
+    </button>
+  </div>
+
+  <div class="mobile-menu-body">
+    <nav class="mobile-nav" aria-label="グローバルナビゲーション">
+      <ul class="mobile-nav-list">
+        {nav.map((item) => (
+          <li>
+            <a
+              class="mobile-nav-link"
+              href={item.href}
+              {...(item.external ? { target: '_blank', rel: 'noopener' } : {})}
+            >
+              <span class="mobile-nav-text">
+                <span class="mobile-nav-en">{item.en}</span>
+                <span class="mobile-nav-jp">{item.label}</span>
+              </span>
+              <img class="mobile-nav-chevron" src={iconChevron.src} width="20" height="20" alt="" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="ornament" aria-hidden="true">
+      <span class="ornament-line"></span>
+      <span class="ornament-dot"></span>
+      <span class="ornament-line"></span>
+    </div>
+
+    <div class="mobile-phones">
+      {company.contacts.map((c) => (
+        <a class="phone-card" href={telHref(c.tel)}>
+          <span class="phone-card-label">{c.label}</span>
+          <span class="phone-card-row">
+            <img src={iconPhone.src} width="16" height="16" alt="" />
+            <span class="phone-card-tel">{c.tel}</span>
+          </span>
+        </a>
+      ))}
+    </div>
+
+    <a class="mail-button" href={`mailto:${company.email}`}>
+      <img src={iconMail.src} width="16" height="16" alt="" />
+      <span>メールで問い合わせ</span>
+    </a>
+
+    <div class="ornament" aria-hidden="true">
+      <span class="ornament-line"></span>
+      <span class="ornament-dot"></span>
+      <span class="ornament-line"></span>
+    </div>
+
+    <ul class="mobile-sns">
+      {sns.map((item) => (
+        <li>
+          <a href={item.href} target="_blank" rel="noopener" aria-label={item.name}>
+            {item.name === 'Instagram' ? (
+              <img src={iconInstagramMenu.src} width="24" height="24" alt="" />
+            ) : (
+              <img src={iconFacebook.src} width="24" height="24" alt="" />
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <p class="lang lang--menu" aria-label="言語">
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep" aria-hidden="true">│</span>
+      <span class="lang-other">English</span>
+      <span class="lang-sep" aria-hidden="true">│</span>
+      <span class="lang-other">中文</span>
+    </p>
+  </div>
+</div>
+
 <script>
   const button = document.querySelector<HTMLButtonElement>('.menu-button');
-  const navEl = document.getElementById('global-nav');
+  const closeButton = document.querySelector<HTMLButtonElement>('.menu-close');
+  const menu = document.getElementById('global-nav');
+  const pcMq = window.matchMedia('(min-width: 1100px)');
+  const focusableSelector =
+    'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  const getFocusable = (): HTMLElement[] => {
+    if (!menu) return [];
+    return Array.from(menu.querySelectorAll<HTMLElement>(focusableSelector));
+  };
+
+  const openMenu = () => {
+    if (!button || !menu || !closeButton) return;
+    menu.hidden = false;
+    menu.classList.add('is-open');
+    button.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('is-menu-open');
+    closeButton.focus();
+  };
+
+  const closeMenu = ({ restoreFocus = true }: { restoreFocus?: boolean } = {}) => {
+    if (!button || !menu) return;
+    const wasOpen = !menu.hidden;
+    menu.classList.remove('is-open');
+    menu.hidden = true;
+    button.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('is-menu-open');
+    if (wasOpen && restoreFocus) {
+      button.focus();
+    }
+  };
+
   button?.addEventListener('click', () => {
     const open = button.getAttribute('aria-expanded') === 'true';
-    button.setAttribute('aria-expanded', String(!open));
-    navEl?.classList.toggle('is-open', !open);
+    if (open) closeMenu();
+    else openMenu();
   });
-  navEl?.querySelectorAll('a').forEach((a) =>
-    a.addEventListener('click', () => {
-      button?.setAttribute('aria-expanded', 'false');
-      navEl.classList.remove('is-open');
-    }),
-  );
+
+  closeButton?.addEventListener('click', () => closeMenu());
+
+  menu?.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => closeMenu());
+  });
+
+  menu?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !menu || menu.hidden) return;
+    const focusable = getFocusable();
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else if (document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu && !menu.hidden) {
+      closeMenu();
+    }
+  });
+
+  const onViewportChange = (e: MediaQueryListEvent | MediaQueryList) => {
+    if (e.matches) {
+      closeMenu({ restoreFocus: false });
+    }
+  };
+  onViewportChange(pcMq);
+  pcMq.addEventListener('change', onViewportChange);
 </script>
 
 <style>
-  .header { position: sticky; top: 0; z-index: 10; background: var(--color-navy); color: var(--color-white); }
-  .header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; width: min(100% - 32px, 1440px); margin-inline: auto; }
-  .logo { text-decoration: none; font-size: 1.25rem; letter-spacing: 0.2em; display: flex; flex-direction: column; line-height: 1.1; }
-  .logo span { font-size: 0.55rem; letter-spacing: 0.15em; }
-  .nav ul { list-style: none; display: flex; gap: var(--space-4); margin: 0; padding: 0; }
-  .nav a { text-decoration: none; font-size: 0.85rem; }
-  .nav { display: flex; align-items: center; gap: var(--space-4); }
-  .contact-button { border: 1px solid currentColor; padding: var(--space-1) var(--space-3); }
-  .menu-button { display: none; background: none; border: 0; padding: var(--space-2); cursor: pointer; }
-  .menu-button span { display: block; width: 24px; height: 1px; background: var(--color-white); margin: 6px 0; }
-  @media (max-width: 960px) {
-    .menu-button { display: block; }
-    .nav { display: none; position: absolute; inset: 64px 0 auto 0; background: var(--color-navy); flex-direction: column; padding: var(--space-4); }
-    .nav.is-open { display: flex; }
-    .nav ul { flex-direction: column; align-items: center; }
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--color-navy);
+    color: var(--color-white);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height-pc);
+    width: min(100% - 80px, var(--header-width));
+    margin-inline: auto;
+  }
+
+  .logo {
+    display: block;
+    line-height: 0;
+    text-decoration: none;
+  }
+
+  .logo-img {
+    display: block;
+    max-width: none;
+    height: auto;
+  }
+
+  .logo-img--pc {
+    width: 201.6px;
+    height: 48.774px;
+  }
+
+  .logo-img--sp {
+    display: none;
+    width: 150px;
+    height: 36px;
+  }
+
+  .pc-nav {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .pc-nav-list {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pc-nav-list a {
+    text-decoration: none;
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: normal;
+    color: var(--color-white);
+    white-space: nowrap;
+  }
+
+  .contact-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-white);
+    padding: 12px 16px;
+    text-decoration: none;
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-white);
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+  }
+
+  .menu-button {
+    display: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  .menu-button-bars {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .menu-button-bars span {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    margin-inline: auto;
+    background: var(--color-white);
+  }
+
+  /* SP ハンバーガーメニュー本体（#global-nav） */
+  .mobile-menu {
+    display: none;
+  }
+
+  .mobile-menu.is-open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    overflow-y: auto;
+    background: var(--color-navy-deep);
+  }
+
+  .mobile-menu-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height-sp);
+    padding: 20px 20px 16px;
+    background: var(--color-navy);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
+    box-sizing: border-box;
+  }
+
+  .menu-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .menu-close img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    max-width: none;
+  }
+
+  .mobile-menu-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 32px 24px 40px;
+  }
+
+  .mobile-nav {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .mobile-nav-list li {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 25%, transparent);
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    text-decoration: none;
+    color: var(--color-white);
+  }
+
+  .mobile-nav-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-nav-en {
+    font-family: var(--font-en-serif);
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--color-gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  .mobile-nav-jp {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--color-white);
+    line-height: 1.3;
+  }
+
+  .mobile-nav-chevron {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    max-width: none;
+  }
+
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ornament-line {
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-gold) 30%, transparent);
+  }
+
+  .ornament-dot {
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-gold) 50%, transparent);
+  }
+
+  .mobile-phones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .phone-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    padding: 16px;
+    border: 0.5px solid var(--color-gold);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    box-sizing: border-box;
+  }
+
+  .phone-card-label {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-gold);
+    letter-spacing: 1px;
+    line-height: 23px;
+  }
+
+  .phone-card-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .phone-card-row img {
+    width: 16px;
+    height: 16px;
+    max-width: none;
+  }
+
+  .phone-card-tel {
+    font-family: var(--font-en-sans);
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--color-white);
+    letter-spacing: 0.5px;
+  }
+
+  .mail-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border-radius: 6px;
+    background: rgba(176, 141, 87, 0.9);
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .mail-button img {
+    width: 16px;
+    height: 16px;
+    max-width: none;
+  }
+
+  .mail-button span {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-navy);
+    letter-spacing: 1px;
+  }
+
+  .mobile-sns {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-sns a {
+    display: block;
+    line-height: 0;
+  }
+
+  .mobile-sns img {
+    width: 24px;
+    height: 24px;
+    max-width: none;
+  }
+
+  .lang {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-family: var(--font-en-sans);
+    font-weight: 400;
+  }
+
+  .lang--menu {
+    gap: 20px;
+    padding-top: 16px;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+
+  .lang-current {
+    color: var(--color-white);
+  }
+
+  .lang--menu .lang-other {
+    color: var(--color-muted);
+  }
+
+  .lang-sep {
+    color: var(--color-white-45);
+  }
+
+  @media (max-width: 1099px) {
+    .header {
+      border-bottom: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
+    }
+
+    .header-inner {
+      height: var(--header-height-sp);
+      width: 100%;
+      padding: 20px 20px 16px;
+      box-sizing: border-box;
+    }
+
+    .logo-img--pc {
+      display: none;
+    }
+
+    .logo-img--sp {
+      display: block;
+    }
+
+    .pc-nav {
+      display: none;
+    }
+
+    .menu-button {
+      display: block;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .menu-button,
+    .mobile-menu {
+      display: none !important;
+    }
   }
 </style>
