@@ -1,98 +1,108 @@
 # 村田宝飾 コーポレートサイト
 
-村田宝飾株式会社のコーポレートサイト（予定：https://www.murata-jewelry.co.jp ）のソースです。
-Astro で静的サイトを作り、Cloudflare Pages で公開します。
+村田宝飾株式会社のホームページ（予定：https://www.murata-jewelry.co.jp ）の中身を置いている場所です。
+お知らせの文章、写真、ページの作りがここに入っています。
 
-- 設計書：Notion「コーポレートサイト リニューアル 設計書」（村田宝飾さま 配下）
-- AI で作業するときのルール：[AGENTS.md](AGENTS.md)
-- 定型作業の手順書：[docs/procedures/](docs/procedures/)
+ホームページを直したいときは、このページを直接いじらず、ChatGPT の Codex に日本語で頼んでください。
+Codex が変更を用意し、確認用のページを作って、公開の手前まで進めてくれます。
+Git や HTML の知識は要りません。
 
-**このリポジトリは公開（public）です。** 公開日前に漏れて困る情報、顧客名、個人情報、社内資料を入れないでください。
+## Codex への頼み方
 
-## 手元で動かす
+普段の言葉でそのまま頼めば足ります。たとえば次のように書きます。
 
-Node.js 22 が要ります。
+- 「お知らせを追加してください。題名は〇〇、日付は 2026年10月15日、本文は次のとおりです。」
+- 「トップページの写真を、添付した写真に差し替えてください。」
+- 「会社概要の〇〇という文言を△△に直してください。」
+- 「確認が済んだので、本番に出したいです。」
+- 「本番にリリースして。」
 
-```sh
-npm ci
-npm run dev          # http://localhost:4321 で確認（下書きも表示される）
-npm run build        # 型の検査とビルド
-npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つの幅で全ページを撮影する）
+頼むときは、次の情報を添えると作業が早く進みます。
+
+- お知らせの題名
+- お知らせの日付（公開日）
+- 本文
+- 使う写真（ファイルを添付し、何を写した写真かも書く）
+- いつ公開したいか
+
+分からない点があれば、Codex が作業を始める前に質問します。
+「本番にリリースして」のように、本番に出すことをはっきり頼んだときだけ、Codex は本番へ出す作業をします。
+
+## 公開までの流れ
+
+変更はすぐ本番（誰でも見られるホームページ）には出ません。
+まず確認用のページに出し、人が確かめて、問題がなければ本番に出します。
+
+```mermaid
+flowchart TD
+    A["事務の方：Codex に変更を頼む"] --> B["Codex：変更を用意し、自動のチェックを通す"]
+    B --> C["Codex：Codex 自身のレビューを受け、確認用のページに反映する"]
+    C --> D["事務の方と公開を判断する人：確認用の URL で見た目と文章を確かめる"]
+    D -->|直したい点がある| A
+    D -->|問題なし| E["事務の方：Codex に「確認が済んだ」と伝える"]
+    E --> F["Codex：本番に出すための依頼を GitHub に出す"]
+    F --> G{"見た目や構成の変更を含むか"}
+    G -->|含む| H["大久保が承認する"]
+    G -->|含まない| I["事務の方：本番に出す"]
+    H --> I
+    I --> J["本番のホームページに反映される"]
 ```
 
-撮影した画像は `test-results/` にできます。
+人がやることは次のとおりです。
 
-## ブランチと公開の流れ
+- 確認用の URL で、変更が意図どおりかを事務の方と公開を判断する人が確かめる。確認用の URL は Cloudflare Access で閲覧を制限していて、URL は大久保から伝える
+- 公開を判断する人が、本番に出してよいと決める
+- 本番に出す。GitHub の画面で「Merge pull request」を押すか、Codex に「本番にリリースして」と頼む。頼まれた Codex は、本番に出る内容を見せたうえで「はい」の返事を待ち、それから出す
 
-| ブランチ | 役割 | 公開先 |
+Codex がやることは次のとおりです。
+
+- 変更を用意し、自動のチェック（ビルド、画面の動作、パスワードらしき文字列の混入など）を通す
+- 変更の内容を `@codex review` というコメントで Codex にレビューしてもらい、指摘を直す
+- 確認用のページに反映し、確かめるよう伝える
+- 確認が済んだと言われたら、同じ変更を本番に出す手続きに進める
+
+本番に出すと、作業用に使った枝（変更を分けて管理する単位）は自動で消えます。
+
+## 自分で出せるもの、大久保の確認が要るもの、大久保に頼むもの
+
+Codex は、頼まれた内容をまず3つに分けて、どれに当たるかを伝えます。
+
+| 区分 | 内容 | 本番に出すとき |
 | --- | --- | --- |
-| `main` | 本番 | www.murata-jewelry.co.jp（切り替えまでは `<プロジェクト名>.pages.dev`） |
-| `staging` | 検証 | `staging.<プロジェクト名>.pages.dev`（Cloudflare Access で閲覧制限） |
-| `work/...` | 作業 | なし |
+| A：内容の更新 | お知らせの追加と修正、写真の差し替え、お知らせの文言 | 自動のチェックがすべて通れば、事務の方が自分で出せる |
+| B：見た目と構成の変更 | レイアウト、新しいページ、部品、色や文字、ページ内の文言 | 本番に出す前に大久保の承認が要る |
+| C：それ以外 | 設定、仕組み、AI のルール、プライバシーポリシーなど | 事務の方も Codex も扱わない。大久保へ連絡する |
 
-1. `main` から `work/...` を切る
-2. 手元で `npm run build` と `npm run test:e2e` を通す
-3. `staging` へ PR → マージ → 検証用 URL で確認
-4. 同じ作業ブランチから `main` へ PR → 必須チェックが通り、区分 B を含むなら大久保が承認 → **事務の方（または大久保）がマージ** → 本番に出る
-5. `main` へマージすると、作業ブランチは自動で消える（`.github/workflows/delete-merged-branch.yml`）。`staging` へのマージでは消えない
-6. `staging` は毎朝 `main` を自動で取り込む（`.github/workflows/sync-staging.yml`）
+区分が分からない依頼は、C として扱って作業を止めます。
 
-急ぎの修正は大久保だけが `hotfix/...` で行う（`staging` を通さずに `main` へ入れられる）。
+## リポジトリに入れてはいけないもの
 
-## 必須チェック（`.github/workflows/ci.yml` と `guard.yml`）
+このリポジトリは公開されていて、誰でも中身と変更の履歴を読めます。
+一度入れた情報は、あとから消しても履歴に残ります。
+次のものは、Codex への依頼文にも添付ファイルにも含めないでください。
 
-| 名前 | 内容 |
-| --- | --- |
-| `build` | 型の検査（`astro check`）とビルド。お知らせの書式の誤りもここで止まる |
-| `playwright` | 全ページが開くか、ブラウザのエラー、お問い合わせ欄、メニュー、下書きが本番に出ないか、noindex、エントリーフォームの入力チェック。撮影画像を Checks 画面に保存 |
-| `scope` | 変更したファイルを区分 A・B・C に分ける。大久保以外が区分 C を変えたら失敗。`guard.yml` で動かすので、PR の中から書き換えて緩めることはできない |
-| `staging-verified` | `main` への PR の最新の変更が `staging` に入っているか。入っていなければ失敗（大久保の `hotfix/` は例外） |
-| `secrets` | パスワードや API キーらしき文字列（gitleaks） |
-| `codex-review` | PR の最新のコミットに Codex のレビュー（または指摘なしの 👍）が付いているか。付くまで最大25分待つ。PR を出したら必ず `@codex review` とコメントしてレビューを依頼する（自動では付かないことがある）。間に合わずに失敗したら、レビューが付いてから再実行する。指摘は「会話の解決」の設定で、すべて解決するまでマージできない |
+- 公開日前に知られると困る情報（新作、イベント、採用計画、価格の改定など）。下書きにしても読めてしまうので、公開日になってから入れる
+- 顧客や取引先の名前、個人情報（本人や先方の了承があるものを除く）
+- 卸価格や取引条件など、TJC（会員向けのネットショップ）の会員向けの情報
+- 社内の資料、パスワード、API キー
 
-`staging` 向けの PR でも `guard.yml` は動くが、チェック名の末尾に「 (staging)」が付き、`main` の必須チェックとは別に記録される。チェックの結果はコミットとチェック名の組ごとに1つしか残らないので、同じ名前のままだと、同じブランチから出した `staging` 向けの PR の結果で `main` 向けの PR の結果が上書きされる。
+依頼にこれらが含まれていると、Codex は作業を止めて知らせます。
 
-## 初回の設定（大久保が GitHub と Cloudflare の画面で行う）
+## 困ったとき
 
-コードでは設定できないので、手で入れる。入れたら設計書 15章の「ガードレールが効いているかの試験」を行う。
+誤って公開してしまったときは、自分や Codex で直そうとせず、すぐに大久保へ連絡してください。
+大久保が Cloudflare で公開を元の状態に戻します。
 
-### GitHub（Settings）
+次の場合も、大久保へ連絡してください。
 
-- [ ] General：Issues、Wikis、Discussions、Projects を無効にする
-- [ ] General → Pull Requests：「Allow merge commits」だけを有効にし、「Allow squash merging」と「Allow rebase merging」を無効にする。squash や rebase でマージすると、作業ブランチのコミットが `staging` に入らず、`staging-verified` が必ず失敗する
-- [ ] General：「Allow auto-merge」は無効のまま
-- [ ] General：「Automatically delete head branches」は無効にする。有効だと `staging` へのマージで作業ブランチが消え、同じブランチから `main` へ PR を出せなくなる。`main` へのマージ後の削除は `delete-merged-branch.yml` が行う
-- [ ] Actions → General：「Require approval for all external contributors」にする
-- [ ] Rules → Rulesets を作る
-  - [ ] **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）、**Require conversation resolution before merging**（Codex の指摘をすべて解決しないとマージできない）
-  - [ ] **main-review**（対象：`main`、bypass：Repository admin）：Require a pull request before merging（Require review from Code Owners、Dismiss stale pull request approvals、Require approval of the most recent reviewable push）
-    - CODEOWNERS で、区分 A（お知らせと画像）だけ持ち主を外している。区分 A だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 B を含む PR は大久保の承認が要る
-    - bypass に大久保（Repository admin）を入れるのは、大久保が自分の PR を承認できないため。bypass は main-review にだけ効き、main-protect の必須チェックは大久保も飛ばせない
-  - [ ] **staging-protect**（対象：`staging`、bypass：なし）：Restrict deletions、Block force pushes
-    - `staging` は毎朝の自動取り込みが直接 push するので、PR 必須と必須チェックはかけない。作業ブランチからは PR で入れる（AGENTS.md）
-    - そのため `staging` には、区分 C の変更やチェックが失敗した変更も入りうる。入っても検証環境だけの話で、`main` へは main-protect の必須チェックで止まる
-- [ ] `staging` ブランチを `main` から作る
+- Codex が「大久保へ連絡してください」と言ったとき（作業の食い違いが起きた、自動のチェックが2回直しても通らない、区分の判断がつかない、など）
+- 自動のチェックが赤いまま進まないとき。チェックの結果は、GitHub の変更依頼の画面の下のほうに並んでいる
+- Codex のレビューがいつまでも付かないとき。まず、GitHub の変更依頼の画面の下にあるコメント欄に `@codex review` と書いて送る。それでも付かなければ連絡する
 
-### Codex（ChatGPT の設定画面）
+連絡のとき、何をしていて、画面や Codex の返事がどうなったかを添えてもらえると、原因をつかみやすくなります。
 
-- [ ] Codex に GitHub を接続し、このリポジトリへのアクセスを許可する
-- [ ] Codex の設定 → Code review で、このリポジトリの「Code review」と「Automatic reviews」を有効にする。自動のレビューは付かないことがあるので、運用では PR ごとに `@codex review` とコメントする（`AGENTS.md`）
-- [ ] 試験で、Codex のアカウント名が `chatgpt-codex-connector[bot]` であることと、指摘がないときの振る舞い（レビューか 👍 か）を確かめる。違えば `scripts/check-codex-review.mjs` を直す
+## 大久保と AI 向けの資料
 
-### Cloudflare Pages
-
-- [ ] GitHub 連携でこのリポジトリを接続する
-- [ ] Build command：`npm run build`、Output：`dist`、環境変数 `NODE_VERSION=22`
-- [ ] Production branch：`main`
-- [ ] Preview branches：Custom → 含める `staging` のみ
-- [ ] プレビューに Cloudflare Access をかける（事務の方、公開判断者、大久保だけ）
-- [ ] 本番の環境変数に `PUBLIC_GA4_ID`（GA4 の測定 ID）を入れる
-
-## 公開までに残っていること
-
-- Figma のデザインの実装（いまのページはすべて仮）
-- お知らせ詳細と FAQ のデザイン（作成中）
-- エントリーフォームの送信（Cloudflare の関数 → メール。いまは送信ボタンを無効にしている）
-- プライバシーポリシーの【要確認】を埋め、確認を受ける
-- お知らせのサンプル2件（`src/content/news/*sample*`）を消す
-- `www` の切り替え（設計書 10章）
+- [docs/development.md](docs/development.md)：手元での動かし方、公開の仕組み、必須チェック、GitHub と Cloudflare の設定
+- [AGENTS.md](AGENTS.md)：このリポジトリで作業する AI のルール
+- [docs/procedures/](docs/procedures/)：お知らせの追加、写真の差し替えなど、定型作業の手順書
