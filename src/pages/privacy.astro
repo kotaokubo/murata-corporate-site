@@ -2,20 +2,170 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import { getEntry, render } from 'astro:content';
+import pageHeroImg from '../assets/images/company/page-hero.png';
 
 const entry = await getEntry('legal', 'privacy');
 if (!entry) throw new Error('src/content/legal/privacy.md がありません');
 const { Content } = await render(entry);
+
+// ページ見出しの背景で、内容を伝えない飾りの写真
+const heroAlt = '';
 ---
 <BaseLayout title={entry.data.title} description="村田宝飾株式会社の個人情報の取り扱いについて。">
-  <PageHero title={entry.data.title} eyebrow="PRIVACY POLICY" />
-  <section class="section">
-    <div class="container legal"><Content /></div>
+  <PageHero
+    title={entry.data.title}
+    eyebrow="PRIVACY POLICY"
+    image={pageHeroImg}
+    imageAlt={heroAlt}
+  />
+  <section class="legal-section">
+    <div class="inner">
+      <div class="legal">
+        <Content />
+      </div>
+    </div>
   </section>
 </BaseLayout>
+
 <style>
-  .legal { max-width: 800px; }
-  .legal :global(h2) { font-size: 1.15rem; font-weight: 500; margin-top: var(--space-5); border-left: 3px solid var(--color-gold); padding-left: var(--space-3); }
-  .legal :global(table) { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
-  .legal :global(th), .legal :global(td) { border: 1px solid var(--color-line); padding: var(--space-2); vertical-align: top; }
+  .inner {
+    width: min(100% - 48px, var(--content-width));
+    margin-inline: auto;
+  }
+
+  .legal-section {
+    background: var(--color-bg);
+    padding: 160px 0;
+  }
+
+  .legal {
+    max-width: 800px;
+    margin-inline: auto;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.9;
+    letter-spacing: 0.61px;
+    color: var(--color-ink);
+  }
+
+  .legal :global(p) {
+    margin: 0 0 24px;
+  }
+
+  .legal :global(h2) {
+    margin: 64px 0 24px;
+    padding-left: 16px;
+    border-left: 2px solid var(--color-gold);
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.5;
+    letter-spacing: 1px;
+    color: var(--color-navy);
+  }
+
+  .legal :global(ul),
+  .legal :global(ol) {
+    margin: 0 0 24px;
+    padding-left: 1.5em;
+  }
+
+  .legal :global(li) {
+    margin-bottom: 8px;
+  }
+
+  .legal :global(li:last-child) {
+    margin-bottom: 0;
+  }
+
+  .legal :global(li > ul),
+  .legal :global(li > ol) {
+    margin: 8px 0 0;
+  }
+
+  .legal :global(a) {
+    color: var(--color-navy);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .legal :global(a:hover) {
+    color: var(--color-gold);
+  }
+
+  .legal :global(strong) {
+    font-weight: 600;
+  }
+
+  .legal :global(table) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 24px;
+    border-collapse: collapse;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .legal :global(thead),
+  .legal :global(tbody),
+  .legal :global(tr) {
+    width: 100%;
+  }
+
+  .legal :global(th),
+  .legal :global(td) {
+    min-width: 8em;
+    padding: 12px 16px;
+    border: 1px solid var(--color-line);
+    vertical-align: top;
+    text-align: left;
+  }
+
+  .legal :global(th) {
+    background: var(--color-bg-soft);
+    font-weight: 600;
+    color: var(--color-navy);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1099px) {
+    .inner {
+      width: min(100% - 48px, 342px);
+    }
+
+    .legal-section {
+      padding: 80px 0;
+    }
+
+    .legal {
+      font-size: 14px;
+      line-height: 1.9;
+      letter-spacing: 0;
+    }
+
+    .legal :global(h2) {
+      margin-top: 48px;
+      margin-bottom: 20px;
+      padding-left: 12px;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .legal :global(p),
+    .legal :global(ul),
+    .legal :global(ol),
+    .legal :global(table) {
+      margin-bottom: 20px;
+    }
+
+    .legal :global(th),
+    .legal :global(td) {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  }
 </style>
