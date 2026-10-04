@@ -58,6 +58,10 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 設定の手順そのものは、Notion の「環境構築の手順」にある。
 設定したあとは、設計書 15章の「ガードレールが効いているかの試験」を行う。
 
+Claude Code では、ファイルを書き換える前に `.claude/settings.json` の PreToolUse フック（`scripts/claude-scope-hook.mjs`）が動く。
+区分の判定は必須チェック `scope` と同じ `scripts/scope.mjs` の `classify()` を使う。
+区分 C のファイルを変えようとしたときだけ確認を求め、区分 A・B とリポジトリ外はそのまま進める。
+
 ### GitHub（Settings）
 
 - General：Issues、Wikis、Discussions、Projects は無効
