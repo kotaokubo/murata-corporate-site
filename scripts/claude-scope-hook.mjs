@@ -1,16 +1,85 @@
 // Claude Code PreToolUse フック。区分 C のファイルを書き換えようとしたら確認を求める。
 // 区分の判定は必須チェック scope と同じ scripts/scope.mjs の classify() を使う。
-import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { classify } from './scope.mjs';
 
-const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ASK_REASON = 'このファイルは区分 C（大久保だけが変える）。大久保の依頼で変える場合だけ許可する';
 
-/** @param {string} absPath */
-function toRepoRelative(absPath) {
-  const relative = path.relative(REPO_ROOT, path.resolve(absPath));
+/**
+ * 相対パスなら cwd（無ければ process.cwd()）を基準に絶対パスへ解決する。
+ * @param {string} targetPath
+ * @param {string | undefined} cwd
+ */
+function resolveTargetPath(targetPath, cwd) {
+  if (path.isAbsolute(targetPath)) return path.resolve(targetPath);
+  const base = typeof cwd === 'string' && cwd ? cwd : process.cwd();
+  return path.resolve(base, targetPath);
+}
+
+/**
+ * 存在するパスは realpathSync.native で正規化する。
+ * 無ければ存在する一番近い祖先を正規化し、残りの断片をつなぐ。
+ * @param {string} absPath
+ */
+function resolveRealPath(absPath) {
+  if (existsSync(absPath)) {
+    return realpathSync.native(absPath);
+  }
+
+  const parts = [];
+  let current = absPath;
+  while (true) {
+    parts.unshift(path.basename(current));
+    const parent = path.dirname(current);
+    if (parent === current) {
+      return absPath;
+    }
+    if (existsSync(parent)) {
+      return path.join(realpathSync.native(parent), ...parts);
+    }
+    current = parent;
+  }
+}
+
+/**
+ * git rev-parse を走らせるディレクトリ。対象の親、無ければ存在する一番近い祖先。
+ * @param {string} absPath
+ */
+function gitStartDir(absPath) {
+  let current = path.dirname(absPath);
+  while (!existsSync(current)) {
+    const parent = path.dirname(current);
+    if (parent === current) return current;
+    current = parent;
+  }
+  return current;
+}
+
+/**
+ * @param {string} startDir
+ * @returns {string | null}
+ */
+function gitRepoRoot(startDir) {
+  try {
+    const out = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+      cwd: startDir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return out.trim();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {string} absPath
+ * @param {string} repoRoot
+ */
+function toRepoRelative(absPath, repoRoot) {
+  const relative = path.relative(repoRoot, absPath);
   const normalized = relative.split(path.sep).join('/');
   if (!normalized || normalized === '.') return null;
   if (normalized.startsWith('..') || path.isAbsolute(normalized)) return null;
@@ -26,6 +95,13 @@ function extractTargetPath(input) {
   const candidate = ti.file_path ?? ti.notebook_path;
   if (typeof candidate !== 'string' || !candidate) return null;
   return candidate;
+}
+
+/** @param {unknown} input */
+function extractCwd(input) {
+  if (!input || typeof input !== 'object') return undefined;
+  const cwd = /** @type {Record<string, unknown>} */ (input).cwd;
+  return typeof cwd === 'string' && cwd ? cwd : undefined;
 }
 
 function main() {
@@ -51,7 +127,12 @@ function main() {
     process.exit(0);
   }
 
-  const relative = toRepoRelative(targetPath);
+  const absolute = resolveTargetPath(targetPath, extractCwd(payload));
+  const real = resolveRealPath(absolute);
+  const repoRoot = gitRepoRoot(gitStartDir(real));
+  if (!repoRoot) process.exit(0);
+
+  const relative = toRepoRelative(real, repoRoot);
   if (!relative) process.exit(0);
 
   if (classify(relative) !== 'C') process.exit(0);

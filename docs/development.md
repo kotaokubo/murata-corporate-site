@@ -62,6 +62,12 @@ Claude Code では、ファイルを書き換える前に `.claude/settings.json
 区分の判定は必須チェック `scope` と同じ `scripts/scope.mjs` の `classify()` を使う。
 区分 C のファイルを変えようとしたときだけ確認を求め、区分 A・B とリポジトリ外はそのまま進める。
 
+このフックには限界がある。
+`.claude/settings.json` の deny に当たるファイルは deny が優先され、確認画面は出ずに拒否される。
+フックが効くのは deny に無い区分 C のファイルだけである。
+また、フックは専用の編集ツールだけを対象にし、Bash などからの書き換えは判定しない。
+止める本体は必須チェック `scope` である。
+
 ### GitHub（Settings）
 
 - General：Issues、Wikis、Discussions、Projects は無効
