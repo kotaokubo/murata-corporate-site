@@ -68,7 +68,7 @@ recruit:
   title: Careers
   lead: |
     We are looking for people
-    to share brilliance with us
+    to deliver brilliance together
   ctaLabel: Careers >
   cards:
     - title: Sales staff
@@ -78,7 +78,7 @@ recruit:
     - title: Part-time staff
       linkLabel: Details →
   sp:
-    lead: We are looking for people to share brilliance with us
+    lead: We are looking for people to deliver brilliance together
     ctaLabel: Careers  >
 
 news:

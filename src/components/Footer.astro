@@ -5,7 +5,7 @@ import {
   hrefForLang,
   htmlLang,
   hreflangCode,
-  labelWithUntranslatedSuffix,
+  labelWithUntranslatedSuffix, untranslatedSuffix,
   languageSwitchHref,
   langs,
   localizedPath,
@@ -59,7 +59,9 @@ const resolveFooterItem = (item: { href: string; label: string; external?: boole
   }
 
   if (item.external || pageKey === null) {
-    return { ...item, label, displayLabel: label, hrefResolved: item.href };
+    // 外部のリンク（オンラインショップ）は日本語だけのサイト
+    const displayLabel = item.external ? `${label}${untranslatedSuffix(lang)}` : label;
+    return { ...item, label, displayLabel, hrefResolved: item.href };
   }
 
   return {

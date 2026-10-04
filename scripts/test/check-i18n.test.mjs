@@ -28,6 +28,20 @@ describe('check-i18n', () => {
     ]);
   });
 
+  it('この PR で訳を消したときも警告する', () => {
+    // en は消した（差分にあるが、もう存在しない）。zh は変えていない
+    const exists = (p) => p === 'src/content/pages/zh/home.yml';
+    const stale = findStaleTranslations(
+      ['src/content/pages/home.yml', 'src/content/pages/en/home.yml'],
+      exists,
+    );
+    assert.equal(stale.length, 1);
+    assert.deepEqual(stale[0].missing, [
+      'src/content/pages/en/home.yml',
+      'src/content/pages/zh/home.yml',
+    ]);
+  });
+
   it('en と zh も同じ差分に含まれていれば警告しない', () => {
     const exists = () => true;
     const stale = findStaleTranslations(

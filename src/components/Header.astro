@@ -5,7 +5,7 @@ import {
   hrefForLang,
   htmlLang,
   hreflangCode,
-  labelWithUntranslatedSuffix,
+  labelWithUntranslatedSuffix, untranslatedSuffix,
   languageSwitchHref,
   langs,
   localizedPath,
@@ -52,7 +52,8 @@ const localizedNav = nav.map((item) => {
     return {
       ...item,
       label,
-      displayLabel: label,
+      // 外部のリンク（オンラインショップ）は日本語だけのサイト
+      displayLabel: item.external ? `${label}${untranslatedSuffix(lang)}` : label,
       hrefResolved: item.href,
     };
   }

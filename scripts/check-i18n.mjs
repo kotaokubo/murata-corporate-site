@@ -28,13 +28,16 @@ export function findStaleTranslations(changedPaths, existsFn = (rel) => existsSy
 
     const en = `src/content/pages/en/${page}.yml`;
     const zh = `src/content/pages/zh/${page}.yml`;
-    // 訳ファイルがまだ無いページは対象外
-    if (!existsFn(en) || !existsFn(zh)) continue;
+    // 訳ファイルがまだ無いページは対象外（この PR で消した訳は対象にする）
+    const hasEn = existsFn(en) || changed.has(en);
+    const hasZh = existsFn(zh) || changed.has(zh);
+    if (!hasEn && !hasZh) continue;
 
     /** @type {string[]} */
     const missing = [];
-    if (!changed.has(en)) missing.push(en);
-    if (!changed.has(zh)) missing.push(zh);
+    // 変えていない訳と、この PR で消した訳を挙げる
+    if (!changed.has(en) || !existsFn(en)) missing.push(en);
+    if (!changed.has(zh) || !existsFn(zh)) missing.push(zh);
     if (missing.length) stale.push({ page, ja, missing });
   }
   return stale;

@@ -13,6 +13,7 @@ import {
   hrefForLang,
   labelWithUntranslatedSuffix,
   t as i18n,
+  untranslatedSuffix,
 } from '../../lib/i18n';
 
 import heroPc from '../../assets/images/top/hero-pc.png';
@@ -303,7 +304,7 @@ const heroAlt = i18n(lang, 'heroAlt');
         <p class="body online-body-pc">{page.onlineShop.body}</p>
         <p class="body online-body-sp">{page.onlineShop.sp?.body ?? page.onlineShop.body}</p>
         <div class="online-actions">
-          <CtaButton href={shopUrl} label={page.onlineShop.ctaLabel} external />
+          <CtaButton href={shopUrl} label={`${page.onlineShop.ctaLabel}${untranslatedSuffix(lang)}`} external />
           <p class="online-note">{page.onlineShop.note}</p>
         </div>
       </div>
