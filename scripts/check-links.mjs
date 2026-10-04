@@ -184,13 +184,44 @@ export function pageUrlFromFile(distDir, htmlFile) {
   return '/' + rel;
 }
 
-/** srcset の各候補 URL（記述子を除く） */
+/**
+ * srcset の各候補を「URL 空白 記述子」として分ける。
+ * data: で始まる候補は丸ごと飛ばす（base64 内のカンマで壊れないようにする）。
+ * @param {string} srcset
+ * @returns {string[]}
+ */
 export function parseSrcset(srcset) {
   if (!srcset || !String(srcset).trim()) return [];
-  return String(srcset)
-    .split(',')
-    .map((part) => part.trim().split(/\s+/)[0])
-    .filter(Boolean);
+  const s = String(srcset).trim();
+  /** @type {string[]} */
+  const urls = [];
+  let pos = 0;
+
+  while (pos < s.length) {
+    while (pos < s.length && /[\s,]/.test(s[pos])) pos++;
+    if (pos >= s.length) break;
+
+    const rest = s.slice(pos);
+
+    if (rest.startsWith('data:')) {
+      // data: 候補を丸ごとスキップ。記述子（Nx / Nw）のあとか、次の候補の手前まで進む
+      const desc = /\s+\d+(?:\.\d+)?[wx](?=\s*,|\s*$)/i.exec(rest);
+      if (desc) {
+        pos += desc.index + desc[0].length;
+      } else {
+        const next = /,(?=\s*(?:\/|https?:|data:|[.#]|[^\s,]+\s+\d))/i.exec(rest);
+        pos += next ? next.index : rest.length;
+      }
+      continue;
+    }
+
+    // URL（空白・カンマ以外）+ 任意の記述子
+    const m = /^([^\s,]+)(?:\s+(\d+(?:\.\d+)?[wx]))?/i.exec(rest);
+    if (!m) break;
+    urls.push(m[1]);
+    pos += m[0].length;
+  }
+  return urls;
 }
 
 const LINK_RELS = new Set(['stylesheet', 'icon', 'sitemap', 'preload', 'manifest']);
@@ -230,51 +261,107 @@ export function collectRefs(html) {
 }
 
 /**
- * sitemap XML の <loc> からパスを取り、dist 上の存在を確かめる（サイトマップ XML 向け）
+ * astro.config.mjs の本文から site（オリジン）を正規表現で読む。
+ * @param {string} source
+ * @returns {string | null} 例 https://www.murata-jewelry.co.jp
+ */
+export function readSiteOrigin(source) {
+  const m = /\bsite\s*:\s*['"](https?:\/\/[^'"]+)['"]/.exec(source);
+  if (!m) return null;
+  try {
+    const u = new URL(m[1]);
+    return u.origin;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * dist 上のファイルパスを探す（ページ解決 + .xml の直接解決）。
+ * @param {string} distDir
+ * @param {string} pathname
+ * @returns {string | null}
+ */
+function resolveSitemapTarget(distDir, pathname) {
+  const page = resolveDistFile(distDir, pathname);
+  if (page) return page;
+  const distAbs = resolve(distDir);
+  const rel = pathname.replace(/^\//, '');
+  const direct = resolve(distAbs, rel);
+  if (direct.startsWith(distAbs + sep) || direct === distAbs) {
+    if (existsSync(direct) && statSync(direct).isFile()) return direct;
+  }
+  return null;
+}
+
+/**
+ * sitemap XML の <loc> を確かめる。
+ * - ホストは siteOrigin と一致必須
+ * - パスは dist に存在すること
+ * - サイトマップインデックスの子 XML 内の <loc> はページとして解決する
  * @param {string} distDir
  * @param {string} xmlPath
  * @param {string} fromPage
+ * @param {string} siteOrigin
+ * @param {{ asPages?: boolean }} [opts] asPages=true なら子（urlset）の loc をページとして扱う
  * @returns {string[]} errors
  */
-export function checkSitemapLocs(distDir, xmlPath, fromPage) {
+export function checkSitemapLocs(distDir, xmlPath, fromPage, siteOrigin, opts = {}) {
+  const { asPages = false } = opts;
   const errors = [];
   if (!existsSync(xmlPath) || !statSync(xmlPath).isFile()) {
     errors.push(`${fromPage} の sitemap が dist にありません（${xmlPath}）。`);
     return errors;
   }
   const xml = readFileSync(xmlPath, 'utf8');
+  const isIndex = /<sitemapindex\b/i.test(xml);
   const locRe = /<loc>\s*([^<]+?)\s*<\/loc>/gi;
   let m;
   while ((m = locRe.exec(xml)) !== null) {
     const loc = m[1].trim();
-    let pathname;
+    let url;
     try {
-      if (/^https?:\/\//i.test(loc)) {
-        pathname = new URL(loc).pathname;
-      } else {
-        pathname = loc.startsWith('/') ? loc : '/' + loc;
-      }
+      url = new URL(loc);
     } catch {
-      errors.push(`${fromPage} の sitemap 内 <loc>${loc}</loc> を URL として読めません。`);
+      errors.push(
+        `${fromPage} の sitemap 内 <loc>${loc}</loc> を URL として読めません。絶対 URL（${siteOrigin}…）にしてください。`,
+      );
       continue;
     }
-    const normalized = normalizePathname(pathname);
+    if (url.origin !== siteOrigin) {
+      errors.push(
+        `${fromPage} の sitemap 内 <loc>${loc}</loc> のホストが site（${siteOrigin}）と一致しません。`,
+      );
+      continue;
+    }
+    const normalized = normalizePathname(url.pathname);
     if (normalized == null) {
       errors.push(`${fromPage} の sitemap 内 <loc>${loc}</loc> が dist の外を指しています。`);
       continue;
     }
-    const target = resolveDistFile(distDir, normalized);
-    // サイトマップの loc は XML ファイル（拡張子 .xml）を想定。ファイルとして存在すればよい
-    const distAbs = resolve(distDir);
-    const rel = normalized.replace(/^\//, '');
-    const direct = resolve(distAbs, rel);
-    const okFile =
-      (target && existsSync(target) && statSync(target).isFile()) ||
-      (direct.startsWith(distAbs) && existsSync(direct) && statSync(direct).isFile());
-    if (!okFile) {
+
+    if (asPages || (!isIndex && !normalized.endsWith('.xml'))) {
+      // ページとして dist に存在するか（既存のページ解決規則）
+      const target = resolveDistFile(distDir, normalized);
+      if (!target) {
+        errors.push(
+          `${fromPage} の sitemap 内 <loc> が指すページ「${normalized}」が dist にありません。サイトマップの出力を確かめてください。`,
+        );
+      }
+      continue;
+    }
+
+    // インデックスの子 XML、または .xml への参照
+    const target = resolveSitemapTarget(distDir, normalized);
+    if (!target) {
       errors.push(
         `${fromPage} の sitemap 内 <loc> が指す「${normalized}」が dist にありません。サイトマップの出力を確かめてください。`,
       );
+      continue;
+    }
+    if (isIndex && target.endsWith('.xml')) {
+      // 子 XML の <loc> をページとして確かめる
+      errors.push(...checkSitemapLocs(distDir, target, fromPage, siteOrigin, { asPages: true }));
     }
   }
   return errors;
@@ -282,11 +369,35 @@ export function checkSitemapLocs(distDir, xmlPath, fromPage) {
 
 /**
  * @param {string} distDir
+ * @param {{ siteOrigin?: string | null }} [options]
  * @returns {{ errors: string[], warnings: string[], checked: number }}
  */
-export function checkDist(distDir) {
+export function checkDist(distDir, options = {}) {
   const errors = [];
   const warnings = [];
+
+  let siteOrigin = options.siteOrigin;
+  if (siteOrigin === undefined) {
+    const configPath = join(ROOT, 'astro.config.mjs');
+    if (!existsSync(configPath)) {
+      return {
+        errors: ['astro.config.mjs がありません。site を読めないためリンクチェックを続けられません。'],
+        warnings: [],
+        checked: 0,
+      };
+    }
+    siteOrigin = readSiteOrigin(readFileSync(configPath, 'utf8'));
+  }
+  if (!siteOrigin) {
+    return {
+      errors: [
+        'astro.config.mjs から site を読めませんでした。`site: \'https://…\'` の形になっているか確かめてください。',
+      ],
+      warnings: [],
+      checked: 0,
+    };
+  }
+
   const htmlFiles = walkHtml(distDir);
   /** @type {Map<string, Set<string>>} */
   const idCache = new Map();
@@ -325,9 +436,9 @@ export function checkDist(distDir) {
         continue;
       }
 
-      // sitemap: 指す XML と、その中の <loc> のサイトマップ XML も確かめる
+      // sitemap: 指す XML と、インデックスの子 XML 内の <loc>（ページ）も確かめる
       if (kind.startsWith('link[href](sitemap)')) {
-        errors.push(...checkSitemapLocs(distDir, targetFile, pageUrl));
+        errors.push(...checkSitemapLocs(distDir, targetFile, pageUrl, siteOrigin));
       }
 
       if (resolved.fragment) {

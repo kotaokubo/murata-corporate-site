@@ -68,6 +68,20 @@ export function normalizePiiText(s) {
  * @param {string} source
  * @returns {{ phones: Set<string>, emails: Set<string>, found: boolean }}
  */
+/**
+ * 電話番号を数字だけにそろえる。+81 は先頭を 0 に戻した国内形式にする。
+ * @param {string} s
+ */
+export function toPhoneDigits(s) {
+  const normalized = normalizePiiText(s);
+  let digits = normalized.replace(/\D/g, '');
+  if (/^\s*\+81/.test(normalized) || normalized.includes('+81')) {
+    const rest = digits.startsWith('81') ? digits.slice(2) : digits;
+    digits = rest.startsWith('0') ? rest : '0' + rest;
+  }
+  return digits;
+}
+
 export function extractCompanyAllowlist(source) {
   const phones = new Set();
   const emails = new Set();
@@ -75,7 +89,7 @@ export function extractCompanyAllowlist(source) {
   const telRe = /\btel\s*:\s*['"]([^'"]+)['"]/g;
   let m;
   while ((m = telRe.exec(source)) !== null) {
-    phones.add(normalizePiiText(m[1]));
+    phones.add(toPhoneDigits(m[1]));
   }
 
   const emailRe = /\bemail\s*:\s*['"]([^'"]+)['"]/g;
@@ -91,16 +105,33 @@ export function normalizePhone(s) {
   return normalizePiiText(s);
 }
 
-/** @param {string} path */
+/**
+ * PII 検査の対象パスか。
+ * src/・public/・docs/、ルート直下の *.md、.github/ 配下の .md/.yml/.yaml。
+ * package-lock.json は除く。
+ * @param {string} path
+ */
 export function isPiiTargetPath(path) {
   const n = path.replace(/\\/g, '/');
-  if (SKIP_FILES.has(n.split('/').pop())) return false;
-  if (!(n.startsWith('src/') || n.startsWith('public/'))) return false;
-  return TEXT_EXT.has(extname(n).toLowerCase());
+  const base = n.split('/').pop() ?? '';
+  if (SKIP_FILES.has(base)) return false;
+
+  if (n.startsWith('src/') || n.startsWith('public/') || n.startsWith('docs/')) {
+    return TEXT_EXT.has(extname(n).toLowerCase());
+  }
+  // リポジトリルート直下の *.md
+  if (!n.includes('/') && n.toLowerCase().endsWith('.md')) return true;
+  // .github/ 配下のテキスト
+  if (n.startsWith('.github/')) {
+    const ext = extname(n).toLowerCase();
+    return ext === '.md' || ext === '.yml' || ext === '.yaml';
+  }
+  return false;
 }
 
 /**
- * unified diff（-U0）から追加行を取る
+ * unified diff（-U0）から追加行を取る。
+ * ファイルヘッダーの `+++` は hunk の外だけ。hunk 内の `+++` 始まりは追加行。
  * @param {string} diff
  * @returns {{ file: string, line: number, text: string }[]}
  */
@@ -108,20 +139,27 @@ export function parseAddedLines(diff) {
   const added = [];
   let file = null;
   let track = false;
+  let inHunk = false;
   let newLine = 0;
   for (const raw of diff.split('\n')) {
-    if (raw.startsWith('+++ ')) {
+    if (raw.startsWith('diff --git ')) {
+      inHunk = false;
+      continue;
+    }
+    // ファイルヘッダーの +++ は hunk の外だけ
+    if (!inHunk && raw.startsWith('+++ ')) {
       const p = raw.slice(4).trim();
       file = p === '/dev/null' ? null : p.replace(/^b\//, '');
       track = Boolean(file && isPiiTargetPath(file));
       continue;
     }
     if (raw.startsWith('@@ ')) {
+      inHunk = true;
       const m = /\+(\d+)/.exec(raw);
       newLine = m ? Number(m[1]) : 0;
       continue;
     }
-    if (!track) continue;
+    if (!track || !inHunk) continue;
     if (raw.startsWith('+')) {
       added.push({ file, line: newLine, text: raw.slice(1) });
       newLine++;
@@ -193,7 +231,7 @@ export function findPiiInText(text, allow) {
   const hits = [];
 
   for (const value of findPhoneMatches(normalized)) {
-    const key = normalizePiiText(value);
+    const key = toPhoneDigits(value);
     if (allow.phones.has(key)) continue;
     hits.push({ kind: 'phone', value });
   }

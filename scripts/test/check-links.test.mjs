@@ -10,9 +10,12 @@ import {
   resolveDistFile,
   parseSrcset,
   normalizePathname,
+  readSiteOrigin,
+  checkSitemapLocs,
 } from '../check-links.mjs';
 
 const tmp = join(dirname(fileURLToPath(import.meta.url)), '.tmp-links');
+const SITE = 'https://www.murata-jewelry.co.jp';
 
 describe('check-links', () => {
   before(() => {
@@ -54,9 +57,15 @@ describe('check-links', () => {
     writeFileSync(join(tmp, 'app.js'), '');
     writeFileSync(
       join(tmp, 'sitemap-index.xml'),
-      `<?xml version="1.0"?><sitemapindex><sitemap><loc>https://www.example.com/sitemap-0.xml</loc></sitemap></sitemapindex>`,
+      `<?xml version="1.0"?><sitemapindex><sitemap><loc>${SITE}/sitemap-0.xml</loc></sitemap></sitemapindex>`,
     );
-    writeFileSync(join(tmp, 'sitemap-0.xml'), `<?xml version="1.0"?><urlset></urlset>`);
+    writeFileSync(
+      join(tmp, 'sitemap-0.xml'),
+      `<?xml version="1.0"?><urlset>
+        <url><loc>${SITE}/</loc></url>
+        <url><loc>${SITE}/company/</loc></url>
+      </urlset>`,
+    );
   });
   after(() => {
     rmSync(tmp, { recursive: true, force: true });
@@ -97,6 +106,19 @@ describe('check-links', () => {
     assert.deepEqual(parseSrcset('/a.png 1x, /b.png 2x'), ['/a.png', '/b.png']);
   });
 
+  it('srcset の data: URL を壊さず飛ばす', () => {
+    const srcset =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg== 1x, /logo.png 2x';
+    assert.deepEqual(parseSrcset(srcset), ['/logo.png']);
+  });
+
+  it('srcset が data: のみなら空配列', () => {
+    assert.deepEqual(
+      parseSrcset('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7 1x'),
+      [],
+    );
+  });
+
   it('/company と /company/ の両方を index.html に解決する', () => {
     assert.ok(resolveDistFile(tmp, '/company/').endsWith('company/index.html'));
     assert.ok(resolveDistFile(tmp, '/company').endsWith('company/index.html'));
@@ -110,7 +132,7 @@ describe('check-links', () => {
   });
 
   it('存在するページは成功、無いページは失敗、無い id は警告だけ', () => {
-    const { errors, warnings } = checkDist(tmp);
+    const { errors, warnings } = checkDist(tmp, { siteOrigin: SITE });
     assert.ok(errors.some((e) => e.includes('/missing/')));
     assert.ok(!errors.some((e) => e.includes('「/company/') && e.includes('ありません')));
     assert.ok(warnings.some((w) => w.includes('id="faq"')));
@@ -120,12 +142,12 @@ describe('check-links', () => {
   });
 
   it('srcset の欠けた候補を失敗にする', () => {
-    const { errors } = checkDist(tmp);
+    const { errors } = checkDist(tmp, { siteOrigin: SITE });
     assert.ok(errors.some((e) => e.includes('missing@2x.png')));
   });
 
   it('dist の外への参照を失敗にする', () => {
-    const { errors } = checkDist(tmp);
+    const { errors } = checkDist(tmp, { siteOrigin: SITE });
     assert.ok(errors.some((e) => e.includes('外を指して')));
   });
 
@@ -133,9 +155,55 @@ describe('check-links', () => {
     // 404.html 内の /company/ は成功するので、エラーに 404 由来の欠けは出ない
     // pageUrl /404.html が検査されていることの煙テスト: ファイルを壊して確認
     writeFileSync(join(tmp, '404.html'), `<!doctype html><a href="/no-from-404/"></a>`);
-    const { errors } = checkDist(tmp);
+    const { errors } = checkDist(tmp, { siteOrigin: SITE });
     assert.ok(errors.some((e) => e.includes('/404.html') && e.includes('/no-from-404/')));
     // 後続テストのため戻す
     writeFileSync(join(tmp, '404.html'), `<!doctype html><html><body><a href="/company/">c</a></body></html>`);
+  });
+
+  it('astro.config から site を読む', () => {
+    assert.equal(readSiteOrigin(`export default { site: '${SITE}' };`), SITE);
+    assert.equal(readSiteOrigin('export default { trailingSlash: "ignore" };'), null);
+  });
+
+  it('サイトマップのホスト不一致を失敗にする', () => {
+    const errs = checkSitemapLocs(
+      tmp,
+      join(tmp, 'sitemap-index.xml'),
+      '/',
+      'https://wrong.example',
+    );
+    assert.ok(errs.some((e) => e.includes('ホスト') && e.includes('一致しません')));
+  });
+
+  it('サイトマップインデックスの子 XML の loc をページとして確かめる', () => {
+    const { errors } = checkDist(tmp, { siteOrigin: SITE });
+    // 子の / と /company/ は存在するので、sitemap 由来のページ欠けは出ない
+    assert.ok(!errors.some((e) => e.includes('sitemap') && e.includes('ページ')));
+
+    // 子に無いページを足すと失敗する
+    writeFileSync(
+      join(tmp, 'sitemap-0.xml'),
+      `<?xml version="1.0"?><urlset>
+        <url><loc>${SITE}/</loc></url>
+        <url><loc>${SITE}/no-such-page/</loc></url>
+      </urlset>`,
+    );
+    const { errors: errs2 } = checkDist(tmp, { siteOrigin: SITE });
+    assert.ok(errs2.some((e) => e.includes('/no-such-page/') && e.includes('sitemap')));
+    // 戻す
+    writeFileSync(
+      join(tmp, 'sitemap-0.xml'),
+      `<?xml version="1.0"?><urlset>
+        <url><loc>${SITE}/</loc></url>
+        <url><loc>${SITE}/company/</loc></url>
+      </urlset>`,
+    );
+  });
+
+  it('site が読めないと失敗する', () => {
+    const { errors, checked } = checkDist(tmp, { siteOrigin: null });
+    assert.equal(checked, 0);
+    assert.ok(errors.some((e) => e.includes('site')));
   });
 });
