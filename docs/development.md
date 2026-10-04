@@ -66,6 +66,7 @@ Claude Code では、ファイルを書き換える前に `.claude/settings.json
 `.claude/settings.json` の deny に当たるファイルは deny が優先され、確認画面は出ずに拒否される。
 フックが効くのは deny に無い区分 C のファイルだけである。
 また、フックは専用の編集ツールだけを対象にし、Bash などからの書き換えは判定しない。
+別のリポジトリのファイルは判定しない。
 止める本体は必須チェック `scope` である。
 
 ### GitHub（Settings）

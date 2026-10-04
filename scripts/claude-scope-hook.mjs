@@ -1,11 +1,13 @@
 // Claude Code PreToolUse フック。区分 C のファイルを書き換えようとしたら確認を求める。
 // 区分の判定は必須チェック scope と同じ scripts/scope.mjs の classify() を使う。
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync, readlinkSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { classify } from './scope.mjs';
 
 const ASK_REASON = 'このファイルは区分 C（大久保だけが変える）。大久保の依頼で変える場合だけ許可する';
+const GIT_TIMEOUT_MS = 3000;
+const MAX_SYMLINK_DEPTH = 10;
 
 /**
  * 相対パスなら cwd（無ければ process.cwd()）を基準に絶対パスへ解決する。
@@ -16,6 +18,27 @@ function resolveTargetPath(targetPath, cwd) {
   if (path.isAbsolute(targetPath)) return path.resolve(targetPath);
   const base = typeof cwd === 'string' && cwd ? cwd : process.cwd();
   return path.resolve(base, targetPath);
+}
+
+/**
+ * 対象がシンボリックリンクなら readlink で辿る（最大 MAX_SYMLINK_DEPTH 回）。
+ * 壊れたリンク（リンク先がまだ無い）も、リンク先パスへ解決する。
+ * @param {string} absPath
+ */
+function resolveSymlinkChain(absPath) {
+  let current = absPath;
+  for (let i = 0; i < MAX_SYMLINK_DEPTH; i++) {
+    let st;
+    try {
+      st = lstatSync(current);
+    } catch {
+      break;
+    }
+    if (!st.isSymbolicLink()) break;
+    const link = readlinkSync(current);
+    current = path.resolve(path.dirname(current), link);
+  }
+  return current;
 }
 
 /**
@@ -58,20 +81,65 @@ function gitStartDir(absPath) {
 }
 
 /**
- * @param {string} startDir
- * @returns {string | null}
+ * @typedef {{ kind: 'ok', value: string } | { kind: 'outside' } | { kind: 'unavailable', reason: string }} GitResult
  */
-function gitRepoRoot(startDir) {
+
+/**
+ * execFileSync の失敗が「git を実行できなかった」か「リポジトリ外」かを分ける。
+ * @param {unknown} err
+ * @returns {string | null} unavailable の理由。null ならリポジトリ外（git は動いた）。
+ */
+function gitUnavailableReason(err) {
+  if (!err || typeof err !== 'object') return String(err);
+  const e = /** @type {NodeJS.ErrnoException & { killed?: boolean, status?: number | null }} */ (err);
+  if (e.code === 'ENOENT') return 'ENOENT';
+  if (e.code === 'ETIMEDOUT' || e.killed) return 'timeout';
+  if (typeof e.status === 'number') return null;
+  return e.message || String(e.code || err);
+}
+
+/**
+ * @param {string[]} args
+ * @param {string} cwd
+ * @returns {GitResult}
+ */
+function runGit(args, cwd) {
   try {
-    const out = execFileSync('git', ['rev-parse', '--show-toplevel'], {
-      cwd: startDir,
+    const out = execFileSync('git', args, {
+      cwd,
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
+      timeout: GIT_TIMEOUT_MS,
     });
-    return out.trim();
-  } catch {
-    return null;
+    return { kind: 'ok', value: out.trim() };
+  } catch (err) {
+    const reason = gitUnavailableReason(err);
+    if (reason === null) return { kind: 'outside' };
+    return { kind: 'unavailable', reason };
   }
+}
+
+/**
+ * @param {string} startDir
+ * @returns {GitResult}
+ */
+function gitCommonDir(startDir) {
+  const result = runGit(['rev-parse', '--git-common-dir'], startDir);
+  if (result.kind !== 'ok') return result;
+  const abs = path.isAbsolute(result.value) ? result.value : path.resolve(startDir, result.value);
+  try {
+    return { kind: 'ok', value: realpathSync.native(abs) };
+  } catch {
+    return { kind: 'ok', value: resolveRealPath(abs) };
+  }
+}
+
+/**
+ * @param {string} startDir
+ * @returns {GitResult}
+ */
+function gitRepoRoot(startDir) {
+  return runGit(['rev-parse', '--show-toplevel'], startDir);
 }
 
 /**
@@ -104,6 +172,23 @@ function extractCwd(input) {
   return typeof cwd === 'string' && cwd ? cwd : undefined;
 }
 
+/** @param {string} reason */
+function warnGitUnavailable(reason) {
+  console.error(`claude-scope-hook: git を実行できなかったので区分を判定しなかった（${reason}）`);
+}
+
+/**
+ * @param {GitResult} result
+ * @returns {string | null} ok なら値。それ以外は exit 済みで戻らない想定だが、呼び出し側で null 扱い。
+ */
+function unwrapGitOrExit(result) {
+  if (result.kind === 'ok') return result.value;
+  if (result.kind === 'unavailable') {
+    warnGitUnavailable(result.reason);
+  }
+  process.exit(0);
+}
+
 function main() {
   let raw;
   try {
@@ -127,11 +212,16 @@ function main() {
     process.exit(0);
   }
 
+  const projectCwd = extractCwd(payload) ?? process.cwd();
   const absolute = resolveTargetPath(targetPath, extractCwd(payload));
-  const real = resolveRealPath(absolute);
-  const repoRoot = gitRepoRoot(gitStartDir(real));
-  if (!repoRoot) process.exit(0);
+  const afterLinks = resolveSymlinkChain(absolute);
+  const real = resolveRealPath(afterLinks);
 
+  const projectCommon = unwrapGitOrExit(gitCommonDir(projectCwd));
+  const targetCommon = unwrapGitOrExit(gitCommonDir(gitStartDir(real)));
+  if (projectCommon !== targetCommon) process.exit(0);
+
+  const repoRoot = unwrapGitOrExit(gitRepoRoot(gitStartDir(real)));
   const relative = toRepoRelative(real, repoRoot);
   if (!relative) process.exit(0);
 
