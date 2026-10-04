@@ -911,7 +911,7 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
   /* ===== SP ===== */
   @media (max-width: 1099px) {
     .inner {
-      width: min(100% - 48px, 342px);
+      width: min(100% - 48px, var(--sp-content-width));
     }
 
     .section-wholesale,
@@ -1196,15 +1196,10 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
     }
   }
 
-  @media (max-width: 767px) {
+  /* 599px 以下は従来どおり余白のみ（390px の見た目を維持） */
+  @media (max-width: 599px) {
     .inner {
       width: min(100% - 48px, 100%);
-    }
-  }
-
-  @media (min-width: 768px) and (max-width: 1099px) {
-    .inner {
-      width: min(100% - 64px, 720px);
     }
   }
 
