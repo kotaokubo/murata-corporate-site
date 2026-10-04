@@ -1,0 +1,121 @@
+# トップページの文言（区分 A：事務の方が承認なしで直せる）
+meta:
+  title: 村田宝飾
+  description: 人が輝く 世界で輝く。村田宝飾株式会社のコーポレートサイトです。
+
+hero:
+  catchphrase: |
+    永遠の瞬間に寄り添う
+    美しき輝き
+  scroll: SCROLL
+
+concept:
+  eyebrow: CONCEPT
+  title: |
+    お客様にとって
+    一番のパートナー
+  body: |
+    職人の手仕事と最高品質の素材が融合した唯一無二の宝飾品を一つひとつ想いを込めて。
+    村田宝飾は確かな技術と独自の仕入れネットワークで、全国の宝飾小売店様を支える「ジュエリーコンシェルジュ」であり続けます。
+  sp:
+    title: お客様にとって一番のパートナー
+    body: |
+      職人の手仕事と最高品質の素材が融合した唯一無二の宝飾品を一つひとつ想いを込めて。
+
+      村田宝飾は確かな技術と独自の仕入れネットワークで、全国の宝飾小売店様を支える「ジュエリーコンシェルジュ」であり続けます。
+
+ourBusiness:
+  eyebrow: OUR BUSINESS
+  title: 購入からアフターケアまで、すべてお任せください。
+  body: |
+    村田宝飾は宝飾品の卸売を中心に、オリジナルジュエリーの製作から修理・リフォームまで、
+    一気通貫でサポートいたします。
+
+    当社の強みは「材料調達力」「新商品開発力」「自社工房による加工力」「幅広い品揃え力」「商品鮮度力」です。
+    5つの強みを活かし、お客様のあらゆるニーズにお応えします。どんなことでもお気軽にご相談ください。
+  ctaLabel: 詳しく見る >
+  steps:
+    - en: 01 SOURCING
+      ja: 仕入れ
+    - en: 02 QUALITY CHECK
+      ja: 品質チェック
+    - en: 03 CRAFTING
+      ja: 製作
+    - en: 04 WHOLESALE
+      ja: 卸売
+    - en: 05 PROCESSING
+      ja: 加工
+    - en: 06 DELIVERY
+      ja: 納品
+  sp:
+    title: |
+      購入からアフターケアまで、
+      すべてお任せください。
+
+about:
+  eyebrow: ABOUT
+  title: 村田宝飾について
+  body: 昭和54年の創業以来、愛媛県松山市を拠点に高品質な宝飾品をお届けしてきました。確かな技術と審美眼で、世代を超えて愛される輝きと価値を提供し続けます。
+  ctaLabel: 詳しく見る >
+  sp:
+    eyebrow: ABOUT US
+    body: |
+      昭和54年の創業以来、愛媛県松山市を拠点に高品質な宝飾品をお届けしてきました。
+
+      確かな技術と審美眼で、世代を超えて愛される輝きと価値を提供し続けます。
+
+recruit:
+  eyebrow: RECRUIT
+  title: 採用情報
+  lead: |
+    共に輝きを届ける仲間を
+    募集しています
+  ctaLabel: 採用情報 >
+  cards:
+    - title: セールススタッフ
+      linkLabel: 詳細 →
+    - title: フロアスタッフ
+      linkLabel: 詳細 →
+    - title: パートスタッフ
+      linkLabel: 詳細 →
+  sp:
+    lead: 共に輝きを届ける仲間を募集しています
+    ctaLabel: 採用情報  >
+
+news:
+  eyebrow: NEWS
+  title: お知らせ
+  ctaLabel: 一覧を見る >
+
+onlineShop:
+  eyebrow: ONLINE SHOP
+  title: オンラインショップ
+  overlay: The Jewelry Concierge
+  body: |
+    「The Jewelry Concierge」は宝飾小売店様専用のオンラインショップです。
+    一般のお客様はご購入いただけない為、ご注意ください。
+  ctaLabel: BtoB Online Shop >
+  note: ※ BtoBショップのご利用にはアカウント登録が必要です
+  sp:
+    body: 「The Jewelry Concierge」は宝飾小売店様専用のオンラインショップです。一般のお客様はご購入いただけない為、ご注意ください。
+
+instagram:
+  eyebrow: INSTAGRAM
+  title: インスタグラム
+  ctaLabel: Instagramを見る >
+  images: []
+
+faq:
+  eyebrow: FAQ
+  title: よくあるご質問
+  items:
+    - question: オーダーメイドジュエリーの制作は可能ですか？
+      answer: はい、承っております。ご希望のデザインをもとに、世界に一つだけのオーダーメイドジュエリーを制作いたします。CADによる設計や、お持ちのCADデータを使用した制作にも対応しています。豊富なカラーストーンをご用意しておりますので、お気軽にご相談ください。
+    - question: 新規のお取引について
+      answer: ''
+    - question: ディーラー展ではどんな商品を取り扱っているのか
+      answer: ''
+    - question: 商品を実際に見たい
+      answer: ''
+    - question: アフターサービス・修理について
+      answer: ''
