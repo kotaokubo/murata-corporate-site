@@ -23,7 +23,9 @@ function resolveTargetPath(targetPath, cwd) {
 /**
  * 対象がシンボリックリンクなら readlink で辿る（最大 MAX_SYMLINK_DEPTH 回）。
  * 壊れたリンク（リンク先がまだ無い）も、リンク先パスへ解決する。
+ * MAX_SYMLINK_DEPTH 回辿ってもまだリンクなら tooDeep（循環・深すぎ）。
  * @param {string} absPath
+ * @returns {{ kind: 'ok', path: string } | { kind: 'tooDeep' }}
  */
 function resolveSymlinkChain(absPath) {
   let current = absPath;
@@ -32,13 +34,18 @@ function resolveSymlinkChain(absPath) {
     try {
       st = lstatSync(current);
     } catch {
-      break;
+      return { kind: 'ok', path: current };
     }
-    if (!st.isSymbolicLink()) break;
+    if (!st.isSymbolicLink()) return { kind: 'ok', path: current };
     const link = readlinkSync(current);
     current = path.resolve(path.dirname(current), link);
   }
-  return current;
+  try {
+    if (lstatSync(current).isSymbolicLink()) return { kind: 'tooDeep' };
+  } catch {
+    // リンク先が消えている等。パスとしては確定している。
+  }
+  return { kind: 'ok', path: current };
 }
 
 /**
@@ -86,15 +93,24 @@ function gitStartDir(absPath) {
 
 /**
  * execFileSync の失敗が「git を実行できなかった」か「リポジトリ外」かを分ける。
+ * 数値の終了コードで失敗したときは、stderr に「not a git repository」を含む場合だけリポジトリ外。
  * @param {unknown} err
  * @returns {string | null} unavailable の理由。null ならリポジトリ外（git は動いた）。
  */
 function gitUnavailableReason(err) {
   if (!err || typeof err !== 'object') return String(err);
-  const e = /** @type {NodeJS.ErrnoException & { killed?: boolean, status?: number | null }} */ (err);
+  const e =
+    /** @type {NodeJS.ErrnoException & { killed?: boolean, status?: number | null, stderr?: string }} */ (
+      err
+    );
   if (e.code === 'ENOENT') return 'ENOENT';
   if (e.code === 'ETIMEDOUT' || e.killed) return 'timeout';
-  if (typeof e.status === 'number') return null;
+  if (typeof e.status === 'number') {
+    const stderr = typeof e.stderr === 'string' ? e.stderr : '';
+    if (stderr.includes('not a git repository')) return null;
+    const firstLine = stderr.trim().split('\n')[0];
+    return firstLine || `exit ${e.status}`;
+  }
   return e.message || String(e.code || err);
 }
 
@@ -108,8 +124,9 @@ function runGit(args, cwd) {
     const out = execFileSync('git', args, {
       cwd,
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
+      stdio: ['ignore', 'pipe', 'pipe'],
       timeout: GIT_TIMEOUT_MS,
+      env: { ...process.env, LC_ALL: 'C' },
     });
     return { kind: 'ok', value: out.trim() };
   } catch (err) {
@@ -177,6 +194,19 @@ function warnGitUnavailable(reason) {
   console.error(`claude-scope-hook: git を実行できなかったので区分を判定しなかった（${reason}）`);
 }
 
+function writeAskAndExit() {
+  process.stdout.write(
+    JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'ask',
+        permissionDecisionReason: ASK_REASON,
+      },
+    }),
+  );
+  process.exit(0);
+}
+
 /**
  * @param {GitResult} result
  * @returns {string | null} ok なら値。それ以外は exit 済みで戻らない想定だが、呼び出し側で null 扱い。
@@ -214,8 +244,10 @@ function main() {
 
   const projectCwd = extractCwd(payload) ?? process.cwd();
   const absolute = resolveTargetPath(targetPath, extractCwd(payload));
-  const afterLinks = resolveSymlinkChain(absolute);
-  const real = resolveRealPath(afterLinks);
+  const linkResult = resolveSymlinkChain(absolute);
+  if (linkResult.kind === 'tooDeep') writeAskAndExit();
+
+  const real = resolveRealPath(linkResult.path);
 
   const projectCommon = unwrapGitOrExit(gitCommonDir(projectCwd));
   const targetCommon = unwrapGitOrExit(gitCommonDir(gitStartDir(real)));
@@ -227,16 +259,7 @@ function main() {
 
   if (classify(relative) !== 'C') process.exit(0);
 
-  process.stdout.write(
-    JSON.stringify({
-      hookSpecificOutput: {
-        hookEventName: 'PreToolUse',
-        permissionDecision: 'ask',
-        permissionDecisionReason: ASK_REASON,
-      },
-    }),
-  );
-  process.exit(0);
+  writeAskAndExit();
 }
 
 main();

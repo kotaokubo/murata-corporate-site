@@ -226,6 +226,79 @@ test('多段のシンボリックリンクを辿って C と判定する', () =>
   }
 });
 
+test('11段以上のシンボリックリンクは区分を判定できず ask になる', () => {
+  const root = withTempDir();
+  try {
+    gitInit(root);
+    const linkDir = path.join(root, 'src/components');
+    fs.mkdirSync(linkDir, { recursive: true });
+    // link0 → link1 → ... → link11（実体なしの鎖。MAX_SYMLINK_DEPTH=10 を超える）
+    const depth = 12;
+    for (let i = 0; i < depth - 1; i++) {
+      const from = path.join(linkDir, `deep-link-${i}.ts`);
+      const to = path.join(linkDir, `deep-link-${i + 1}.ts`);
+      fs.symlinkSync(path.relative(linkDir, to), from);
+    }
+    fs.writeFileSync(path.join(linkDir, `deep-link-${depth - 1}.ts`), 'export {};\n');
+
+    const { status, stdout } = runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: path.join(linkDir, 'deep-link-0.ts') },
+      cwd: root,
+    });
+    assert.equal(status, 0);
+    assert.equal(JSON.parse(stdout).hookSpecificOutput.permissionDecision, 'ask');
+    assert.match(JSON.parse(stdout).hookSpecificOutput.permissionDecisionReason, /区分 C/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('循環シンボリックリンクは区分を判定できず ask になる', () => {
+  const root = withTempDir();
+  try {
+    gitInit(root);
+    const linkDir = path.join(root, 'src/components');
+    fs.mkdirSync(linkDir, { recursive: true });
+    const a = path.join(linkDir, 'cycle-a.ts');
+    const b = path.join(linkDir, 'cycle-b.ts');
+    fs.symlinkSync(path.relative(linkDir, b), a);
+    fs.symlinkSync(path.relative(linkDir, a), b);
+
+    const { status, stdout } = runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: a },
+      cwd: root,
+    });
+    assert.equal(status, 0);
+    assert.equal(JSON.parse(stdout).hookSpecificOutput.permissionDecision, 'ask');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('破損した .git では stderr に判定不能を出して stdout は空', () => {
+  const root = withTempDir();
+  try {
+    // 空のディレクトリではなく不正な gitfile。git は "not a git repository" 以外で失敗する。
+    fs.writeFileSync(path.join(root, '.git'), 'not-a-valid-gitfile\n');
+    const targetAbs = path.join(root, 'src/lib/site.ts');
+    fs.mkdirSync(path.dirname(targetAbs), { recursive: true });
+    fs.writeFileSync(targetAbs, 'export {};\n');
+
+    const { status, stdout, stderr } = runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: targetAbs },
+      cwd: root,
+    });
+    assert.equal(status, 0);
+    assert.equal(stdout, '');
+    assert.match(stderr, /claude-scope-hook: git を実行できなかったので区分を判定しなかった/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('別リポジトリの対象は何も出さない', () => {
   const base = withTempDir();
   try {
