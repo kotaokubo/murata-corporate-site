@@ -189,12 +189,7 @@ const businessPageSchema = z.object({
         }),
       )
       .length(8),
-    slides: z.array(captionSlide).length(2),
-    sp: z
-      .object({
-        slides: z.array(captionSlide).length(2),
-      })
-      .optional(),
+    // 製作工程の写真は、使える写真が届くまで置かない（届いたら写真と見出しを足す）
   }),
   repair: z.object({
     eyebrow: nonEmpty,

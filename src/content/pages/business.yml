@@ -74,13 +74,6 @@ craft:
       label: 石留め加工
     - num: "08"
       label: 磨き上げ・完成
-  slides:
-    - caption: ⑦石留め
-    - caption: ⑧磨き・仕上げ
-  sp:
-    slides:
-      - caption: ⑦石留め工程
-      - caption: ⑧磨き・仕上げ工程
 
 repair:
   eyebrow: REPAIR

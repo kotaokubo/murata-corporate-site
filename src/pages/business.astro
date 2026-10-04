@@ -42,8 +42,6 @@ const t = entry.data as unknown as {
     eyebrow: string;
     title: string;
     steps: { num: string; label: string }[];
-    slides: { caption: string }[];
-    sp?: { slides: { caption: string }[] };
   };
   repair: {
     eyebrow: string;
@@ -91,10 +89,10 @@ const shopUrl = nav.find((n) => n.label === 'オンラインショップ')?.href
 
 const wholesaleImages = [wholesaleRing, wholesaleNecklace, wholesaleBracelet, wholesaleGemstones];
 const wholesaleAlts = [
-  'ダイヤモンドのリングとルース、ルーペ',
-  'パールのネックレスとルース',
-  'カラーストーンのブレスレットとルース',
-  'テーブルに並ぶカラーストーンのルース',
+  '台座に飾られたダイヤモンドのリング',
+  '金の留め具が付いたパールのブレスレット',
+  'エメラルドとダイヤモンドを交互に並べたゴールドのリング',
+  '白い布の上に並ぶサファイアやルビーなどのルース',
 ];
 
 const repairImages = [repairRhodium, repairLaser];
@@ -105,10 +103,10 @@ const repairAlts = [
 
 const strengthImages = [strengthDev, strengthNetwork, strengthAtelier, strengthFresh];
 const strengthAlts = [
-  'グリーンの宝石が付いたゴールドのリング',
-  '複数の宝石リングが並ぶ様子',
-  '青い宝石のドロップ型ペンダント',
-  'パールのリングとピアス',
+  '机に向かってジュエリーのデザイン画を描く女性',
+  '各地に印が立つ世界地図',
+  '工具でジュエリーを加工する職人の手元',
+  'トレーに並ぶ色石とダイヤモンドの原石',
 ];
 
 const tokyoGallery = [
@@ -126,7 +124,7 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
     title={t.hero.title}
     eyebrow={t.hero.eyebrow}
     image={heroImg}
-    imageAlt="ジュエリーを手に取る様子"
+    imageAlt=""
   />
 
   <div class="divider" aria-hidden="true"><span></span></div>
@@ -173,8 +171,8 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
                 src={wholesaleImages[i]}
                 alt={wholesaleAlts[i]}
                 class="slide-img"
-                widths={[342, 520, 1040]}
-                sizes="(max-width: 1099px) 100vw, 520px"
+                widths={[342, 520, 1040, 1152]}
+                sizes="(max-width: 1099px) 100vw, 1120px"
               />
             </div>
             <figcaption class="slide-caption">{slide.caption}</figcaption>
