@@ -25,4 +25,22 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
-        run: gh api -X DELETE "repos/$REPO/git/refs/heads/$HEAD_REF"
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # ブランチ名は URL に埋めるので、英数字と . _ - だけを許す（# や ? で別のブランチを指させない）
+          if [[ ! "$HEAD_REF" =~ ^(work|hotfix)/[A-Za-z0-9._-]+$ ]]; then
+            echo "ブランチ名 $HEAD_REF は自動では消さない。必要なら手で消す"
+            exit 0
+          fi
+          # マージのあとにコミットが足されていたら消さない（未マージの変更を失わないため）
+          current=$(gh api "repos/$REPO/git/ref/heads/$HEAD_REF" --jq .object.sha 2>/dev/null || true)
+          if [ -z "$current" ]; then
+            echo "ブランチ $HEAD_REF は既に無い"
+            exit 0
+          fi
+          if [ "$current" != "$HEAD_SHA" ]; then
+            echo "ブランチ $HEAD_REF にマージ後のコミットがあるので消さない（$current）"
+            exit 0
+          fi
+          gh api -X DELETE "repos/$REPO/git/refs/heads/$HEAD_REF"
+          echo "ブランチ $HEAD_REF を消した"
