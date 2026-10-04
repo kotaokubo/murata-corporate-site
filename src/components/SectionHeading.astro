@@ -13,7 +13,7 @@ const { eyebrow, title, align = 'left', titleClass = '', dark = false } = Astro.
     <p class="eyebrow">{eyebrow}</p>
     <span class="eyebrow-line" aria-hidden="true"></span>
   </div>
-  {title && <h2 class:list={['sec-title', titleClass]} set:html={title.replace(/\n/g, '<br />')} />}
+  {title && <h2 class:list={['sec-title', titleClass]}>{title}</h2>}
 </div>
 
 <style>
@@ -69,6 +69,7 @@ const { eyebrow, title, align = 'left', titleClass = '', dark = false } = Astro.
     line-height: 48px;
     letter-spacing: 3px;
     color: var(--color-navy);
+    white-space: pre-line;
   }
 
   .is-dark .sec-title {

@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeading from '../components/SectionHeading.astro';
@@ -39,37 +39,59 @@ const instagramImages = t.instagram.images;
 
 const faqVisible = t.faq.items.filter((item) => item.answer.trim().length > 0);
 
-const nl = (s: string) => s.replace(/\n/g, '<br />');
+// HERO: PC / SP を picture で排他選択（元画像幅を超えない widths）
+const heroPcImage = await getImage({ src: heroPc, widths: [692, 1385] });
+const heroSpImage = await getImage({ src: heroSp, widths: [384, 768] });
+const heroSpArtImage = await getImage({ src: heroSpArt, widths: [390, 780, 1200] });
+// PC では source が選ばれないため、フォールバックは 1x1 にして重い画像を取らない
+const heroSpArtPlaceholder = await getImage({ src: heroSpArt, width: 1, height: 1 });
+
+const heroAlt = '人が輝く　世界で翔く　MURATA JEWELRY　星空を背景にした蝶と星のダイヤモンドのネックレス';
 ---
 <BaseLayout title={t.meta.title} description={t.meta.description}>
   <!-- HERO -->
   <section class="hero" aria-label="メインビジュアル">
-    <div class="hero-pc">
-      <Image
-        src={heroPc}
-        alt="ジュエリーを身に着けた女性のメインビジュアル"
-        class="hero-pc-img"
-        widths={[720, 1440, 1920]}
+    <h1 class="visually-hidden">村田宝飾株式会社</h1>
+    <picture class="hero-picture">
+      <source
+        media="(min-width: 1100px)"
+        srcset={heroPcImage.srcSet.attribute}
+        sizes="min(100vw, 1440px)"
+        width={heroPc.width}
+        height={heroPc.height}
+      />
+      <img
+        src={heroSpImage.src}
+        srcset={heroSpImage.srcSet.attribute}
         sizes="100vw"
+        width={heroSp.width}
+        height={heroSp.height}
+        alt={heroAlt}
+        class="hero-main-img"
         loading="eager"
         fetchpriority="high"
+        decoding="async"
       />
-    </div>
-    <div class="hero-sp">
-      <div class="hero-sp-bg">
-        <Image src={heroSp} alt="" class="hero-sp-bg-img" widths={[390, 780]} sizes="100vw" loading="eager" />
-      </div>
+    </picture>
+    <div class="hero-sp-ui">
       <div class="hero-sp-art-wrap">
-        <Image
-          src={heroSpArt}
-          alt="ジュエリーを身に着けた女性"
-          class="hero-sp-art"
-          widths={[390, 780]}
-          sizes="100vw"
-          loading="eager"
-        />
+        <picture>
+          <source
+            media="(max-width: 1099px)"
+            srcset={heroSpArtImage.srcSet.attribute}
+            sizes="100vw"
+          />
+          <img
+            src={heroSpArtPlaceholder.src}
+            alt=""
+            class="hero-sp-art"
+            width={heroSpArt.width}
+            height={heroSpArt.height}
+            decoding="async"
+          />
+        </picture>
       </div>
-      <p class="hero-catch" set:html={nl(t.hero.catchphrase)} />
+      <p class="hero-catch">{t.hero.catchphrase}</p>
       <div class="hero-scroll" aria-hidden="true">
         <span>{t.hero.scroll}</span>
         <span class="hero-scroll-dot"></span>
@@ -83,14 +105,14 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
       <div class="concept-grid">
         <div class="concept-copy">
           <SectionHeading eyebrow={t.concept.eyebrow} />
-          <h2 class="concept-title concept-title-pc" set:html={nl(t.concept.title)} />
+          <h2 class="concept-title concept-title-pc">{t.concept.title}</h2>
           <h2 class="concept-title concept-title-sp">{t.concept.sp?.title ?? t.concept.title}</h2>
-          <p class="body concept-body-pc" set:html={nl(t.concept.body)} />
-          <p class="body concept-body-sp" set:html={nl(t.concept.sp?.body ?? t.concept.body)} />
+          <p class="body concept-body-pc">{t.concept.body}</p>
+          <p class="body concept-body-sp">{t.concept.sp?.body ?? t.concept.body}</p>
         </div>
         <div class="concept-imgs">
-          <Image src={concept1} alt="職人の手元と宝飾品" class="concept-img" width={276} height={342} />
-          <Image src={concept2} alt="ジュエリーを身に着けた手元" class="concept-img concept-img-offset" width={276} height={342} />
+          <Image src={concept1} alt="角形のサファイアのペンダントとダイヤのリング" class="concept-img" width={276} height={342} />
+          <Image src={concept2} alt="ターコイズの猫と肉球のリングとチェーン" class="concept-img concept-img-offset" width={276} height={342} />
         </div>
       </div>
     </div>
@@ -106,8 +128,8 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
           align="center"
           titleClass="ob-title-pc"
         />
-        <h2 class="ob-title-sp" set:html={nl(t.ourBusiness.sp?.title ?? t.ourBusiness.title)} />
-        <p class="body ob-body" set:html={nl(t.ourBusiness.body)} />
+        <h2 class="ob-title-sp">{t.ourBusiness.sp?.title ?? t.ourBusiness.title}</h2>
+        <p class="body ob-body">{t.ourBusiness.body}</p>
       </div>
 
       <ol class="ob-flow-pc">
@@ -154,21 +176,27 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
       <div class="about-visual">
         <Image
           src={aboutImg}
-          alt="村田宝飾のジュエリーを手にする様子"
+          alt="色石とダイヤの指輪とペンダント、パールとオニキスのネックレスを並べた写真"
           class="about-photo"
           width={494}
           height={330}
         />
       </div>
       <div class="about-photo-sp">
-        <Image src={aboutImg} alt="村田宝飾のジュエリーを手にする様子" class="about-photo-sp-img" width={342} height={219} />
+        <Image
+          src={aboutImg}
+          alt="色石とダイヤの指輪とペンダント、パールとオニキスのネックレスを並べた写真"
+          class="about-photo-sp-img"
+          width={342}
+          height={219}
+        />
       </div>
       <div class="about-copy">
         <SectionHeading eyebrow={t.about.eyebrow} title={t.about.title} titleClass="about-title" />
         <p class="eyebrow-sp">{t.about.sp?.eyebrow ?? t.about.eyebrow}</p>
         <h2 class="about-title-sp">{t.about.title}</h2>
         <p class="body about-body-pc">{t.about.body}</p>
-        <p class="body about-body-sp" set:html={nl(t.about.sp?.body ?? t.about.body)} />
+        <p class="body about-body-sp">{t.about.sp?.body ?? t.about.body}</p>
         <div class="about-cta about-cta-pc">
           <CtaButton href="/company/" label={t.about.ctaLabel} variant="text" />
         </div>
@@ -185,7 +213,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
     <div class="inner recruit-grid">
       <div class="recruit-left">
         <SectionHeading eyebrow={t.recruit.eyebrow} title={t.recruit.title} dark titleClass="recruit-title" />
-        <p class="recruit-lead recruit-lead-pc" set:html={nl(t.recruit.lead)} />
+        <p class="recruit-lead recruit-lead-pc">{t.recruit.lead}</p>
         <p class="recruit-lead recruit-lead-sp">{t.recruit.sp?.lead ?? t.recruit.lead}</p>
         <div class="recruit-cta recruit-cta-pc">
           <CtaButton href="/recruit/" label={t.recruit.ctaLabel} />
@@ -241,7 +269,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
     <div class="inner online-grid">
       <div class="online-copy">
         <SectionHeading eyebrow={t.onlineShop.eyebrow} title={t.onlineShop.title} />
-        <p class="body online-body-pc" set:html={nl(t.onlineShop.body)} />
+        <p class="body online-body-pc">{t.onlineShop.body}</p>
         <p class="body online-body-sp">{t.onlineShop.sp?.body ?? t.onlineShop.body}</p>
         <div class="online-actions">
           <CtaButton href={shopUrl} label={t.onlineShop.ctaLabel} external />
@@ -251,7 +279,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
       <div class="online-visual">
         <Image
           src={onlineShopImg}
-          alt="The Jewelry Concierge オンラインショップのイメージ"
+          alt="星と蝶のダイヤのネックレスと「The Jewelry Concierge」の文字"
           class="online-img"
           width={614}
           height={432}
@@ -262,7 +290,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
   </section>
 
   <!-- INSTAGRAM -->
-  <section class="instagram">
+  <section class="instagram" aria-label={t.instagram.title}>
     <div class="inner">
       <div class="ig-head">
         <SectionHeading eyebrow={t.instagram.eyebrow} align="center" />
@@ -299,6 +327,18 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
 </BaseLayout>
 
 <style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   .inner {
     width: min(100% - 48px, var(--content-width));
     margin-inline: auto;
@@ -312,6 +352,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
     line-height: 1.73;
     letter-spacing: 0.614px;
     color: var(--color-ink);
+    white-space: pre-line;
   }
 
   /* ===== HERO ===== */
@@ -321,7 +362,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
     overflow: hidden;
   }
 
-  .hero-pc {
+  .hero-picture {
     display: flex;
     justify-content: center;
     align-items: stretch;
@@ -331,7 +372,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
     background: var(--color-navy-deep);
   }
 
-  .hero-pc-img {
+  .hero-main-img {
     width: min(100%, 1440px);
     height: 100%;
     object-fit: cover;
@@ -339,7 +380,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
     display: block;
   }
 
-  .hero-sp {
+  .hero-sp-ui {
     display: none;
   }
 
@@ -370,6 +411,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
     line-height: 48px;
     letter-spacing: 3px;
     color: var(--color-navy);
+    white-space: pre-line;
   }
 
   .concept-title-sp,
@@ -408,6 +450,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
 
   .ob-title-sp {
     display: none;
+    white-space: pre-line;
   }
 
   .ob-body {
@@ -614,6 +657,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
     line-height: 2.47;
     letter-spacing: 3px;
     color: var(--color-bg-soft);
+    white-space: pre-line;
   }
 
   .recruit-cta-pc {
@@ -912,11 +956,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
       width: min(100% - 48px, 342px);
     }
 
-    .hero-pc {
-      display: none;
-    }
-
-    .hero-sp {
+    .hero {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -924,22 +964,34 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
       min-height: 640px;
       height: 640px;
       padding: 66px 24px 30px;
-      position: relative;
-      overflow: hidden;
       box-sizing: border-box;
     }
 
-    .hero-sp-bg {
+    .hero-picture {
       position: absolute;
       inset: 0;
       z-index: 0;
+      height: 100%;
+      max-height: none;
+      min-height: 0;
     }
 
-    .hero-sp-bg-img {
+    .hero-main-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
+    }
+
+    .hero-sp-ui {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
     }
 
     .hero-sp-art-wrap {
@@ -950,6 +1002,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
       z-index: 1;
       width: 100%;
       height: 389px;
+      pointer-events: none;
     }
 
     .hero-sp-art {
@@ -970,6 +1023,8 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
       letter-spacing: 3px;
       color: var(--color-white);
       text-align: center;
+      white-space: pre-line;
+      pointer-events: auto;
     }
 
     .hero-scroll {
@@ -983,6 +1038,7 @@ const nl = (s: string) => s.replace(/\n/g, '<br />');
       font-size: 10px;
       letter-spacing: 2px;
       color: var(--color-white-70);
+      pointer-events: auto;
     }
 
     .hero-scroll-dot {
