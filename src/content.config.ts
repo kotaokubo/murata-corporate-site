@@ -529,7 +529,6 @@ const pages = defineCollection({
         privacy: z.object({
           title: nonEmpty,
           body: nonEmpty,
-          spBody: nonEmpty,
           agreeLabel: nonEmpty,
         }),
         preparingNote: nonEmpty,

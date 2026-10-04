@@ -50,7 +50,6 @@ const t = entry.data as unknown as {
     privacy: {
       title: string;
       body: string;
-      spBody: string;
       agreeLabel: string;
     };
     preparingNote: string;
@@ -209,8 +208,8 @@ const heroAlt = '';
         <div class="privacy">
           <div class="privacy-box">
             <p class="privacy-title">{t.form.privacy.title}</p>
-            <p class="privacy-body privacy-body-pc">{t.form.privacy.body}</p>
-            <p class="privacy-body privacy-body-sp">{t.form.privacy.spBody}</p>
+            {/* 同意の対象なので、PC と SP で同じ文面を出す */}
+            <p class="privacy-body">{t.form.privacy.body}</p>
           </div>
           <label class="agree-row">
             <input type="checkbox" id="agree" name="agree" required />
@@ -510,10 +509,6 @@ const heroAlt = '';
     white-space: pre-line;
   }
 
-  .privacy-body-sp {
-    display: none;
-  }
-
   .agree-row {
     display: flex;
     align-items: center;
@@ -638,14 +633,6 @@ const heroAlt = '';
       padding: 24px 0;
       gap: 16px;
       align-items: stretch;
-    }
-
-    .privacy-body-pc {
-      display: none;
-    }
-
-    .privacy-body-sp {
-      display: block;
     }
 
     .submit-row {
