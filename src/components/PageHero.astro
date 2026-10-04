@@ -12,17 +12,15 @@ const { title, eyebrow, image, imageAlt = '' } = Astro.props;
 ---
 <section class="page-hero">
   {image && (
-    <div class="page-hero-media">
-      <Image
-        src={image}
-        alt={imageAlt}
-        class="page-hero-bg"
-        widths={[780, 1440, 1920]}
-        sizes="100vw"
-        loading="eager"
-        fetchpriority="high"
-      />
-    </div>
+    <Image
+      src={image}
+      alt={imageAlt}
+      class="page-hero-bg"
+      widths={[390, 780, 1440, 1920]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
   )}
   {image && <div class="page-hero-overlay" aria-hidden="true"></div>}
   <div class="page-hero-inner">
@@ -46,18 +44,11 @@ const { title, eyebrow, image, imageAlt = '' } = Astro.props;
     box-sizing: border-box;
   }
 
-  .page-hero-media {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
-
   .page-hero-bg {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    max-width: none;
     object-fit: cover;
     object-position: center;
     display: block;
@@ -66,7 +57,6 @@ const { title, eyebrow, image, imageAlt = '' } = Astro.props;
   .page-hero-overlay {
     position: absolute;
     inset: 0;
-    z-index: 0;
     background: rgba(3, 22, 85, 0.22);
     pointer-events: none;
   }

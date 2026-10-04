@@ -1,12 +1,353 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import PageSubnav from '../components/PageSubnav.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import pageHeroImg from '../assets/images/company/page-hero.png';
+
+const entry = await getEntry('pages', 'company');
+if (!entry) throw new Error('src/content/pages/company.yml が見つかりません');
+const t = entry.data as unknown as {
+  meta: { title: string; description: string };
+  hero: { eyebrow: string; title: string };
+  subnav: { label: string; href: string }[];
+  philosophy: { eyebrow: string; title: string; headline: string; body: string };
+  message: { eyebrow: string; title: string; body: string; role: string; name: string };
+  profile: {
+    eyebrow: string;
+    title: string;
+    rows: { label: string; value: string; sp?: { value: string } }[];
+  };
+};
+if (!t.philosophy) throw new Error('company.yml の形が違います');
+
+// ページ見出しの背景で、内容を伝えない飾りの写真
+const heroAlt = '';
 ---
-<BaseLayout title="村田宝飾について" description="村田宝飾の会社概要です。">
-  <PageHero title="村田宝飾について" eyebrow="ABOUT" />
-  <section class="section">
-    <div class="container">
-      <p>【仮】Figma（93:139 / 150:128）のデザインを実装する。</p>
+<BaseLayout title={t.meta.title} description={t.meta.description}>
+  <PageHero
+    title={t.hero.title}
+    eyebrow={t.hero.eyebrow}
+    image={pageHeroImg}
+    imageAlt={heroAlt}
+  />
+  <PageSubnav items={t.subnav} currentPath={Astro.url.pathname} />
+
+  <!-- PHILOSOPHY -->
+  <section class="philosophy">
+    <div class="inner">
+      <div class="philosophy-grid">
+        <div class="philosophy-copy">
+          <SectionHeading eyebrow={t.philosophy.eyebrow} title={t.philosophy.title} />
+          <p class="philosophy-headline">{t.philosophy.headline}</p>
+          <p class="body philosophy-body">{t.philosophy.body}</p>
+        </div>
+        <div class="philosophy-visual" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MESSAGE -->
+  <section class="message">
+    <div class="inner">
+      <div class="message-wrap">
+        <SectionHeading eyebrow={t.message.eyebrow} title={t.message.title} />
+        <p class="body message-body">{t.message.body}</p>
+        <div class="sign-off">
+          <p class="sign-role">{t.message.role}</p>
+          <p class="sign-name">{t.message.name}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPANY PROFILE -->
+  <section class="profile">
+    <div class="inner">
+      <SectionHeading eyebrow={t.profile.eyebrow} title={t.profile.title} />
+      <div class="profile-table-wrap">
+        <table class="profile-table">
+          <tbody>
+            {t.profile.rows.map((row) => (
+              <tr>
+                <th scope="row">{row.label}</th>
+                <td>
+                  <span class="profile-value-pc">{row.value}</span>
+                  <span class="profile-value-sp">{row.sp?.value ?? row.value}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .inner {
+    width: min(100% - 48px, var(--content-width));
+    margin-inline: auto;
+  }
+
+  .body {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.73;
+    letter-spacing: 0.61px;
+    color: var(--color-ink);
+    white-space: pre-line;
+  }
+
+  /* ===== PHILOSOPHY ===== */
+  .philosophy {
+    background: var(--color-bg);
+    padding: 160px 0;
+  }
+
+  .philosophy-grid {
+    display: grid;
+    grid-template-columns: 470px 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .philosophy-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .philosophy-headline {
+    margin: 0;
+    padding: 20px 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.4;
+    letter-spacing: 2px;
+    color: var(--color-navy);
+    white-space: pre-line;
+  }
+
+  .philosophy-body {
+    font-size: 15px;
+    line-height: 1.8;
+    letter-spacing: 0.8px;
+  }
+
+  .philosophy-visual {
+    width: 100%;
+    max-width: 598px;
+    aspect-ratio: 598 / 352;
+    background: #ebe8e3;
+    margin-left: auto;
+  }
+
+  /* ===== MESSAGE ===== */
+  .message {
+    background: var(--color-bg-soft);
+    padding: 160px 0;
+  }
+
+  .message-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 40px;
+  }
+
+  .message-wrap :global(.section-heading) {
+    width: 100%;
+  }
+
+  .message-body {
+    width: 100%;
+  }
+
+  .sign-off {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .sign-role {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: 14px;
+    color: var(--color-gold);
+  }
+
+  .sign-name {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--color-navy);
+  }
+
+  /* ===== PROFILE ===== */
+  .profile {
+    background: var(--color-bg);
+    padding: 160px 0;
+  }
+
+  .profile :global(.section-heading) {
+    margin-bottom: 50px;
+  }
+
+  .profile-table-wrap {
+    width: min(100%, 880px);
+    margin-left: auto;
+  }
+
+  .profile-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .profile-table th,
+  .profile-table td {
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--color-navy-12);
+    vertical-align: middle;
+    text-align: left;
+  }
+
+  .profile-table tr:first-child th,
+  .profile-table tr:first-child td {
+    border-top: 1px solid var(--color-navy-12);
+  }
+
+  .profile-table th {
+    width: 280px;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 28px;
+    letter-spacing: 1px;
+    color: var(--color-navy);
+  }
+
+  .profile-table td {
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.73;
+    letter-spacing: 0.61px;
+    color: var(--color-ink);
+  }
+
+  .profile-value-pc,
+  .profile-value-sp {
+    white-space: pre-line;
+  }
+
+  .profile-value-sp {
+    display: none;
+  }
+
+  @media (max-width: 1099px) {
+    .inner {
+      width: min(100% - 48px, 342px);
+    }
+
+    .philosophy {
+      padding: 80px 0;
+    }
+
+    .philosophy-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .philosophy-copy {
+      gap: 16px;
+    }
+
+    .philosophy-headline {
+      padding: 0;
+      font-size: 20px;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .philosophy-body {
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .philosophy-visual {
+      max-width: none;
+      aspect-ratio: 342 / 201;
+      margin-left: 0;
+    }
+
+    .message {
+      padding: 80px 0;
+    }
+
+    .message-wrap {
+      align-items: stretch;
+      gap: 30px;
+    }
+
+    .sign-off {
+      align-self: flex-end;
+    }
+
+    .body {
+      font-size: 14px;
+      line-height: 1.8;
+      letter-spacing: 0;
+    }
+
+    .profile {
+      padding: 80px 0;
+    }
+
+    .profile :global(.section-heading) {
+      margin-bottom: 30px;
+    }
+
+    .profile-table-wrap {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .profile-table th,
+    .profile-table td {
+      display: table-cell;
+      padding: 20px 10px;
+      vertical-align: top;
+    }
+
+    .profile-table th {
+      width: 88px;
+      min-width: 72px;
+      padding-right: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+
+    .profile-table td {
+      font-size: 14px;
+      line-height: 1.7;
+      letter-spacing: 0;
+    }
+
+    .profile-value-pc {
+      display: none;
+    }
+
+    .profile-value-sp {
+      display: inline;
+    }
+  }
+</style>
