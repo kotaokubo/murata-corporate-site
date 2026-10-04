@@ -1,6 +1,5 @@
 ---
 import { Image } from 'astro:assets';
-import type { PartnersPageData } from '../content.config';
 import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
@@ -14,10 +13,9 @@ import reason02 from '../assets/images/partners/reason-02.jpg';
 import reason03 from '../assets/images/partners/reason-03.jpg';
 import reason04 from '../assets/images/partners/reason-04.jpg';
 
-const entry = await getEntry('pages', 'partners');
+const entry = await getEntry('partnersPage', 'partners');
 if (!entry) throw new Error('src/content/pages/partners.yml が見つかりません');
-const t = entry.data as unknown as PartnersPageData;
-if (!t.intro) throw new Error('partners.yml の形が想定と違います');
+const t = entry.data;
 
 const reasonImages = [
   { src: reason01, alt: 'ゴールドのリングやネックレスを並べた陳列台' },

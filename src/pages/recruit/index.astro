@@ -17,51 +17,9 @@ import statTenure from '../../assets/images/recruit/stat-tenure.png';
 import statAge from '../../assets/images/recruit/stat-age.png';
 import statVacation from '../../assets/images/recruit/stat-vacation.png';
 
-const entry = await getEntry('pages', 'recruit');
+const entry = await getEntry('recruitPage', 'recruit');
 if (!entry) throw new Error('src/content/pages/recruit.yml が見つかりません');
-const t = entry.data as unknown as {
-  meta: { title: string; description: string };
-  hero: { eyebrow: string; title: string };
-  message: {
-    eyebrow: string;
-    title: string;
-    headline: string;
-    body1: string;
-    body2: string;
-    ctaRequirements: string;
-    ctaEntry: string;
-    sp: { title: string; headline: string; body1: string; body2: string };
-  };
-  staffInterview: {
-    eyebrow: string;
-    title: string;
-    items: {
-      role: string;
-      name: string;
-      photo: 'omoto' | 'sakamoto' | 'mandal';
-      sections: string[];
-      message: string;
-      spBody: string;
-    }[];
-  };
-  midCta: { message: string; ctaLabel: string };
-  selectionFlow: {
-    eyebrow: string;
-    title: string;
-    steps: { en: string; ja: string }[];
-    sp: { steps: { en: string; ja: string }[] };
-  };
-  jobRequirements: {
-    eyebrow: string;
-    title: string;
-    jobs: { title: string; rows: { label: string; value: string }[] }[];
-    stats: { title: string; value: string; unit: string }[];
-    bottomCta: { message: string; ctaLabel: string };
-  };
-};
-if (!t.message || !t.staffInterview || !t.jobRequirements) {
-  throw new Error('recruit.yml の形が違います');
-}
+const t = entry.data;
 
 // ページ見出しの背景で、内容を伝えない飾りの写真
 const heroAlt = '';

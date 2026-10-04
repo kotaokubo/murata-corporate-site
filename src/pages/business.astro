@@ -23,67 +23,9 @@ import tokyoInterior from '../assets/images/business/tokyo-interior.png';
 import tokyoExterior from '../assets/images/business/tokyo-exterior.png';
 import onlineShopImg from '../assets/images/business/online-shop.jpg';
 
-const entry = await getEntry('pages', 'business');
+const entry = await getEntry('businessPage', 'business');
 if (!entry) throw new Error('src/content/pages/business.yml が見つかりません');
-// content.config の pages schema 型は home に寄せているため、事業内容の形へ絞り込む
-const t = entry.data as unknown as {
-  meta: { title: string; description: string };
-  hero: { eyebrow: string; title: string };
-  wholesale: {
-    eyebrow: string;
-    title: string;
-    intro: string;
-    body: string;
-    steps: { en: string; ja: string }[];
-    slides: { caption: string }[];
-    sp?: { steps: { en: string; ja: string }[]; body: string };
-  };
-  craft: {
-    eyebrow: string;
-    title: string;
-    steps: { num: string; label: string }[];
-  };
-  repair: {
-    eyebrow: string;
-    title: string;
-    body: string;
-    slides: { caption: string }[];
-    sp?: { lead: string; services: string; closing: string; slides?: { caption: string }[] };
-  };
-  endToEnd: {
-    title: string;
-    body: string;
-    sp?: { eyebrow: string; body: string };
-  };
-  strength: {
-    eyebrow: string;
-    title: string;
-    cards: { title: string; body: string }[];
-  };
-  tokyo: {
-    eyebrow: string;
-    title: string;
-    company: string;
-    branch: string;
-    postal: string;
-    address: string;
-    building: string;
-    telLabel: string;
-    telHref: string;
-    mapLabel: string;
-    mapHref: string;
-    galleryLabel: string;
-    features: { title: string; body: string }[];
-  };
-  onlineShop: {
-    eyebrow: string;
-    title: string;
-    overlay: string;
-    body: string;
-    ctaLabel: string;
-    note: string;
-  };
-};
+const t = entry.data;
 
 const shopUrl = nav.find((n) => n.label === 'オンラインショップ')?.href ?? '';
 
