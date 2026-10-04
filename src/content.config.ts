@@ -355,9 +355,9 @@ const pages = defineCollection({
         address: nonEmpty,
         building: nonEmpty,
         telLabel: nonEmpty,
-        telHref: nonEmpty,
+        telHref: z.string().trim().regex(/^tel:\+?[0-9-]+$/, 'tel: で始まる電話番号を書いてください'),
         mapLabel: nonEmpty,
-        mapHref: nonEmpty,
+        mapHref: z.string().trim().regex(/^https:\/\/[^\s]+$/, 'https:// で始まる地図の URL を書いてください'),
         galleryLabel: nonEmpty,
         features: z
           .array(
