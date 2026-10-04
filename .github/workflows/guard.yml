@@ -14,9 +14,12 @@ permissions:
   pull-requests: read
   issues: read
 
+# チェックの結果は「コミット × チェック名」で1つしか残らない。staging 向けと main 向けの PR が同じコミットを指すと、
+# あとから走った方の結果で上書きされる（staging 向けの skipped で、main 向けの staging-verified の失敗が消えていた）。
+# そこで staging 向けの PR では、名前の末尾に「 (staging)」を付けて、main の必須チェックと別のものとして記録する。
 jobs:
   scope:
-    name: scope
+    name: ${{ github.base_ref == 'main' && 'scope' || 'scope (staging)' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,18 +32,24 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
 
+  # staging 向けの PR では確かめることがないので、すぐ成功で終える。
+  # ジョブごと飛ばす（if）と skipped が記録され、GitHub は必須チェックの skipped を成功と扱うので、そうしない
   staging-verified:
-    name: staging-verified
-    if: github.base_ref == 'main'
+    name: ${{ github.base_ref == 'main' && 'staging-verified' || 'staging-verified (staging)' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - if: github.base_ref != 'main'
+        run: echo "staging 向けの PR なので確かめない"
+      - if: github.base_ref == 'main'
+        uses: actions/checkout@v4
         with: { fetch-depth: 0, ref: main, persist-credentials: false }
       - name: PR の変更と staging を取ってくる（実行はしない）
+        if: github.base_ref == 'main'
         run: |
           git fetch origin "pull/${{ github.event.pull_request.number }}/head"
           git fetch origin staging
-      - run: node scripts/check-staging-verified.mjs
+      - if: github.base_ref == 'main'
+        run: node scripts/check-staging-verified.mjs
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           HEAD_REF: ${{ github.head_ref }}
@@ -48,7 +57,7 @@ jobs:
 
   # Codex のレビューが最新のコミットに付いているか（付くまで最大25分待つ）
   codex-review:
-    name: codex-review
+    name: ${{ github.base_ref == 'main' && 'codex-review' || 'codex-review (staging)' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
