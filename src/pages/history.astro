@@ -357,8 +357,9 @@ const heroAlt = '';
     }
 
     .timeline-row {
-      grid-template-columns: 72px 1fr;
-      gap: 24px;
+      /* Figma の日付の枠（60px）だと「1997年10月」が折り返すので、1行に収まる幅にする */
+      grid-template-columns: 84px 1fr;
+      gap: 16px;
       align-items: flex-start;
       min-height: 0;
       padding: 20px 10px;
@@ -371,6 +372,7 @@ const heroAlt = '';
       letter-spacing: 0;
       color: var(--color-navy);
       text-align: center;
+      white-space: nowrap;
     }
 
     .timeline-text {
