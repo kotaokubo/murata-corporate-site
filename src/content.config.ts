@@ -61,6 +61,95 @@ const subnavSchema = z
   .min(1)
   .max(6);
 
+const partnersSchema = z.object({
+  meta: metaSchema,
+  pageHero: z.object({
+    eyebrow: nonEmpty,
+    title: nonEmpty,
+    sp: z.object({
+      title: nonEmpty,
+    }).optional(),
+  }),
+  intro: z.object({
+    title: nonEmpty,
+    body: nonEmpty,
+    ctaBusiness: nonEmpty,
+    ctaContact: nonEmpty,
+    sp: z.object({
+      title: nonEmpty,
+      body: nonEmpty,
+    }).optional(),
+  }),
+  reasons: z.object({
+    eyebrow: nonEmpty,
+    title: nonEmpty,
+    sp: z.object({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+    }).optional(),
+    items: z.array(z.object({
+      number: nonEmpty,
+      title: nonEmpty,
+      body: nonEmpty,
+      sp: z.object({
+        title: nonEmpty.optional(),
+        body: nonEmpty.optional(),
+      }).optional(),
+    })).length(4),
+  }),
+  consultations: z.object({
+    eyebrow: nonEmpty,
+    title: nonEmpty,
+    items: z.array(z.object({
+      en: nonEmpty,
+      title: nonEmpty,
+      bullets: z.array(nonEmpty).min(1).max(6),
+      sp: z.object({
+        en: nonEmpty,
+        title: nonEmpty,
+        bullets: z.array(nonEmpty).min(1).max(6),
+      }).optional(),
+    })).length(4),
+  }),
+  flow: z.object({
+    eyebrow: nonEmpty,
+    title: nonEmpty,
+    lead: nonEmpty,
+    steps: z.array(z.object({
+      number: nonEmpty,
+      title: nonEmpty,
+      body: nonEmpty,
+    })).length(4),
+  }),
+  faq: z.object({
+    eyebrow: nonEmpty,
+    title: nonEmpty,
+    items: z.array(z.object({
+      question: nonEmpty,
+      answer: z.string().trim(),
+    })).min(1).max(12),
+  }),
+});
+
+const newsPageSchema = z.object({
+  meta: metaSchema,
+  pageHero: z.object({
+    eyebrow: nonEmpty,
+    title: nonEmpty,
+    sp: z.object({
+      title: nonEmpty,
+    }).optional(),
+  }),
+  breadcrumb: z.object({
+    home: nonEmpty,
+    current: nonEmpty,
+  }),
+});
+
+// 下層ページの入口で、ページの形の型として使う
+export type PartnersPageData = z.infer<typeof partnersSchema>;
+export type NewsPageData = z.infer<typeof newsPageSchema>;
+
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.yml', base: './src/content/pages' }),
   schema: ({ image }) => {
@@ -544,6 +633,8 @@ const pages = defineCollection({
       businessPageSchema,
       recruitPageSchema,
       entryPageSchema,
+      partnersSchema,
+      newsPageSchema,
     ]) as unknown as typeof homePageSchema;
   },
 });

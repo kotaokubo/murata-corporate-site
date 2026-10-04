@@ -1,0 +1,375 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import type { NewsPageData } from '../../content.config';
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { isProduction } from '../../lib/site';
+import heroImg from '../../assets/images/partners/hero.png';
+import iconChevron from '../../assets/brand/icons/chevron-right.svg';
+
+// Figma PC の一覧は 4 行。ページ送りは Astro paginate（/news/・/news/2/）。
+// 詳細は [id].astro。記事 id が数字のみの場合は衝突しうる点に注意。
+export const getStaticPaths = (async ({ paginate }) => {
+  const pageSize = 4;
+  const news = (await getCollection('news', ({ data }) => (isProduction ? !data.draft : true)))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  return paginate(news, { pageSize });
+}) satisfies GetStaticPaths;
+
+type Props = { page: Page<CollectionEntry<'news'>> };
+const { page } = Astro.props as Props;
+
+const pageEntry = await getEntry('pages', 'news');
+if (!pageEntry) throw new Error('src/content/pages/news.yml が見つかりません');
+const t = pageEntry.data as unknown as NewsPageData;
+if (!t.breadcrumb) throw new Error('news.yml の形が想定と違います');
+
+const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
+const pageNumbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);
+// サイトの URL は末尾に / を付ける形にそろえる
+const withSlash = (url: string) => (url.endsWith('/') ? url : `${url}/`);
+---
+<BaseLayout title={t.meta.title} description={t.meta.description}>
+  <PageHero
+    title={t.pageHero.title}
+    titleSp={t.pageHero.sp?.title}
+    eyebrow={t.pageHero.eyebrow}
+    image={heroImg}
+    imageAlt=""
+  />
+
+  <nav class="breadcrumbs" aria-label="パンくずリスト">
+    <div class="inner breadcrumbs-inner">
+      <a href="/" class="crumb-home">{t.breadcrumb.home}</a>
+      <span class="crumb-sep" aria-hidden="true">/</span>
+      <span class="crumb-current">{t.breadcrumb.current}</span>
+    </div>
+  </nav>
+
+  <section class="news-section">
+    <div class="inner">
+      <ul class="news-list" data-testid="news-list">
+        {page.data.map((n) => (
+          <li class="news-item">
+            <a href={`/news/${n.id}/`} class="news-row">
+              <div class="news-meta">
+                <time class="news-date" datetime={n.data.date.toISOString()}>{fmt(n.data.date)}</time>
+                <span class:list={['news-tag', `is-${n.data.category.toLowerCase()}`]}>{n.data.category}</span>
+              </div>
+              <div class="news-content">
+                <span class="news-title-wrap">
+                  {n.data.draft && <span class="draft-badge">下書き</span>}
+                  <span class="news-title">{n.data.title}</span>
+                </span>
+                <p class="news-desc">{n.data.description}</p>
+              </div>
+              <span class="news-arrow" aria-hidden="true">
+                <img src={iconChevron.src} width="16" height="16" alt="" />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      {page.data.length === 0 && <p class="news-empty">お知らせはまだありません。</p>}
+
+      {page.lastPage > 1 && (
+        <nav class="pagination" aria-label="ページ送り">
+          {page.url.prev ? (
+            <a class="page-btn" href={withSlash(page.url.prev)} aria-label="前のページ">&lt;</a>
+          ) : (
+            <span class="page-btn is-disabled" aria-disabled="true">&lt;</span>
+          )}
+          {pageNumbers.map((num) => (
+            num === page.currentPage ? (
+              <span class="page-btn is-current" aria-current="page">{num}</span>
+            ) : (
+              <a class="page-btn" href={num === 1 ? '/news/' : `/news/${num}/`}>{num}</a>
+            )
+          ))}
+          {page.url.next ? (
+            <a class="page-btn" href={withSlash(page.url.next)} aria-label="次のページ">&gt;</a>
+          ) : (
+            <span class="page-btn is-disabled" aria-disabled="true">&gt;</span>
+          )}
+        </nav>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .news-empty {
+    margin: 40px 0 0;
+    text-align: center;
+    color: var(--color-ink);
+  }
+
+  .inner {
+    width: min(100% - 48px, var(--content-width));
+    margin-inline: auto;
+  }
+
+  .breadcrumbs {
+    background: var(--color-bg);
+  }
+
+  .breadcrumbs-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 24px 0;
+    font-family: var(--font-jp);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .crumb-home {
+    color: var(--color-muted-on-navy);
+    text-decoration: none;
+  }
+
+  .crumb-home:hover {
+    text-decoration: underline;
+  }
+
+  .crumb-sep {
+    font-family: var(--font-en-serif);
+    color: var(--color-muted-on-navy);
+  }
+
+  .crumb-current {
+    color: var(--color-navy);
+  }
+
+  .news-section {
+    background: var(--color-bg);
+    padding: 80px 0 160px;
+  }
+
+  .news-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-navy-12);
+  }
+
+  .news-item {
+    border-bottom: 1px solid var(--color-navy-12);
+  }
+
+  .news-row {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 16px;
+    gap: 32px;
+    align-items: start;
+    padding: 32px 16px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .news-meta {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    padding-top: 4px;
+  }
+
+  .news-date {
+    font-family: var(--font-en-serif);
+    font-size: 16px;
+    letter-spacing: 0.8px;
+    color: var(--color-navy);
+    white-space: nowrap;
+  }
+
+  .news-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 59px;
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-family: var(--font-en-serif);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 18px;
+    letter-spacing: 1.2px;
+    color: var(--color-white);
+    background: var(--color-navy);
+  }
+
+  .news-tag.is-event {
+    background: var(--color-gold);
+  }
+
+  .news-tag.is-media {
+    background: var(--color-muted-on-navy);
+  }
+
+  .news-tag.is-info {
+    background: var(--color-navy);
+  }
+
+  .news-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .news-title-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .news-title {
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+
+  .news-desc {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-muted-on-navy);
+    white-space: pre-line;
+  }
+
+  .news-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    width: 16px;
+    height: 16px;
+  }
+
+  .news-arrow img {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 0;
+    padding-top: 80px;
+  }
+
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 41px;
+    height: 41px;
+    padding: 12px 18px;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    font-family: var(--font-en-serif);
+    font-size: 14px;
+    line-height: 1;
+    color: var(--color-ink);
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .page-btn.is-current {
+    background: var(--color-navy);
+    border-color: var(--color-navy);
+    color: var(--color-white);
+  }
+
+  .page-btn.is-disabled {
+    color: var(--color-muted-on-navy);
+  }
+
+  .page-btn:not(.is-current):not(.is-disabled):hover {
+    border-color: var(--color-navy-12);
+  }
+
+  @media (max-width: 1099px) {
+    .inner {
+      width: min(100% - 48px, 342px);
+    }
+
+    .breadcrumbs {
+      background: var(--color-bg-soft);
+    }
+
+    .breadcrumbs-inner {
+      padding: 16px 0;
+      font-size: 11px;
+      letter-spacing: 0.6px;
+    }
+
+    .news-section {
+      padding: 40px 0 80px;
+    }
+
+    .news-row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 26px 0;
+      position: relative;
+    }
+
+    .news-meta {
+      gap: 12px;
+      padding-top: 0;
+    }
+
+    .news-date {
+      font-size: 14px;
+    }
+
+    .news-tag {
+      min-width: 52px;
+      padding: 4px 10px;
+      font-size: 12px;
+      line-height: 17px;
+      letter-spacing: 1.1px;
+    }
+
+    .news-title {
+      font-size: 16px;
+      line-height: 22px;
+      color: var(--color-navy-deep);
+      font-weight: 400;
+    }
+
+    .news-desc {
+      font-size: 12px;
+      line-height: 22px;
+      letter-spacing: 0.15px;
+    }
+
+    .news-arrow {
+      position: absolute;
+      right: 0;
+      top: 26px;
+    }
+
+    .pagination {
+      gap: 8px;
+      padding-top: 46px;
+    }
+
+    .page-btn {
+      min-width: 42px;
+      height: 42px;
+      padding: 0;
+    }
+  }
+</style>

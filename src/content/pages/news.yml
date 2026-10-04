@@ -1,0 +1,12 @@
+# お知らせ一覧（区分 A）
+meta:
+  title: お知らせ
+  description: 村田宝飾からのお知らせです。
+
+pageHero:
+  eyebrow: NEWS
+  title: お知らせ
+
+breadcrumb:
+  home: HOME
+  current: お知らせ一覧

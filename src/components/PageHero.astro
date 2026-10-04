@@ -4,11 +4,13 @@ import type { ImageMetadata } from 'astro';
 
 interface Props {
   title: string;
+  // SP だけ見出しの文言が違うとき
+  titleSp?: string;
   eyebrow: string;
   image?: ImageMetadata;
   imageAlt?: string;
 }
-const { title, eyebrow, image, imageAlt = '' } = Astro.props;
+const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
 ---
 <section class="page-hero">
   {image && (
@@ -26,7 +28,14 @@ const { title, eyebrow, image, imageAlt = '' } = Astro.props;
   <div class="page-hero-inner">
     <p class="page-hero-eyebrow">{eyebrow}</p>
     <span class="page-hero-line" aria-hidden="true"></span>
-    <h1 class="page-hero-title">{title}</h1>
+    <h1 class="page-hero-title">
+      {titleSp ? (
+        <>
+          <span class="page-hero-title-pc">{title}</span>
+          <span class="page-hero-title-sp">{titleSp}</span>
+        </>
+      ) : title}
+    </h1>
   </div>
 </section>
 
@@ -98,7 +107,19 @@ const { title, eyebrow, image, imageAlt = '' } = Astro.props;
     color: var(--color-white);
   }
 
+  .page-hero-title-sp {
+    display: none;
+  }
+
   @media (max-width: 1099px) {
+    .page-hero-title-pc {
+      display: none;
+    }
+
+    .page-hero-title-sp {
+      display: inline;
+    }
+
     .page-hero {
       height: 250px;
       padding: 0 24px 59px;
