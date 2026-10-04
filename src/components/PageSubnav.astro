@@ -1,0 +1,85 @@
+---
+interface Item {
+  label: string;
+  href: string;
+}
+interface Props {
+  items: Item[];
+  currentPath: string;
+}
+const { items, currentPath } = Astro.props;
+const normalize = (path: string) => (path.endsWith('/') ? path : `${path}/`);
+const current = normalize(currentPath);
+---
+<nav class="page-subnav" aria-label="関連ページ">
+  <ul class="page-subnav-list">
+    {items.map((item) => {
+      const active = normalize(item.href) === current;
+      return (
+        <li>
+          {active ? (
+            <span class="page-subnav-item is-current" aria-current="page">{item.label}</span>
+          ) : (
+            <a class="page-subnav-item" href={item.href}>{item.label}</a>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+
+<style>
+  .page-subnav {
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-navy-12);
+  }
+
+  .page-subnav-list {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    width: min(100% - 48px, var(--content-width));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .page-subnav-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 12px 28px;
+    font-family: var(--font-jp);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    color: var(--color-ink);
+    border-bottom: 2px solid transparent;
+    box-sizing: border-box;
+  }
+
+  .page-subnav-item.is-current {
+    color: var(--color-navy);
+    font-weight: 600;
+    border-bottom-color: var(--color-gold);
+  }
+
+  .page-subnav-item:not(.is-current):hover {
+    color: var(--color-navy);
+    border-bottom-color: var(--color-navy-12);
+  }
+
+  @media (max-width: 1099px) {
+    .page-subnav-list {
+      width: min(100% - 48px, 342px);
+    }
+
+    .page-subnav-item {
+      min-height: 48px;
+      padding: 10px 16px;
+      font-size: 13px;
+    }
+  }
+</style>

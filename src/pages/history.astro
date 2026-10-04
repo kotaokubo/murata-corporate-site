@@ -1,12 +1,449 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import PageSubnav from '../components/PageSubnav.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import pageHeroImg from '../assets/images/company/page-hero.png';
+
+const entry = await getEntry('pages', 'history');
+if (!entry) throw new Error('src/content/pages/history.yml が見つかりません');
+const t = entry.data as unknown as {
+  meta: { title: string; description: string };
+  hero: { eyebrow: string; title: string };
+  subnav: { label: string; href: string }[];
+  intro: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    sp?: { eyebrow: string; body: string };
+  };
+  timeline: { date: string; text: string; sp?: { text: string } }[];
+  houseBrands: {
+    eyebrow: string;
+    title: string;
+    items: { date: string; text: string; sp?: { text: string } }[];
+    noteBefore: string;
+    noteLinkLabel: string;
+    noteAfter: string;
+    noteHref: string;
+  };
+};
+if (!t.timeline) throw new Error('history.yml の形が違います');
+
+// ページ見出しの背景で、内容を伝えない飾りの写真
+const heroAlt = '';
 ---
-<BaseLayout title="会社の沿革" description="村田宝飾の沿革です。">
-  <PageHero title="会社の沿革" eyebrow="HISTORY" />
-  <section class="section">
-    <div class="container">
-      <p>【仮】Figma（715:293 / 720:319）のデザインを実装する。</p>
+<BaseLayout title={t.meta.title} description={t.meta.description}>
+  <PageHero
+    title={t.hero.title}
+    eyebrow={t.hero.eyebrow}
+    image={pageHeroImg}
+    imageAlt={heroAlt}
+  />
+  <PageSubnav items={t.subnav} currentPath={Astro.url.pathname} />
+
+  <!-- INTRO -->
+  <section class="intro">
+    <div class="inner">
+      <div class="intro-head">
+        <p class="intro-eyebrow intro-eyebrow-pc">{t.intro.eyebrow}</p>
+        <p class="intro-eyebrow intro-eyebrow-sp">{t.intro.sp?.eyebrow ?? t.intro.eyebrow}</p>
+        <span class="intro-line" aria-hidden="true"></span>
+        <h2 class="intro-title">{t.intro.title}</h2>
+      </div>
+      <p class="body intro-body-pc">{t.intro.body}</p>
+      <p class="body intro-body-sp">{t.intro.sp?.body ?? t.intro.body}</p>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="timeline" aria-label="沿革の年表">
+    <div class="inner">
+      <ol class="timeline-list">
+        {t.timeline.map((item) => (
+          <li class="timeline-row">
+            <span class="timeline-date">{item.date}</span>
+            <span class="timeline-text timeline-text-pc">{item.text}</span>
+            <span class="timeline-text timeline-text-sp">{item.sp?.text ?? item.text}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- HOUSE BRANDS -->
+  <section class="house-brands">
+    <div class="inner">
+      <SectionHeading
+        eyebrow={t.houseBrands.eyebrow}
+        title={t.houseBrands.title}
+        titleClass="hb-title"
+      />
+      <ol class="hb-list">
+        {t.houseBrands.items.map((item) => (
+          <li class="hb-row">
+            <span class="hb-date">{item.date}</span>
+            <span class="hb-text hb-text-pc">{item.text}</span>
+            <span class="hb-text hb-text-sp">{item.sp?.text ?? item.text}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="hb-note">
+        {t.houseBrands.noteBefore}<a href={t.houseBrands.noteHref}>{t.houseBrands.noteLinkLabel}</a>{t.houseBrands.noteAfter}
+      </p>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .inner {
+    width: min(100% - 48px, var(--content-width));
+    margin-inline: auto;
+  }
+
+  .body {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.73;
+    letter-spacing: 0.61px;
+    color: var(--color-ink);
+    white-space: pre-line;
+  }
+
+  /* ===== INTRO ===== */
+  .intro {
+    background: var(--color-bg);
+    padding: 160px 0 0;
+  }
+
+  .intro-head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  .intro-eyebrow {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 20px;
+    letter-spacing: 3.84px;
+    color: var(--color-gold);
+  }
+
+  .intro-eyebrow-sp {
+    display: none;
+  }
+
+  .intro-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--color-gold);
+  }
+
+  .intro-title {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 48px;
+    letter-spacing: 3px;
+    color: var(--color-navy);
+  }
+
+  .intro-body-sp {
+    display: none;
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline {
+    background: var(--color-bg);
+    padding: 120px 0;
+  }
+
+  .timeline-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-navy-12);
+  }
+
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    align-items: center;
+    gap: 0;
+    min-height: 77px;
+    padding: 24px 0;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--color-navy-12);
+  }
+
+  .timeline-row:nth-child(even) {
+    background: #f7f4f0;
+  }
+
+  .timeline-date {
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--color-gold);
+    padding-left: 0;
+    text-align: center;
+  }
+
+  .timeline-text {
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 28px;
+    letter-spacing: 0.6px;
+    color: var(--color-ink);
+    white-space: pre-line;
+  }
+
+  .timeline-text-sp {
+    display: none;
+  }
+
+  /* ===== HOUSE BRANDS ===== */
+  .house-brands {
+    background: var(--color-bg-soft);
+    padding: 120px 0;
+  }
+
+  .house-brands :global(.section-heading) {
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-gold);
+  }
+
+  .house-brands :global(.eyebrow-line) {
+    display: none;
+  }
+
+  .house-brands :global(.eyebrow) {
+    font-family: var(--font-jp);
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  .house-brands :global(.hb-title) {
+    font-size: 22px;
+    line-height: 1.45;
+    letter-spacing: 2px;
+  }
+
+  .hb-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-navy-12);
+  }
+
+  .hb-row {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    align-items: center;
+    min-height: 77px;
+    padding: 24px 0;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--color-navy-12);
+  }
+
+  .hb-date {
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--color-gold);
+  }
+
+  .hb-text {
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 28px;
+    letter-spacing: 0.6px;
+    color: var(--color-ink);
+    white-space: pre-line;
+  }
+
+  .hb-text-sp {
+    display: none;
+  }
+
+  .hb-note {
+    margin: 32px 0 0;
+    font-family: var(--font-jp);
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(44, 44, 46, 0.6);
+  }
+
+  .hb-note a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .hb-note a:hover {
+    color: var(--color-navy);
+  }
+
+  @media (max-width: 1099px) {
+    .inner {
+      width: min(100% - 48px, 342px);
+    }
+
+    .intro {
+      padding: 80px 0 0;
+    }
+
+    .intro-head {
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .intro-eyebrow {
+      font-family: var(--font-en-serif);
+      font-size: 14px;
+      line-height: 23px;
+      letter-spacing: 2px;
+    }
+
+    .intro-eyebrow-pc {
+      display: none;
+    }
+
+    .intro-eyebrow-sp {
+      display: block;
+    }
+
+    .intro-line {
+      width: 24px;
+    }
+
+    .intro-title {
+      font-size: 20px;
+      line-height: 1.45;
+      letter-spacing: 2px;
+    }
+
+    .intro-body-pc {
+      display: none;
+    }
+
+    .intro-body-sp {
+      display: block;
+      font-size: 14px;
+      line-height: 1.8;
+      letter-spacing: 0;
+    }
+
+    .timeline {
+      padding: 40px 0 80px;
+    }
+
+    .timeline-list {
+      border-top-color: var(--color-line);
+    }
+
+    .timeline-row {
+      grid-template-columns: 72px 1fr;
+      gap: 24px;
+      align-items: flex-start;
+      min-height: 0;
+      padding: 20px 10px;
+      border-bottom-color: var(--color-line);
+    }
+
+    .timeline-date {
+      font-size: 14px;
+      line-height: 23px;
+      letter-spacing: 0;
+      color: var(--color-navy);
+      text-align: center;
+    }
+
+    .timeline-text {
+      font-size: 14px;
+      line-height: 1.7;
+      letter-spacing: 0;
+    }
+
+    .timeline-text-pc {
+      display: none;
+    }
+
+    .timeline-text-sp {
+      display: block;
+    }
+
+    .house-brands {
+      background: #fdf9f0;
+      padding: 80px 0;
+    }
+
+    .house-brands :global(.section-heading) {
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+    }
+
+    .house-brands :global(.eyebrow) {
+      font-family: var(--font-en-serif);
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+
+    .house-brands :global(.hb-title) {
+      font-size: 20px;
+    }
+
+    .hb-list {
+      border-top-color: rgba(153, 143, 128, 0.3);
+    }
+
+    .hb-row {
+      grid-template-columns: 72px 1fr;
+      gap: 24px;
+      align-items: flex-start;
+      min-height: 0;
+      padding: 20px 10px;
+      border-bottom-color: rgba(153, 143, 128, 0.3);
+    }
+
+    .hb-date {
+      font-size: 14px;
+      line-height: 23px;
+      letter-spacing: 0;
+      color: var(--color-navy);
+      text-align: center;
+    }
+
+    .hb-text {
+      font-size: 14px;
+      line-height: 1.7;
+      letter-spacing: 0;
+    }
+
+    .hb-text-pc {
+      display: none;
+    }
+
+    .hb-text-sp {
+      display: block;
+    }
+
+    .hb-note {
+      display: none;
+    }
+  }
+</style>
