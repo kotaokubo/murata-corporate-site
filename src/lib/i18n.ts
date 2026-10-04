@@ -5,7 +5,13 @@ export type Lang = 'ja' | 'en' | 'zh';
 export const langs: Lang[] = ['ja', 'en', 'zh'];
 
 /** 今回までに訳があるページ（パスは末尾 /。トップは /） */
-export const translatedPages: readonly string[] = ['/'];
+export const translatedPages: readonly string[] = [
+  '/',
+  '/company/',
+  '/history/',
+  '/business/',
+  '/partners/',
+];
 
 /** 将来訳す5ページ（ナビの言語切り替え・リンク方針の前提） */
 export const translatablePaths: readonly string[] = [
@@ -87,6 +93,34 @@ const dictionaries: Record<Lang, Dict> = {
     notFoundDescription: 'お探しのページは見つかりませんでした。',
     notFoundBody: 'お探しのページは移動または削除された可能性があります。',
     notFoundLink: 'トップページへ',
+    subnavAria: '関連ページ',
+    timelineAria: '沿革の年表',
+    businessFlowAria: 'ビジネスフロー',
+    wholesaleCarousel: '取扱商品',
+    repairCarousel: '修理・加工',
+    tokyoMapAria: '東京店舗の地図（新しいタブで開く）',
+    tokyoGalleryCarousel: '店舗ギャラリー',
+    altWholesale1: '台座に飾られたダイヤモンドのリング',
+    altWholesale2: '金の留め具が付いたパールのブレスレット',
+    altWholesale3: 'エメラルドとダイヤモンドを交互に並べたゴールドのリング',
+    altWholesale4: '白い布の上に並ぶサファイアやルビーなどのルース',
+    altRepair1: 'ロジウムメッキ加工の様子',
+    altRepair2: 'レーザー溶接でジュエリーを修理する様子',
+    altStrength1: '机に向かってジュエリーのデザイン画を描く女性',
+    altStrength2: '各地に印が立つ世界地図',
+    altStrength3: '工具でジュエリーを加工する職人の手元',
+    altStrength4: 'トレーに並ぶ色石とダイヤモンドの原石',
+    altTokyoInterior: '村田宝飾ビル内の商品棚と陳列ケース',
+    altTokyoExterior: '村田宝飾ビルの外観',
+    altReason1: 'ゴールドのリングやネックレスを並べた陳列台',
+    altReason2: 'ピンセットで色石を選り分ける女性',
+    altReason3: '工房の作業台で指輪を加工する職人の手元',
+    altReason4: '店舗のテーブルでジュエリーを見ながら話す2人',
+    carouselDefaultLabel: 'スライド',
+    carouselPrev: '{label}の前へ',
+    carouselNext: '{label}の次へ',
+    carouselDots: '{label}の表示する写真',
+    carouselSlide: '{n}枚目',
   },
   en: {
     siteName: 'Murata Jewelry',
@@ -138,6 +172,34 @@ const dictionaries: Record<Lang, Dict> = {
     notFoundDescription: 'The page you are looking for could not be found.',
     notFoundBody: 'The page you are looking for may have been moved or deleted.',
     notFoundLink: 'Back to top',
+    subnavAria: 'Related pages',
+    timelineAria: 'Company history timeline',
+    businessFlowAria: 'Business flow',
+    wholesaleCarousel: 'Products',
+    repairCarousel: 'Repair & processing',
+    tokyoMapAria: 'Map of Tokyo store (opens in a new tab)',
+    tokyoGalleryCarousel: 'Store gallery',
+    altWholesale1: 'Diamond ring displayed on a stand',
+    altWholesale2: 'Pearl bracelet with a gold clasp',
+    altWholesale3: 'Gold ring with emeralds and diamonds arranged alternately',
+    altWholesale4: 'Loose sapphires, rubies, and other stones arranged on white cloth',
+    altRepair1: 'Rhodium plating in progress',
+    altRepair2: 'Jewelry being repaired by laser welding',
+    altStrength1: 'A woman drawing a jewelry design at a desk',
+    altStrength2: 'A world map with markers in various places',
+    altStrength3: 'An artisan’s hands working jewelry with tools',
+    altStrength4: 'Colored stones and rough diamonds arranged on a tray',
+    altTokyoInterior: 'Product shelves and display cases inside the Murata Jewelry building',
+    altTokyoExterior: 'Exterior of the Murata Jewelry building',
+    altReason1: 'Display table with gold rings and necklaces',
+    altReason2: 'A woman sorting colored stones with tweezers',
+    altReason3: 'An artisan’s hands working a ring at a workshop bench',
+    altReason4: 'Two people talking while looking at jewelry at a store table',
+    carouselDefaultLabel: 'Slides',
+    carouselPrev: 'Previous {label}',
+    carouselNext: 'Next {label}',
+    carouselDots: 'Photos in {label}',
+    carouselSlide: 'Slide {n}',
   },
   zh: {
     siteName: '村田宝饰',
@@ -188,6 +250,34 @@ const dictionaries: Record<Lang, Dict> = {
     notFoundDescription: '找不到您要访问的页面。',
     notFoundBody: '您要访问的页面可能已移动或删除。',
     notFoundLink: '返回首页',
+    subnavAria: '相关页面',
+    timelineAria: '沿革年表',
+    businessFlowAria: '业务流程',
+    wholesaleCarousel: '经营商品',
+    repairCarousel: '修理与加工',
+    tokyoMapAria: '东京门店地图（在新标签页中打开）',
+    tokyoGalleryCarousel: '门店图库',
+    altWholesale1: '陈列在台座上的钻石戒指',
+    altWholesale2: '带金色搭扣的珍珠手链',
+    altWholesale3: '翡翠与钻石交替排列的黄金戒指',
+    altWholesale4: '白布上排列的蓝宝石、红宝石等裸石',
+    altRepair1: '镀铑加工的情景',
+    altRepair2: '用激光焊接修理珠宝的情景',
+    altStrength1: '坐在桌前绘制珠宝设计图的女性',
+    altStrength2: '各地标有记号的世界地图',
+    altStrength3: '工匠用工具加工珠宝的手部特写',
+    altStrength4: '托盘上排列的彩色宝石与钻石原石',
+    altTokyoInterior: '村田宝饰大楼内的商品架与陈列柜',
+    altTokyoExterior: '村田宝饰大楼外观',
+    altReason1: '摆放黄金戒指与项链的陈列台',
+    altReason2: '用镊子挑选彩色宝石的女性',
+    altReason3: '在工房作业台上加工戒指的工匠手部特写',
+    altReason4: '在店铺桌边边看珠宝边交谈的两人',
+    carouselDefaultLabel: '幻灯片',
+    carouselPrev: '{label}上一张',
+    carouselNext: '{label}下一张',
+    carouselDots: '{label}中显示的照片',
+    carouselSlide: '第{n}张',
   },
 };
 
@@ -266,8 +356,12 @@ export function languageSwitchHref(currentPathname: string, targetLang: Lang): s
   return localizedPath('/', targetLang);
 }
 
+export function pageEntryId(page: string, lang: Lang): string {
+  return lang === 'ja' ? page : `${lang}/${page}`;
+}
+
 export function homeEntryId(lang: Lang): string {
-  return lang === 'ja' ? 'home' : `${lang}/home`;
+  return pageEntryId('home', lang);
 }
 
 export function buildFullTitle(title: string, lang: Lang): string {
@@ -278,13 +372,13 @@ export function buildFullTitle(title: string, lang: Lang): string {
 
 export type Alternate = { lang: Lang; href: string };
 
-/** トップなど訳ありページの alternate 一覧（絶対 URL） */
-export function homeAlternates(site: URL | string): Alternate[] {
+/** 訳ありページの alternate 一覧（絶対 URL）。pageKey は末尾 /（トップは /） */
+export function alternatesFor(pageKey: string, site: URL | string): Alternate[] {
   const base = typeof site === 'string' ? site : site.href;
   const origin = base.replace(/\/$/, '');
-  return [
-    { lang: 'ja', href: `${origin}/` },
-    { lang: 'en', href: `${origin}/en/` },
-    { lang: 'zh', href: `${origin}/zh/` },
-  ];
+  const key = normalizePath(pageKey);
+  return langs.map((lang) => ({
+    lang,
+    href: `${origin}${localizedPath(key, lang)}`,
+  }));
 }

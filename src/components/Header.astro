@@ -708,6 +708,21 @@ const langItems = langs.map((code) => ({
     }
   }
 
+  /* 英語はナビの文言が長く、狭い PC の幅で収まらないので、その幅だけ詰める */
+  @media (min-width: 1100px) and (max-width: 1365px) {
+    :global(html[lang='en']) .pc-nav {
+      gap: 24px;
+    }
+
+    :global(html[lang='en']) .pc-nav-list {
+      gap: 14px;
+    }
+
+    :global(html[lang='en']) .pc-nav-list a {
+      font-size: 14px;
+    }
+  }
+
   @media (min-width: 1100px) {
     .menu-button,
     .mobile-menu {

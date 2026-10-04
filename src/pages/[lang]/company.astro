@@ -1,0 +1,14 @@
+---
+import CompanyPage from '../../components/pages/CompanyPage.astro';
+import type { Lang } from '../../lib/i18n';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'en' } },
+    { params: { lang: 'zh' } },
+  ];
+}
+
+const lang = Astro.params.lang as Lang;
+---
+<CompanyPage lang={lang} />

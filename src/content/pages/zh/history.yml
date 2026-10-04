@@ -1,0 +1,107 @@
+# AI による翻訳。日本語（../history.yml）を直したら、この訳も直す
+meta:
+  title: 沿革
+  description: 村田宝饰的沿革与自有品牌的历程。
+
+hero:
+  eyebrow: HISTORY
+  title: 沿革
+
+subnav:
+  - label: 关于村田宝饰
+    href: /company/
+  - label: 沿革
+    href: /history/
+
+intro:
+  eyebrow: OUR HISTORY
+  title: 沿革
+  body: |
+    自1979年创业以来，村田宝饰作为珠宝制造批发商，持续前行。
+    从爱媛县松山市这片富有自然与历史的土地，走向全国，走向世界——。
+    始于四国展会的生意，历经进驻东京御徒町、行业首获ISO9001认证、开设自社工房与网上商店等重要节点，直至今日。在此介绍我们与时代变迁同行的轨迹。
+  sp:
+    eyebrow: OUR HISTORY
+    body: |
+      自1979年创业以来，村田宝饰作为珠宝制造批发商，持续前行。
+      从爱媛县松山市这片富有自然与历史的土地，走向全国，走向世界——。
+      始于四国展会的生意，历经进驻东京御徒町、行业首获ISO9001认证、开设自社工房与网上商店等重要节点，直至今日。在此介绍村田宝饰与时代变迁同行的历史。
+
+timeline:
+  - date: 1979年
+    text: 于爱媛县松山市立花设立村田宝饰株式会社（资本金1,000万日元）
+  - date: 1983年4月
+    text: 举办综合展会「Sanaki Fair」
+  - date: 1995年3月
+    text: 由「Sanaki Fair」更名为「灿美展」，于四国主要城市9个会场举办
+    sp:
+      text: 由「Sanaki Fair」更名为「灿美展」，于四国主要城市9个会场举办
+  - date: 1995年4月
+    text: 总公司迁至松山市朝生田
+  - date: 1997年10月
+    text: 于曼谷设立当地法人「Santamates Gem」
+  - date: 1999年4月
+    text: 松山市中村新社屋落成
+  - date: 1999年12月
+    text: 举办创业20周年纪念派对
+  - date: 2001年4月
+    text: 于御徒町开设东京支店，加入珠宝城御徒町并参加JTO展出
+  - date: 2002年7月
+    text: 村田康一郎就任社长
+  - date: 2004年12月
+    text: 获得行业首个ISO9001认证。
+  - date: 2005年10月
+    text: 将东京支店重组为东京总公司
+  - date: 2006年4月
+    text: 开设甲府支店
+  - date: 2012年2月
+    text: 东京总公司扩建搬迁
+  - date: 2015年11月
+    text: 总公司加工部导入激光焊接机
+  - date: 2015年12月
+    text: 开始以活化珠宝市场为目的的「We Love Jewelry」启蒙活动
+  - date: 2016年3月
+    text: 资本金增资至3,000万日元
+  - date: 2016年5月
+    text: 总公司加工部导入3D CAD与3D打印机
+  - date: 2016年8月
+    text: 发行银行担保私募债（发行额1亿日元）
+  - date: 2016年9月
+    text: 伴随总公司制作部门扩大，新建／搬迁工房社屋
+  - date: 2018年3月
+    text: 东京总公司迁至御徒町新社屋
+  - date: 2018年11月
+    text: 设立村田寶飾香港有限公司
+  - date: 2020年3月
+    text: 关闭村田寶飾香港有限公司
+  - date: 2020年4月
+    text: 设立面向珠宝零售店的会员制网上商店「The Jewelry Concierge」
+    sp:
+      text: 设立面向珠宝零售店的网上商店「The Jewelry Concierge」
+  - date: 2023年1月
+    text: 以配合SDG's建设可持续公司为目标，在总公司建筑导入太阳能系统
+
+houseBrands:
+  eyebrow: HOUSE BRANDS
+  title: 自有品牌
+  items:
+    - date: 1996年
+      text: 推出「Earth Story」「心」「Afrodite」「Jupitar」「FAVORITE」
+    - date: 2006年
+      text: 推出「Victorians Gate」「Desire」
+    - date: 2009年
+      text: 推出「Cadriille」
+    - date: 2010年
+      text: 推出「Love and Peace」（社会贡献活动）
+      sp:
+        text: |
+          推出「Love and Peace」
+          （社会贡献活动）
+    - date: 2011年
+      text: 推出「Cadriille × Italy」
+    - date: 2014年
+      text: 推出「Minette」
+  noteBefore: ※ 各品牌详情请参阅「
+  noteLinkLabel: 业务内容
+  noteAfter: 」页面。
+  noteHref: /business/

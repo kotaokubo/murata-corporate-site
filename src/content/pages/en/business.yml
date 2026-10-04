@@ -1,0 +1,152 @@
+# AI による翻訳。日本語（../business.yml）を直したら、この訳も直す
+meta:
+  title: Our Business
+  description: The business of Murata Jewelry. We support you end to end—from jewelry import and wholesale to original jewelry production and repair and processing.
+
+hero:
+  eyebrow: OUR BUSINESS
+  title: Our Business
+
+wholesale:
+  eyebrow: BUSINESS FLOW
+  title: Jewelry Import & Wholesale
+  intro: |
+    Discerning quality, selecting, and creating.
+    Through integrated craftsmanship, we deliver jewelry passed down across generations.
+  body: |
+    We offer a wide range of fine jewelry—diamonds, colored stones, pearls, and more carefully selected from Japan and abroad—and deliver them to jewelry retailers nationwide.
+    Drawing on a sourcing network built over many years and a discerning eye, we select products with a focus on quality and propose pieces of real value.
+    The appeal held in each piece of jewelry, on to the customers beyond.
+    We value delivering jewelry that is loved for years and passed down across generations.
+  steps:
+    - en: 01 SOURCING
+      ja: Sourcing
+    - en: 02 QUALITY CHECK
+      ja: Quality check
+    - en: 03 CRAFTING
+      ja: Crafting
+    - en: 04 WHOLESALE
+      ja: Wholesale
+    - en: 05 PROCESSING
+      ja: Processing
+    - en: 06 DELIVERY
+      ja: Delivery
+  slides:
+    - caption: Diamond ring — using carefully selected diamonds of the highest quality
+    - caption: Pearl necklace — selecting fine pearls one by one with care
+    - caption: Colored-stone bracelet — rare stones gathered from around the world
+    - caption: Loose stone collection — a wide range of stone sizes available
+  sp:
+    steps:
+      - en: "01  SOURCING"
+        ja: Sourcing
+      - en: "02  QUALITY CHECK"
+        ja: Quality check
+      - en: "03  CRAFTING"
+        ja: Crafting
+      - en: "04  WHOLESALE"
+        ja: Wholesale
+      - en: "05  PROCESSING"
+        ja: Processing
+      - en: "06  DELIVERY"
+        ja: Delivery
+    body: |
+      We offer a wide range of fine jewelry—diamonds, colored stones, pearls, and more carefully selected from Japan and abroad—and deliver them to jewelry retailers nationwide.
+      Drawing on a sourcing network built over many years and a discerning eye, we select products with a focus on quality and propose pieces of real value.
+
+craft:
+  eyebrow: CRAFT
+  title: Original Jewelry Production
+  steps:
+    - num: "01"
+      label: Design (3D CAD)
+    - num: "02"
+      label: Resin prototype output (3D printer)
+    - num: "03"
+      label: Casting based on the resin prototype
+    - num: "04"
+      label: Creating a silver prototype
+    - num: "05"
+      label: Rubber mold creation & mass production
+    - num: "06"
+      label: Finishing after casting
+    - num: "07"
+      label: Stone setting
+    - num: "08"
+      label: Polishing & completion
+
+repair:
+  eyebrow: REPAIR
+  title: Repair & Processing
+  body: |
+    Skilled artisans carefully repair and process each of your treasured pieces of jewelry one by one.
+    “The shop where I bought it has closed.” “Another store turned me down.”
+    Please feel free to consult us about such concerns as well.
+
+    Sizing / like-new finishing / stone setting / broken chains & bracelet repair / restringing / engraving & removing engraving / earring conversion / correcting ring deformation & distortion / remakes, and more
+
+    Passing jewelry filled with memories on to the next generation.
+    From intake to delivery, we take responsibility for every step.
+  slides:
+    - caption: Rhodium plating
+    - caption: Laser welding
+  sp:
+    lead: Skilled artisans carefully repair and process each of your treasured pieces of jewelry one by one. “The shop where I bought it has closed.” “Another store turned me down.” Please feel free to consult us about such concerns as well.
+    services: Sizing / like-new finishing / stone setting / broken chains & bracelet repair / restringing / engraving & removing engraving / earring conversion / remodeling
+    closing: |
+      Passing jewelry filled with memories on to the next generation.
+      From intake to delivery, we take responsibility for every step.
+    slides:
+      - caption: Rhodium plating
+      - caption: Precision laser welding
+
+endToEnd:
+  title: From purchase to aftercare, leave it all to us.
+  body: |
+    Centered on wholesale jewelry, Murata Jewelry supports you end to end—from original jewelry production to repair and remodeling.
+    Please feel free to consult us about anything related to treasured jewelry.
+  sp:
+    eyebrow: VALUE PROPOSITION
+    body: Centered on wholesale jewelry, Murata Jewelry supports you end to end—from original jewelry production to repair and remodeling. Please feel free to consult us about anything related to treasured jewelry.
+
+strength:
+  eyebrow: STRENGTH
+  title: Strengths of Murata Jewelry
+  cards:
+    - title: Product development
+      body: We develop products that anticipate the times, aligned with today’s lifestyles.
+    - title: Sourcing network
+      body: We have built strong networks with major markets in Japan and abroad, and procure high-quality materials.
+    - title: In-house atelier
+      body: In our own atelier, skilled artisans create and process each piece with careful handwork.
+    - title: Product freshness
+      body: Always looking ahead to trends of the times, we pursue quality and value.
+
+tokyo:
+  eyebrow: RETAIL STORE
+  title: Tokyo Store
+  company: Murata Jewelry Co., Ltd.
+  branch: Tokyo Head Office
+  postal: 110-0005
+  address: 5-7-5 Ueno, Taito-ku, Tokyo
+  building: Murata Jewelry Building 1F
+  telLabel: "TEL: 03-5807-4345"
+  telHref: tel:0358074345
+  mapLabel: MAP
+  mapHref: https://maps.google.com/?q=%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8F%B0%E6%9D%B1%E5%8C%BA%E4%B8%8A%E9%87%8E5-7-5+%E6%9D%91%E7%94%B0%E5%AE%9D%E9%A3%BE
+  galleryLabel: GALLERY
+  features:
+    - title: Shopping in Chinese or English is available
+      body: Staff who speak Chinese and English are always on hand. Customers who are not confident in Japanese can negotiate with peace of mind.
+    - title: Live-selling space is also available
+      body: A live-selling space with free Wi-Fi is available on the 4th and 5th floors of Tokyo Head Office. Live selling and photo shoots can be done casually. Use is by reservation.
+
+onlineShop:
+  eyebrow: ONLINE SHOP
+  title: Online Shop
+  overlay: The Jewelry Concierge
+  body: |
+    “The Jewelry Concierge” is an online shop exclusively for jewelry retailers.
+    Please note that general customers cannot make purchases.
+  ctaLabel: BtoB Online Shop >
+  note: '* Account registration is required to use the BtoB shop'

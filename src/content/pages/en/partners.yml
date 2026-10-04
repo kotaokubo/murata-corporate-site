@@ -1,0 +1,140 @@
+# AI による翻訳。日本語（../partners.yml）を直したら、この訳も直す
+meta:
+  title: New Business Inquiries
+  description: From sourcing to production, processing, delivery, and aftercare. Murata Jewelry is a Jewelry Concierge that stands beside your business.
+
+pageHero:
+  eyebrow: PARTNERSHIP
+  title: New Business Inquiries
+  sp:
+    title: About New Partnerships
+
+intro:
+  title: |
+    From sourcing to production, processing, delivery, and aftercare.
+    A “Jewelry Concierge” that stands beside your business.
+  body: Since our founding in 1979, Murata Jewelry has supported jewelry retailers, specialty stores, and corporate customers nationwide with a solid sourcing network and the craftsmanship of our own atelier. Beyond product sourcing, we respond one-stop to diverse jewelry needs—from design planning and OEM to advanced processing, repair, and remodeling.
+  ctaBusiness: View Our Business
+  ctaContact: Inquire about a new partnership
+  sp:
+    title: A Jewelry Concierge that stands with you end to end—from sourcing to aftercare
+    body: Since our founding in 1979, Murata Jewelry has continued to support retailers nationwide with our own sourcing network and the specialized craftsmanship of our in-house atelier. We provide consistent, high-level support for sourcing, original CAD design production, and aftercare. As a close “Jewelry Partner” for every retailer and corporate customer, we walk alongside you.
+
+reasons:
+  eyebrow: 4 REASONS
+  title: Four reasons Murata Jewelry is chosen
+  sp:
+    eyebrow: STRENGTHS
+    title: Four reasons we are chosen
+  items:
+    - number: "01"
+      title: A rich assortment with high freshness
+      body: From classic staple designs to the latest collections that reflect ever-changing contemporary trends, we offer a rich lineup. We can flexibly propose assortments matched to seasonal displays and your customer base.
+      sp:
+        body: We propose a wide range from classic staples to trend designs. Flexible lineups matched to the season are possible.
+    - number: "02"
+      title: Sourcing and development through our own network
+      body: We have built strong sourcing routes in Japan and abroad, and GIA (Gemological Institute of America) qualified staff carefully select high-quality stones with a discerning eye. On the foundation of strong material sourcing power, we continually develop new products that lead the times.
+      sp:
+        title: An integrated system from material sourcing to product development
+        body: Reliable quality carefully selected and sourced by GIA-qualified staff. Active original development that makes full use of our network.
+    - number: "03"
+      title: Integrated processing and repair in our own atelier
+      body: Beyond sourcing and production, having our own atelier is our greatest strength. From demanding sizing, like-new finishing, and remodeling to complex stone-setting repairs, in-house craftspeople respond accurately and promptly.
+      sp:
+        title: Fast repair and processing in our own atelier
+        body: From sizing, like-new finishing, and remodeling to complex processing, dedicated in-house artisans provide consistent support.
+    - number: "04"
+      title: Optimal proposals tailored to stores and customers
+      body: We do not offer one-size-fits-all products. We customize optimal purchase volumes, price ranges, and event co-sponsorship proposals through consultation, matched to each retailer’s customer base, store position, and trade area.
+      sp:
+        title: Proposals optimized for your store
+        body: We can consult individually on purchase mix and event collaboration that fit the customer base and average spend your store serves best.
+
+consultations:
+  eyebrow: CONSULTATIONS
+  title: Consultations we can handle
+  items:
+    - en: SUPPLY & SELECTION
+      title: Sourcing staple and trend products
+      bullets:
+        - Staple jewelry in diamonds, pearls, and various colored stones
+        - From trendy casual jewelry to formal pieces of distinction
+        - Consultation on restocking and rebuilding lineups when changing customer mix
+      sp:
+        en: SUPPLY
+        title: Staple & trend sourcing
+        bullets:
+          - Staples such as diamonds and pearls
+          - From casual to full luxury pieces
+          - Updating store lineups
+    - en: ORIGINAL & OEM
+      title: Original & OEM production
+      bullets:
+        - Jewelry design development for your own brand using 3D CAD
+        - Precise resin prototypes via 3D printer through sample confirmation
+        - Rubber mold production for mass runs; our atelier supports small to large lots end to end
+      sp:
+        en: OEM
+        title: Original & OEM
+        bullets:
+          - Original design using 3D CAD
+          - Creating and confirming precise resin samples
+          - Mass-production systems from small to large lots
+    - en: EXHIBITION & EVENTS
+      title: Products for events and exhibitions
+      bullets:
+        - Consignment and sourcing support for retailers’ special exhibitions and limited events
+        - Special selection of high-priced rare jewels and one-of-a-kind pieces that catch the eye
+        - Help with floor planning linked to event promotion tools and displays
+      sp:
+        en: EVENTS
+        title: Event & exhibition products
+        bullets:
+          - Consignment and sourcing for store-limited events
+          - Eye-catching high-priced rare jewels
+          - Planning support for floor presentation
+    - en: AFTERCARE & REPAIR
+      title: Repair, remodeling & aftercare
+      bullets:
+        - Sizing and distortion correction for treasured rings entrusted by customers
+        - Broken necklace chains, pearl restringing, and polish finishing to like-new condition
+        - Remake proposals from treasured keepsake jewelry into contemporary designs
+      sp:
+        en: REPAIR
+        title: Processing, repair & remodeling
+        bullets:
+          - Fast sizing and distortion correction
+          - Pearl necklace restringing & like-new finishing
+          - Remaking treasured pieces into new designs
+
+flow:
+  eyebrow: FLOW
+  title: Steps to starting a partnership
+  lead: Please feel free to contact us first. We will guide you step by step from hearing your needs through proposals and meetings.
+  steps:
+    - number: "01"
+      title: Inquiry
+      body: We hear about your store situation and needs by phone or email.
+    - number: "02"
+      title: Hearing
+      body: We organize the sales floor, customer profile, preferred conditions, and align on direction.
+    - number: "03"
+      title: Proposal / Meeting
+      body: We propose products, pricing, and introduction methods, and proceed with discussions on terms and content.
+    - number: "04"
+      title: Partnership begins
+      body: After the partnership begins, we support business growth with ongoing proposals and service.
+
+faq:
+  eyebrow: FAQ
+  title: Frequently Asked Questions
+  items:
+    - question: We are considering a new partnership. How should we consult first?
+      answer: Please feel free to contact us first by phone or via the inquiry form. After hearing about wholesale account registration steps, product mix, terms, and more, a dedicated concierge will guide you to the best plan.
+    - question: Before purchasing, is it possible to see and confirm products in person?
+      answer: ''
+    - question: What are the lot sizes and pricing for original jewelry production (OEM)?
+      answer: ''
+    - question: Can you also handle aftercare and repair for items purchased at other stores?
+      answer: ''
