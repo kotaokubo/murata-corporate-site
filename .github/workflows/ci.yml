@@ -1,0 +1,77 @@
+# 必須チェック。名前（name）は GitHub の ruleset で「必須」に指定するので変えないこと
+name: checks
+
+on:
+  pull_request:
+    branches: [main, staging]
+  push:
+    branches: [main, staging]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run build
+
+  e2e:
+    name: playwright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: 撮影した画像を保存する（PR の Checks 画面からダウンロードできる）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: test-results/**/screenshots/
+          retention-days: 14
+
+  scope:
+    name: scope
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: node scripts/check-scope.mjs
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+
+  staging-verified:
+    name: staging-verified
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: git fetch origin staging
+      - run: node scripts/check-staging-verified.mjs
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.head_ref }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+
+  secrets:
+    name: secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

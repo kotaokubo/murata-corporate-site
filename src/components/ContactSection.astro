@@ -1,0 +1,35 @@
+---
+// ページ下部のお問い合わせ欄。ヘッダーの「お問い合わせ」はここへ移る（id="contact"）
+import { company } from '../lib/site';
+const telHref = (tel: string) => `tel:${tel.replace(/-/g, '')}`;
+---
+<section id="contact" class="contact" data-testid="contact-section">
+  <div class="container contact-inner">
+    <div>
+      <p class="eyebrow">CONTACT</p>
+      <h2>お問い合わせ</h2>
+      <p>ご質問・ご相談はお電話またはメールにてお問い合わせください。</p>
+    </div>
+    <dl>
+      {company.contacts.map((c) => (
+        <>
+          <dt>{c.label}</dt>
+          <dd><a href={telHref(c.tel)} data-testid="contact-tel">{c.tel}</a></dd>
+        </>
+      ))}
+      <dt>メール</dt>
+      <dd><a href={`mailto:${company.email}`} data-testid="contact-mail">{company.email}</a></dd>
+    </dl>
+  </div>
+</section>
+
+<style>
+  .contact { background: #2b2b2b; color: var(--color-white); padding-block: var(--space-6); scroll-margin-top: 64px; }
+  .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); align-items: center; }
+  .eyebrow { color: var(--color-gold); letter-spacing: 0.3em; font-size: 0.75rem; margin: 0; }
+  h2 { font-weight: 500; margin: var(--space-2) 0; }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); margin: 0; }
+  dd { margin: 0; }
+  dd a { color: var(--color-gold); font-size: 1.25rem; text-decoration: none; }
+  @media (max-width: 768px) { .contact-inner { grid-template-columns: 1fr; } }
+</style>

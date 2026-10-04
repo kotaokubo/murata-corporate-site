@@ -1,0 +1,10 @@
+# 区分 C：大久保の承認がないと入らない（設計書 15章）。この行より下で持ち主を外したものが区分 A・B
+*                         @kotaokubo
+
+# 区分 A・B：持ち主なし（事務の方が staging へ入れられる）
+/src/
+
+# src の中でも区分 C のもの
+/src/lib/                 @kotaokubo
+/src/content.config.ts    @kotaokubo
+/src/content/legal/       @kotaokubo

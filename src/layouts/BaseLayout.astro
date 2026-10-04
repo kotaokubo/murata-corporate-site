@@ -1,0 +1,57 @@
+---
+// 全ページ共通の枠。区分 B（見た目）だが、head の中の公開設定は src/lib/site.ts（区分 C）が決める
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ContactSection from '../components/ContactSection.astro';
+import { isProduction, ga4Id } from '../lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+}
+const { title, description, ogImage } = Astro.props;
+const fullTitle = title === '村田宝飾' ? title : `${title}｜村田宝飾`;
+// canonical は常に本番の URL を指す（pages.dev と重複扱いされないように）
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {!isProduction && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="村田宝飾" />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {isProduction && ga4Id && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>
+        <script is:inline define:vars={{ ga4Id }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+          gtag('config', ga4Id);
+        </script>
+      </>
+    )}
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <ContactSection />
+    <Footer />
+  </body>
+</html>

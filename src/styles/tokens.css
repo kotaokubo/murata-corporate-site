@@ -1,0 +1,27 @@
+/*
+ * 色・文字・余白の変数。
+ * 【仮】Figma の変数を取り込む前の値。Figma から取り込んだら置き換える（区分 B）
+ */
+:root {
+  --color-navy: #0b1a4d;
+  --color-navy-deep: #08112f;
+  --color-gold: #b08d57;
+  --color-ink: #222222;
+  --color-muted: #6b6b6b;
+  --color-bg: #fbfaf6;
+  --color-bg-soft: #f4f1ea;
+  --color-line: #e3ded3;
+  --color-white: #ffffff;
+
+  --font-serif: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+  --space-7: 96px;
+
+  --content-width: 1080px;
+}

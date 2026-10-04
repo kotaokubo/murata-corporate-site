@@ -1,0 +1,13 @@
+---
+interface Props { title: string; eyebrow: string }
+const { title, eyebrow } = Astro.props;
+---
+<section class="hero">
+  <p>{eyebrow}</p>
+  <h1>{title}</h1>
+</section>
+<style>
+  .hero { background: var(--color-navy); color: var(--color-white); text-align: center; padding-block: var(--space-6); }
+  p { color: var(--color-gold); letter-spacing: 0.3em; font-size: 0.75rem; margin: 0; }
+  h1 { font-weight: 500; font-size: 1.5rem; margin: var(--space-2) 0 0; }
+</style>

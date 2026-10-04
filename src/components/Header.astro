@@ -1,0 +1,56 @@
+---
+import { company, nav } from '../lib/site';
+---
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">{company.name}<span>{company.nameEn}</span></a>
+    <button class="menu-button" type="button" aria-controls="global-nav" aria-expanded="false" aria-label="メニューを開く">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="global-nav" class="nav" aria-label="グローバルナビゲーション">
+      <ul>
+        {nav.map((item) => (
+          <li>
+            <a href={item.href} {...(item.external ? { target: '_blank', rel: 'noopener' } : {})}>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+      <a href="#contact" class="contact-button" data-testid="header-contact">お問い合わせ</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.menu-button');
+  const navEl = document.getElementById('global-nav');
+  button?.addEventListener('click', () => {
+    const open = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', String(!open));
+    navEl?.classList.toggle('is-open', !open);
+  });
+  navEl?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      button?.setAttribute('aria-expanded', 'false');
+      navEl.classList.remove('is-open');
+    }),
+  );
+</script>
+
+<style>
+  .header { position: sticky; top: 0; z-index: 10; background: var(--color-navy); color: var(--color-white); }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; width: min(100% - 32px, 1440px); margin-inline: auto; }
+  .logo { text-decoration: none; font-size: 1.25rem; letter-spacing: 0.2em; display: flex; flex-direction: column; line-height: 1.1; }
+  .logo span { font-size: 0.55rem; letter-spacing: 0.15em; }
+  .nav ul { list-style: none; display: flex; gap: var(--space-4); margin: 0; padding: 0; }
+  .nav a { text-decoration: none; font-size: 0.85rem; }
+  .nav { display: flex; align-items: center; gap: var(--space-4); }
+  .contact-button { border: 1px solid currentColor; padding: var(--space-1) var(--space-3); }
+  .menu-button { display: none; background: none; border: 0; padding: var(--space-2); cursor: pointer; }
+  .menu-button span { display: block; width: 24px; height: 1px; background: var(--color-white); margin: 6px 0; }
+  @media (max-width: 960px) {
+    .menu-button { display: block; }
+    .nav { display: none; position: absolute; inset: 64px 0 auto 0; background: var(--color-navy); flex-direction: column; padding: var(--space-4); }
+    .nav.is-open { display: flex; }
+    .nav ul { flex-direction: column; align-items: center; }
+  }
+</style>

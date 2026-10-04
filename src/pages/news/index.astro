@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { getCollection } from 'astro:content';
+import { isProduction } from '../../lib/site';
+
+// 【仮】ページ送りは記事が増えてから付ける（Figma 841:423 にある）
+const news = (await getCollection('news', ({ data }) => isProduction ? !data.draft : true))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
+---
+<BaseLayout title="お知らせ" description="村田宝飾からのお知らせです。">
+  <PageHero title="お知らせ" eyebrow="NEWS" />
+  <section class="section">
+    <div class="container">
+      <ul class="news-list" data-testid="news-list">
+        {news.map((n) => (
+          <li>
+            <time datetime={n.data.date.toISOString()}>{fmt(n.data.date)}</time>
+            <span class="cat">{n.data.category}</span>
+            <div>
+              {n.data.draft && <span class="draft-badge">下書き</span>}
+              <a href={`/news/${n.id}/`}>{n.data.title}</a>
+              <p>{n.data.description}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .news-list { list-style: none; padding: 0; margin: 0; }
+  .news-list li { display: grid; grid-template-columns: 7em 6em 1fr; gap: var(--space-3); padding: var(--space-4) 0; border-bottom: 1px solid var(--color-line); }
+  .cat { color: var(--color-gold); font-size: 0.8rem; }
+  p { margin: var(--space-1) 0 0; color: var(--color-muted); font-size: 0.85rem; }
+  @media (max-width: 768px) { .news-list li { grid-template-columns: 1fr; gap: var(--space-1); } }
+</style>

@@ -1,0 +1,99 @@
+---
+// エントリーフォーム。項目は Figma（551:162 / 559:398）のとおり。
+// 送信先（Cloudflare の関数 → メール）は U5 で決めてから /functions に作る。それまでは送信ボタンを無効にしておく
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+const SUBMIT_ENABLED = false;
+// 【要確認】希望職種と希望勤務地の選択肢は Figma の画面から読み取った仮の値
+---
+<BaseLayout title="エントリーフォーム" description="村田宝飾の採用エントリーフォームです。">
+  <PageHero title="エントリーフォーム" eyebrow="ENTRY FORM" />
+  <section class="section">
+    <div class="container form-wrap">
+      <p class="lead">以下のフォームに必要事項をご記入の上、送信してください。<br />採用選考における個人情報の取り扱いについては、厳重に管理いたします。また、ご提供いただいた書類（履歴書等）は返却いたしかねますので、あらかじめご了承ください。</p>
+      <form id="entry-form" novalidate data-testid="entry-form">
+        <div class="field"><label for="name">お名前<span class="req">必須</span></label><input id="name" name="name" required autocomplete="name" placeholder="例：山田 太郎" /></div>
+        <div class="field"><label for="kana">フリガナ<span class="req">必須</span></label><input id="kana" name="kana" required placeholder="例：ヤマダ タロウ" pattern="[ァ-ヶー　 ]+" /></div>
+        <div class="field"><label for="email">メールアドレス<span class="req">必須</span></label><input id="email" name="email" type="email" required autocomplete="email" placeholder="例：info@example.com" /></div>
+        <div class="field"><label for="tel">電話番号<span class="req">必須</span></label><input id="tel" name="tel" type="tel" required autocomplete="tel" placeholder="例：089-941-4135" pattern="[0-9\-]{10,13}" /></div>
+        <div class="field"><label for="job">希望職種<span class="req">必須</span></label>
+          <select id="job" name="job" required>
+            <option value="">選択してください</option>
+            <option>セールススタッフ</option><option>ショップスタッフ</option><option>パートスタッフ</option>
+          </select></div>
+        <div class="field"><label for="place">希望勤務地<span class="req">必須</span></label>
+          <select id="place" name="place" required>
+            <option value="">選択してください</option>
+            <option>松山本社</option><option>東京本店</option>
+          </select></div>
+        <div class="field"><label for="pr">自己PR<span class="opt">任意</span></label><textarea id="pr" name="pr" rows="5"></textarea></div>
+        <div class="field"><label for="motive">志望動機<span class="req">必須</span></label><textarea id="motive" name="motive" rows="5" required></textarea></div>
+        <div class="field"><label for="resume">履歴書添付<span class="req">必須</span></label>
+          <input id="resume" name="resume" type="file" required accept=".pdf,.doc,.docx,.xls,.xlsx" />
+          <p class="hint">PDF、Word、Excel 形式（最大10MBまで）</p></div>
+        <div class="consent">
+          <p><strong>個人情報の取り扱いについて</strong><br />ご入力いただいた個人情報は、採用選考および採用選考に関するご連絡のみに使用いたします。詳しくは<a href="/privacy/">プライバシーポリシー</a>をご覧ください。</p>
+          <label><input type="checkbox" id="agree" name="agree" required /> 個人情報の取り扱いについて同意する</label>
+        </div>
+        <p class="errors" role="alert" aria-live="polite" data-testid="form-errors"></p>
+        <button type="submit" disabled={!SUBMIT_ENABLED} data-submit-enabled={String(SUBMIT_ENABLED)}>送信内容を確認する</button>
+        {!SUBMIT_ENABLED && <p class="hint">【準備中】送信の仕組みは準備中です。</p>}
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // 入力チェック（送信の前に、足りない項目と形式の誤りを知らせる）
+  const MAX_BYTES = 10 * 1024 * 1024;
+  const ALLOWED = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+  const form = document.getElementById('entry-form') as HTMLFormElement | null;
+
+  function validate(f: HTMLFormElement): string[] {
+    const errors: string[] = [];
+    f.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[required]').forEach((el) => {
+      const label = f.querySelector(`label[for="${el.id}"]`)?.firstChild?.textContent?.trim() ?? el.name;
+      if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+        if (!el.checked) errors.push('個人情報の取り扱いへの同意が必要です');
+      } else if (el instanceof HTMLInputElement && el.type === 'file') {
+        const file = el.files?.[0];
+        if (!file) errors.push(`${label}を選んでください`);
+        else {
+          const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+          if (!ALLOWED.includes(ext)) errors.push(`${label}は PDF、Word、Excel 形式にしてください`);
+          if (file.size > MAX_BYTES) errors.push(`${label}は10MB以下にしてください`);
+        }
+      } else if (!el.value.trim()) {
+        errors.push(`${label}を入力してください`);
+      } else if (!el.checkValidity()) {
+        errors.push(`${label}の形式が正しくありません`);
+      }
+    });
+    return errors;
+  }
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const errors = validate(form);
+    const box = form.querySelector('.errors');
+    if (box) box.textContent = errors.join('／');
+  });
+  // テストから入力チェックだけを呼べるようにする（送信はしない）
+  (window as unknown as { __validateEntry?: () => string[] }).__validateEntry = () => (form ? validate(form) : []);
+</script>
+
+<style>
+  .form-wrap { max-width: 800px; }
+  .lead { text-align: center; font-size: 0.9rem; }
+  form { background: var(--color-white); padding: var(--space-5); box-shadow: 0 2px 12px rgb(0 0 0 / 0.05); }
+  .field { display: grid; grid-template-columns: 12em 1fr; gap: var(--space-3); padding-block: var(--space-3); border-bottom: 1px solid var(--color-line); }
+  input:not([type='checkbox']), select, textarea { width: 100%; padding: var(--space-2); border: 1px solid var(--color-line); font: inherit; }
+  .req, .opt { font-size: 0.7rem; margin-left: var(--space-2); padding: 0 var(--space-1); color: #fff; background: var(--color-gold); }
+  .opt { background: var(--color-muted); }
+  .hint { font-size: 0.8rem; color: var(--color-muted); margin: var(--space-1) 0 0; }
+  .consent { background: var(--color-bg-soft); padding: var(--space-3); margin-block: var(--space-4); font-size: 0.85rem; }
+  .errors { color: #c0392b; font-size: 0.85rem; }
+  button { display: block; margin: var(--space-4) auto 0; background: var(--color-navy); color: #fff; border: 0; padding: var(--space-3) var(--space-6); font: inherit; cursor: pointer; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  @media (max-width: 768px) { .field { grid-template-columns: 1fr; gap: var(--space-1); } form { padding: var(--space-4) var(--space-3); } }
+</style>

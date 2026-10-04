@@ -1,0 +1,19 @@
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-serif);
+  color: var(--color-ink);
+  background: var(--color-bg);
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+}
+img { max-width: 100%; height: auto; }
+a { color: inherit; }
+.container { width: min(100% - 32px, var(--content-width)); margin-inline: auto; }
+.section { padding-block: var(--space-6); }
+.section-title { text-align: center; font-weight: 500; font-size: 1.5rem; margin: 0 0 var(--space-5); }
+.section-title small { display: block; color: var(--color-gold); font-size: 0.75rem; letter-spacing: 0.3em; }
+.draft-badge { display: inline-block; background: #c0392b; color: #fff; font-size: 0.75rem; padding: 0 var(--space-2); margin-right: var(--space-2); }

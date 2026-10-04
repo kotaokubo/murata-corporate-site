@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('legal', 'privacy');
+if (!entry) throw new Error('src/content/legal/privacy.md がありません');
+const { Content } = await render(entry);
+---
+<BaseLayout title={entry.data.title} description="村田宝飾株式会社の個人情報の取り扱いについて。">
+  <PageHero title={entry.data.title} eyebrow="PRIVACY POLICY" />
+  <section class="section">
+    <div class="container legal"><Content /></div>
+  </section>
+</BaseLayout>
+<style>
+  .legal { max-width: 800px; }
+  .legal :global(h2) { font-size: 1.15rem; font-weight: 500; margin-top: var(--space-5); border-left: 3px solid var(--color-gold); padding-left: var(--space-3); }
+  .legal :global(table) { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  .legal :global(th), .legal :global(td) { border: 1px solid var(--color-line); padding: var(--space-2); vertical-align: top; }
+</style>

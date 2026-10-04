@@ -1,0 +1,25 @@
+{
+  "name": "murata-corporate-site",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview --port 4321",
+    "test:e2e": "playwright test",
+    "check:scope": "node scripts/check-scope.mjs",
+    "check:staging": "node scripts/check-staging-verified.mjs"
+  },
+  "dependencies": {
+    "@astrojs/check": "0.9.10",
+    "@astrojs/sitemap": "3.7.4",
+    "astro": "7.3.5",
+    "typescript": "5.9.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}

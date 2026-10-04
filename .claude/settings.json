@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(/.github/**)",
+      "Edit(/.claude/**)",
+      "Edit(/AGENTS.md)",
+      "Edit(/CLAUDE.md)",
+      "Edit(/package.json)",
+      "Edit(/package-lock.json)",
+      "Edit(/astro.config.mjs)",
+      "Edit(/playwright.config.ts)",
+      "Edit(/tests/**)",
+      "Edit(/scripts/**)",
+      "Edit(/docs/**)",
+      "Edit(/src/lib/**)",
+      "Edit(/src/content.config.ts)",
+      "Edit(/src/content/legal/**)",
+      "Edit(/public/_redirects)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push origin main:*)",
+      "Bash(git push origin staging:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git rebase:*)",
+      "Bash(npm install:*)",
+      "Bash(npm i:*)",
+      "Bash(gh pr merge:*)"
+    ]
+  }
+}

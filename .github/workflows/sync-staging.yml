@@ -1,0 +1,28 @@
+# 毎朝、main を staging へ取り込む（設計書 7章）。競合したら失敗し、大久保にメールが届く
+name: sync-staging
+
+on:
+  schedule:
+    - cron: '43 20 * * *' # 毎日 05:43（日本時間）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, ref: staging }
+      - name: main を staging へマージする
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "staging は main を取り込み済みです"
+            exit 0
+          fi
+          git merge --no-ff origin/main -m "main を staging へ取り込む（定期）"
+          git push origin staging

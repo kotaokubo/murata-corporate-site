@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { isProduction } from '../lib/site';
+
+const news = (await getCollection('news', ({ data }) => isProduction ? !data.draft : true))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 4);
+const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
+---
+<BaseLayout title="村田宝飾" description="人が輝く 世界で輝く。村田宝飾株式会社のコーポレートサイトです。">
+  <section class="top-hero">
+    <p class="catch">人が輝く　世界で輝く</p>
+    <h1>MURATA JEWELRY</h1>
+  </section>
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title"><small>NEWS</small>お知らせ</h2>
+      <ul class="news-list">
+        {news.map((n) => (
+          <li>
+            <time datetime={n.data.date.toISOString()}>{fmt(n.data.date)}</time>
+            <span class="cat">{n.data.category}</span>
+            {n.data.draft && <span class="draft-badge">下書き</span>}
+            <a href={`/news/${n.id}/`}>{n.data.title}</a>
+          </li>
+        ))}
+      </ul>
+      <p><a href="/news/">一覧を見る</a></p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container"><p>【仮】トップの各セクションは Figma（1:524 / 28:77）のデザインを実装する。</p></div>
+  </section>
+</BaseLayout>
+<style>
+  .top-hero { background: var(--color-navy); color: var(--color-white); padding: var(--space-7) var(--space-3); }
+  .catch { margin: 0; }
+  h1 { font-weight: 400; font-size: clamp(2rem, 6vw, 3.5rem); letter-spacing: 0.15em; margin: 0; }
+  .news-list { list-style: none; padding: 0; margin: 0 0 var(--space-3); }
+  .news-list li { display: flex; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-line); }
+  .cat { color: var(--color-gold); font-size: 0.8rem; }
+</style>
