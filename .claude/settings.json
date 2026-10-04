@@ -24,6 +24,11 @@
       "Bash(git rebase:*)",
       "Bash(npm install:*)",
       "Bash(npm i:*)",
+      "Bash(gh pr merge --admin:*)",
+      "Bash(gh pr merge --squash:*)",
+      "Bash(gh pr merge --rebase:*)"
+    ],
+    "ask": [
       "Bash(gh pr merge:*)"
     ]
   }
