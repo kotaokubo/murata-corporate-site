@@ -42,7 +42,15 @@
   --space-7: 96px;
 
   --content-width: 1120px;
+  --sp-content-width: 342px;
   --header-width: 1200px;
   --header-height-pc: 100px;
   --header-height-sp: 66px;
+}
+
+/* タブレット（600〜1099px）では SP 本文の上限を広げる */
+@media (min-width: 600px) and (max-width: 1099px) {
+  :root {
+    --sp-content-width: 600px;
+  }
 }
