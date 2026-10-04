@@ -1,6 +1,7 @@
 ---
 import type { GetStaticPaths, Page } from 'astro';
 import type { CollectionEntry } from 'astro:content';
+import type { NewsPageData } from '../../content.config';
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
@@ -22,8 +23,8 @@ const { page } = Astro.props as Props;
 
 const pageEntry = await getEntry('pages', 'news');
 if (!pageEntry) throw new Error('src/content/pages/news.yml が見つかりません');
-const t = pageEntry.data;
-if (!('breadcrumb' in t)) throw new Error('news.yml の形が想定と違います');
+const t = pageEntry.data as unknown as NewsPageData;
+if (!t.breadcrumb) throw new Error('news.yml の形が想定と違います');
 
 const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
 const pageNumbers = Array.from({ length: page.lastPage }, (_, i) => i + 1);

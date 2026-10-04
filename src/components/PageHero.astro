@@ -4,6 +4,7 @@ import type { ImageMetadata } from 'astro';
 
 interface Props {
   title: string;
+  // SP だけ見出しの文言が違うとき
   titleSp?: string;
   eyebrow: string;
   image?: ImageMetadata;
@@ -11,24 +12,30 @@ interface Props {
 }
 const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
 ---
-<section class:list={['page-hero', image && 'has-image']}>
+<section class="page-hero">
   {image && (
     <Image
       src={image}
       alt={imageAlt}
-      class="page-hero-img"
-      widths={[780, 1440, 1920]}
+      class="page-hero-bg"
+      widths={[390, 780, 1440, 1920]}
       sizes="100vw"
       loading="eager"
       fetchpriority="high"
     />
   )}
   {image && <div class="page-hero-overlay" aria-hidden="true"></div>}
-  <div class="page-hero-copy">
+  <div class="page-hero-inner">
     <p class="page-hero-eyebrow">{eyebrow}</p>
     <span class="page-hero-line" aria-hidden="true"></span>
-    <h1 class="page-hero-title page-hero-title-pc">{title}</h1>
-    <h1 class="page-hero-title page-hero-title-sp">{titleSp ?? title}</h1>
+    <h1 class="page-hero-title">
+      {titleSp ? (
+        <>
+          <span class="page-hero-title-pc">{title}</span>
+          <span class="page-hero-title-sp">{titleSp}</span>
+        </>
+      ) : title}
+    </h1>
   </div>
 </section>
 
@@ -38,24 +45,15 @@ const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 180px;
-    overflow: hidden;
-    background: var(--color-navy);
-    color: var(--color-white);
-    text-align: center;
-    box-sizing: border-box;
-    padding: var(--space-6) 24px;
-  }
-
-  .page-hero.has-image {
     justify-content: flex-end;
     height: 300px;
-    min-height: 300px;
     padding: 0 24px 61px;
+    overflow: hidden;
+    background: var(--color-navy);
+    box-sizing: border-box;
   }
 
-  .page-hero-img {
+  .page-hero-bg {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -72,13 +70,14 @@ const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
     pointer-events: none;
   }
 
-  .page-hero-copy {
+  .page-hero-inner {
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
+    text-align: center;
   }
 
   .page-hero-eyebrow {
@@ -89,12 +88,6 @@ const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
     line-height: 1.08;
     letter-spacing: 3.84px;
     color: var(--color-gold);
-    text-transform: uppercase;
-  }
-
-  .page-hero:not(.has-image) .page-hero-eyebrow {
-    font-size: 0.75rem;
-    letter-spacing: 0.3em;
   }
 
   .page-hero-line {
@@ -102,10 +95,6 @@ const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
     width: 32px;
     height: 1px;
     background: var(--color-gold);
-  }
-
-  .page-hero:not(.has-image) .page-hero-line {
-    display: none;
   }
 
   .page-hero-title {
@@ -116,15 +105,6 @@ const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
     line-height: 42px;
     letter-spacing: 3px;
     color: var(--color-white);
-    white-space: pre-line;
-  }
-
-  .page-hero:not(.has-image) .page-hero-title {
-    font-weight: 500;
-    font-size: 1.5rem;
-    line-height: 1.4;
-    letter-spacing: 0.04em;
-    margin-top: var(--space-2);
   }
 
   .page-hero-title-sp {
@@ -132,30 +112,29 @@ const { title, titleSp, eyebrow, image, imageAlt = '' } = Astro.props;
   }
 
   @media (max-width: 1099px) {
-    .page-hero.has-image {
+    .page-hero-title-pc {
+      display: none;
+    }
+
+    .page-hero-title-sp {
+      display: inline;
+    }
+
+    .page-hero {
       height: 250px;
-      min-height: 250px;
       padding: 0 24px 59px;
     }
 
-    .page-hero.has-image .page-hero-eyebrow {
+    .page-hero-eyebrow {
       font-size: 14px;
       line-height: 23px;
       letter-spacing: 2px;
     }
 
-    .page-hero.has-image .page-hero-title {
+    .page-hero-title {
       font-size: 20px;
       line-height: 30px;
       letter-spacing: 3px;
-    }
-
-    .page-hero.has-image .page-hero-title-pc {
-      display: none;
-    }
-
-    .page-hero.has-image .page-hero-title-sp {
-      display: block;
     }
   }
 </style>
