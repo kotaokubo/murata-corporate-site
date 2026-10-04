@@ -1,5 +1,6 @@
 # 必須チェック（ビルド、Playwright、秘密情報）。名前（name）は ruleset で「必須」に指定するので変えないこと
 # 変更範囲と検証済みのチェックは guard.yml（PR 側から書き換えられない形で動かす）
+# 追加のチェック（必須にするかは大久保が決める）：images（画像の形式・大きさ）、links（サイト内リンク切れ）、pii（個人情報らしき文字列の警告）
 name: checks
 
 on:
@@ -49,3 +50,41 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  images:
+    name: ${{ (github.base_ref || github.ref_name) == 'main' && 'images' || 'images (staging)' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc }
+      - run: npm run test:scripts
+      - run: node scripts/check-images.mjs
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+  links:
+    name: ${{ (github.base_ref || github.ref_name) == 'main' && 'links' || 'links (staging)' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: SITE_ENV=production npm run build
+      - run: node scripts/check-links.mjs
+
+  pii:
+    name: ${{ (github.base_ref || github.ref_name) == 'main' && 'pii' || 'pii (staging)' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc }
+      - run: node scripts/check-pii.mjs
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
