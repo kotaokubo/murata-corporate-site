@@ -1,11 +1,10 @@
 ---
-// エントリーフォーム。見た目は Figma どおり。送信先は未実装のためボタンは無効
+// エントリーフォーム。入力チェック後、mailto: で応募者のメールソフトを開く
 import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import pageHeroImg from '../../assets/images/recruit/page-hero.png';
-
-const SUBMIT_ENABLED = false;
+import { recruitEmail } from '../../lib/site';
 
 const entry = await getEntry('entryPage', 'entry');
 if (!entry) throw new Error('src/content/pages/entry.yml が見つかりません');
@@ -41,7 +40,7 @@ const heroAlt = '';
             <span class="badge badge-req">{t.form.requiredLabel}</span>
           </div>
           <div class="field-input">
-            <input id="name" name="name" required autocomplete="name" placeholder={f.name.placeholder} />
+            <input id="name" name="name" required maxlength="40" autocomplete="name" placeholder={f.name.placeholder} />
           </div>
         </div>
 
@@ -51,7 +50,7 @@ const heroAlt = '';
             <span class="badge badge-req">{t.form.requiredLabel}</span>
           </div>
           <div class="field-input">
-            <input id="kana" name="kana" required placeholder={f.kana.placeholder} pattern="[ァ-ヶー　 ]+" />
+            <input id="kana" name="kana" required maxlength="40" placeholder={f.kana.placeholder} pattern="[ァ-ヶー　 ]+" />
           </div>
         </div>
 
@@ -145,17 +144,10 @@ const heroAlt = '';
 
         <div class="field field-file">
           <div class="field-label">
-            <label for="resume">{f.resume.label}</label>
-            <span class="badge badge-req">{t.form.requiredLabel}</span>
+            <span class="resume-heading">{f.resume.label}</span>
           </div>
           <div class="field-input">
-            <label class="file-drop" for="resume">
-              <span class="file-drop-label file-drop-pc">{f.resume.dropLabel}</span>
-              <span class="file-drop-label file-drop-sp">{f.resume.spDropLabel}</span>
-              <input id="resume" name="resume" type="file" required accept=".pdf,.doc,.docx,.xls,.xlsx" />
-            </label>
-            <p class="hint hint-pc">{f.resume.hint}</p>
-            <p class="hint hint-sp">{f.resume.spHint}</p>
+            <p class="resume-notice">{f.resume.notice}</p>
           </div>
         </div>
 
@@ -174,38 +166,34 @@ const heroAlt = '';
         <p class="errors" role="alert" data-testid="form-errors"></p>
 
         <div class="submit-row">
-          <button type="submit" disabled={!SUBMIT_ENABLED} data-submit-enabled={String(SUBMIT_ENABLED)}>
+          <button type="submit" data-testid="entry-submit">
             {/* テストがこの文言でボタンを探すので、YAML に出さずここに置く */}
-            送信内容を確認する
+            メールを作成する
           </button>
-          {!SUBMIT_ENABLED && <p class="hint preparing">{t.form.preparingNote}</p>}
         </div>
+
+        <p class="mailto-note" data-testid="mailto-note" role="status" hidden></p>
       </form>
     </div>
   </section>
 </BaseLayout>
 
-<script>
-  // 入力チェック（送信の前に、足りない項目と形式の誤りを知らせる）
-  const MAX_BYTES = 10 * 1024 * 1024;
-  const ALLOWED = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
-  const form = document.getElementById('entry-form') as HTMLFormElement | null;
+<script define:vars={{ recruitEmail }}>
+  // 入力チェックと mailto: 組み立て（サーバー送信はしない）
+  const form = document.getElementById('entry-form');
 
-  function validate(f: HTMLFormElement): string[] {
-    const errors: string[] = [];
-    f.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[required]').forEach((el) => {
+  function fieldValue(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function validate(f) {
+    const errors = [];
+    f.querySelectorAll('[required]').forEach((el) => {
       const label = f.querySelector(`label[for="${el.id}"]`)?.firstChild?.textContent?.trim()
         ?? (el.id === 'agree' ? '個人情報の取り扱いについて同意する' : el.name);
       if (el instanceof HTMLInputElement && el.type === 'checkbox') {
         if (!el.checked) errors.push('個人情報の取り扱いへの同意が必要です');
-      } else if (el instanceof HTMLInputElement && el.type === 'file') {
-        const file = el.files?.[0];
-        if (!file) errors.push(`${label}を選んでください`);
-        else {
-          const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
-          if (!ALLOWED.includes(ext)) errors.push(`${label}は PDF、Word、Excel 形式にしてください`);
-          if (file.size > MAX_BYTES) errors.push(`${label}は10MB以下にしてください`);
-        }
       } else if (!el.value.trim()) {
         errors.push(`${label}を入力してください`);
       } else if (!el.checkValidity()) {
@@ -215,41 +203,72 @@ const heroAlt = '';
     return errors;
   }
 
+  function buildBody(includeLongFields) {
+    const lines = [
+      `お名前：${fieldValue('name')}`,
+      `フリガナ：${fieldValue('kana')}`,
+      `メールアドレス：${fieldValue('email')}`,
+      `電話番号：${fieldValue('tel')}`,
+      `希望職種：${fieldValue('job')}`,
+      `希望勤務地：${fieldValue('place')}`,
+    ];
+    if (includeLongFields) {
+      lines.push(`自己PR：${fieldValue('pr')}`);
+      lines.push(`志望動機：${fieldValue('motive')}`);
+    } else {
+      lines.push('（自己PRと志望動機は、このメールに書き足してください）');
+    }
+    lines.push('※履歴書を添付してください。');
+    return lines.join('\r\n');
+  }
+
+  function buildMailto() {
+    const subject = `【エントリー】${fieldValue('name')}（${fieldValue('job')}）`;
+    let body = buildBody(true);
+    let url = `mailto:${recruitEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (url.length > 1800) {
+      body = buildBody(false);
+      url = `mailto:${recruitEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+    return url;
+  }
+
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const errors = validate(form);
     const box = form.querySelector('.errors');
     if (box) box.textContent = errors.join('／');
+    const note = form.querySelector('[data-testid="mailto-note"]');
+    if (errors.length) {
+      if (note) {
+        note.hidden = true;
+        note.textContent = '';
+      }
+      return;
+    }
+    if (note) {
+      note.hidden = false;
+      note.textContent = `メールソフトが開きます。開いたメールに履歴書を添付して、送信してください。メールソフトが開かない場合は、${recruitEmail} へ直接お送りください。`;
+    }
+    window.location.href = buildMailto();
   });
 
-  // テストから入力チェックだけを呼べるようにする（送信はしない）
-  (window as Window & { __validateEntry?: () => string[] }).__validateEntry = () =>
-    form ? validate(form) : [];
-
-  // ファイル名表示
-  const resume = document.getElementById('resume') as HTMLInputElement | null;
-  const dropPc = document.querySelector('.file-drop-pc');
-  const dropSp = document.querySelector('.file-drop-sp');
-  const defaultPc = dropPc?.textContent ?? '';
-  const defaultSp = dropSp?.textContent ?? '';
-  resume?.addEventListener('change', () => {
-    const name = resume.files?.[0]?.name;
-    if (dropPc) dropPc.textContent = name || defaultPc;
-    if (dropSp) dropSp.textContent = name || defaultSp;
-  });
+  // テストから入力チェックと mailto 組み立てを呼べるようにする
+  window.__validateEntry = () => (form ? validate(form) : []);
+  window.__buildEntryMailto = () => buildMailto();
 
   // PC / SP でプレースホルダー文言を切り替える（1100px）
   const mq = window.matchMedia('(max-width: 1099px)');
   function applyPlaceholders() {
     const sp = mq.matches;
-    const tel = document.getElementById('tel') as HTMLInputElement | null;
+    const tel = document.getElementById('tel');
     if (tel) {
       tel.placeholder = sp
         ? (tel.dataset.placeholderSp ?? tel.placeholder)
         : (tel.dataset.placeholderPc ?? tel.placeholder);
     }
     for (const id of ['job', 'place']) {
-      const sel = document.getElementById(id) as HTMLSelectElement | null;
+      const sel = document.getElementById(id);
       if (!sel || !sel.options.length) continue;
       const text = sp
         ? (sel.dataset.placeholderSp ?? sel.options[0].text)
@@ -333,7 +352,8 @@ const heroAlt = '';
     padding-top: 14px;
   }
 
-  .field-label label {
+  .field-label label,
+  .resume-heading {
     font-family: var(--font-jp);
     font-weight: 400;
     font-size: 16px;
@@ -357,7 +377,7 @@ const heroAlt = '';
     background: var(--color-muted);
   }
 
-  .field-input input:not([type='checkbox']):not([type='file']),
+  .field-input input:not([type='checkbox']),
   .field-input select,
   .field-input textarea {
     width: 100%;
@@ -386,51 +406,13 @@ const heroAlt = '';
     padding-right: 36px;
   }
 
-  .file-drop:focus-within {
-    outline: 2px solid var(--color-gold);
-    outline-offset: 2px;
-  }
-
-  .file-drop {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100px;
-    padding: 24px 16px;
-    border: 1px dashed var(--color-line);
-    background: var(--color-bg-soft);
-    cursor: pointer;
-    text-align: center;
-  }
-
-  .file-drop input[type='file'] {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    overflow: hidden;
-  }
-
-  .file-drop-label {
+  .resume-notice {
+    margin: 0;
+    padding: 14px 0;
     font-family: var(--font-jp);
     font-size: 14px;
-    color: var(--color-muted);
-  }
-
-  .file-drop-sp {
-    display: none;
-  }
-
-  .hint {
-    margin: 8px 0 0;
-    font-family: var(--font-jp);
-    font-size: 12px;
-    color: var(--color-muted);
-  }
-
-  .hint-sp {
-    display: none;
+    line-height: 1.7;
+    color: var(--color-ink);
   }
 
   .privacy {
@@ -506,12 +488,12 @@ const heroAlt = '';
     cursor: pointer;
   }
 
-  .submit-row button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .preparing {
+  .mailto-note {
+    margin: 16px 0 0;
+    font-family: var(--font-jp);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-ink);
     text-align: center;
   }
 
@@ -560,28 +542,9 @@ const heroAlt = '';
       padding-top: 0;
     }
 
-    .field-label label {
+    .field-label label,
+    .resume-heading {
       font-size: 14px;
-    }
-
-    .file-drop {
-      min-height: 80px;
-    }
-
-    .file-drop-pc {
-      display: none;
-    }
-
-    .file-drop-sp {
-      display: block;
-    }
-
-    .hint-pc {
-      display: none;
-    }
-
-    .hint-sp {
-      display: block;
     }
 
     .privacy {
@@ -596,6 +559,10 @@ const heroAlt = '';
 
     .submit-row button {
       width: 100%;
+    }
+
+    .mailto-note {
+      text-align: left;
     }
   }
 
