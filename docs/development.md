@@ -33,7 +33,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 1. `main` から `work/...` を切る
 2. 手元で `npm run build` と `npm run test:e2e` を通す
 3. `staging` へ PR → マージ → 検証用 URL で確認
-4. 同じ作業ブランチから `main` へ PR → 必須チェックが通り、区分 B を含むなら大久保が承認 → **事務の方（または大久保）がマージ** → 本番に出る
+4. 同じ作業ブランチから `main` へ PR → 必須チェックが通り、区分 B を含むなら事務の方が影響するページをすべて確かめる → **事務の方（または大久保）がマージ** → 本番に出る
 5. `main` へマージすると、作業ブランチは自動で消える（`.github/workflows/delete-merged-branch.yml`）。`staging` へのマージでは消えない
 6. `staging` は毎朝 `main` を自動で取り込む（`.github/workflows/sync-staging.yml`）
 
@@ -69,7 +69,8 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 - Rules → Rulesets は次の3つ
   - **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）、**Require conversation resolution before merging**（Codex の指摘をすべて解決しないとマージできない）
   - **main-review**（対象：`main`、bypass：Repository admin）：Require a pull request before merging（Require review from Code Owners、Dismiss stale pull request approvals、Require approval of the most recent reviewable push）
-    - CODEOWNERS で、区分 A（お知らせと画像）だけ持ち主を外している。区分 A だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 B を含む PR は大久保の承認が要る
+    - CODEOWNERS で、区分 A（お知らせと画像）と区分 B（`src/pages/`、`src/components/`、`src/layouts/`、`src/styles/`）の持ち主を外している。区分 A・B だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 C を含む PR は大久保の承認が要る
+    - 区分 B は承認の代わりに、事務の方が影響するページを検証用の URL で重めに確かめる（AGENTS.md「区分 B のとき」）。全体の動作は必須チェックの Playwright で担保する
     - bypass に大久保（Repository admin）を入れているのは、大久保が自分の PR を承認できないため。bypass は main-review にだけ効き、main-protect の必須チェックは大久保も飛ばせない
   - **staging-protect**（対象：`staging`、bypass：なし）：Restrict deletions、Block force pushes
     - `staging` は毎朝の自動取り込みが直接 push するので、PR 必須と必須チェックはかけていない。作業ブランチからは PR で入れる（AGENTS.md）
