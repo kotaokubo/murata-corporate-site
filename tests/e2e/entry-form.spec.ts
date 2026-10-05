@@ -61,7 +61,7 @@ test.describe('エントリーフォームの入力チェック', () => {
   });
 
   test('名前とメールアドレスを上限いっぱいに入れても、URL は 1800 文字に収まる', async ({ page }) => {
-    // maxlength を超える分は入力されない
+    // 名前とフリガナは40文字まで入る。それを超える分は入力されない
     await page.fill('#name', '山'.repeat(40));
     await page.fill('#kana', 'ヤ'.repeat(40));
     await page.fill('#email', `${'a'.repeat(120)}@example.co.jp`);
@@ -70,6 +70,8 @@ test.describe('エントリーフォームの入力チェック', () => {
     await page.fill('#motive', 'あ'.repeat(1000));
     const mailto: string = await page.evaluate(() => (window as any).__buildEntryMailto());
     expect(mailto.length).toBeLessThanOrEqual(1800);
+    // 名前は切り捨てずに本文に残る
+    expect(mailto).toContain(encodeURIComponent('山'.repeat(40)));
   });
 
   test('送信ボタン（メールを作成する）が押せる', async ({ page }) => {

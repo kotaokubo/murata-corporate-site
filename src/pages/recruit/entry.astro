@@ -40,7 +40,7 @@ const heroAlt = '';
             <span class="badge badge-req">{t.form.requiredLabel}</span>
           </div>
           <div class="field-input">
-            <input id="name" name="name" required maxlength="20" autocomplete="name" placeholder={f.name.placeholder} />
+            <input id="name" name="name" required maxlength="40" autocomplete="name" placeholder={f.name.placeholder} />
           </div>
         </div>
 
@@ -50,7 +50,7 @@ const heroAlt = '';
             <span class="badge badge-req">{t.form.requiredLabel}</span>
           </div>
           <div class="field-input">
-            <input id="kana" name="kana" required maxlength="20" placeholder={f.kana.placeholder} pattern="[ァ-ヶー　 ]+" />
+            <input id="kana" name="kana" required maxlength="40" placeholder={f.kana.placeholder} pattern="[ァ-ヶー　 ]+" />
           </div>
         </div>
 
@@ -203,10 +203,10 @@ const heroAlt = '';
     return errors;
   }
 
-  function buildBody(includeLongFields) {
+  function buildBody(includeLongFields, includeKana = true) {
     const lines = [
       `お名前：${fieldValue('name')}`,
-      `フリガナ：${fieldValue('kana')}`,
+      ...(includeKana ? [`フリガナ：${fieldValue('kana')}`] : []),
       `メールアドレス：${fieldValue('email')}`,
       `電話番号：${fieldValue('tel')}`,
       `希望職種：${fieldValue('job')}`,
@@ -229,6 +229,12 @@ const heroAlt = '';
     if (url.length > 1800) {
       body = buildBody(false);
       url = `mailto:${recruitEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+    if (url.length > 1800) {
+      // 名前がとても長いときは、件名から名前を、本文からフリガナを外す
+      const shortSubject = `【エントリー】（${fieldValue('job')}）`;
+      body = buildBody(false, false);
+      url = `mailto:${recruitEmail}?subject=${encodeURIComponent(shortSubject)}&body=${encodeURIComponent(body)}`;
     }
     return url;
   }
