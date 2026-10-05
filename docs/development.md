@@ -39,6 +39,8 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 
 急ぎの修正は大久保だけが `hotfix/...` で行う（`staging` を通さずに `main` へ入れられる）。
 
+本番を元の状態に戻す手順は [procedures/rollback.md](procedures/rollback.md)。Cloudflare で戻したあとは、`hotfix/...` で revert か直しを `main` に入れるまで、ほかの変更を `main` に merge しない。
+
 ## 必須チェック（`.github/workflows/ci.yml` と `guard.yml`）
 
 | 名前 | 内容 |
