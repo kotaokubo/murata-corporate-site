@@ -22,6 +22,9 @@ export const company = {
   email: 'info@murata-jewelry.co.jp',
 };
 
+// 【要確認】採用の届け先。村田宝飾に確かめる
+export const recruitEmail = company.email;
+
 export const nav = [
   { href: '/company/', label: '村田宝飾について', en: 'About Us' },
   { href: '/business/', label: '事業内容', en: 'Our Business' },
