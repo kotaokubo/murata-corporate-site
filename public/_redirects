@@ -36,8 +36,8 @@
 # お問い合わせ、サイトのご利用について
 /contacts/  /#contact  301
 /contacts  /#contact  301
-/operation-policy/  /  301
-/operation-policy  /  301
+/operation-policy/  /privacy/  301
+/operation-policy  /privacy/  301
 
 # イベント情報（お知らせへ）
 /events/  /news/  301
