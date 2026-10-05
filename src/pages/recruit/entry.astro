@@ -60,7 +60,7 @@ const heroAlt = '';
             <span class="badge badge-req">{t.form.requiredLabel}</span>
           </div>
           <div class="field-input">
-            <input id="email" maxlength="100" name="email" type="email" required autocomplete="email" placeholder={f.email.placeholder} />
+            <input id="email" maxlength="254" name="email" type="email" required autocomplete="email" placeholder={f.email.placeholder} />
           </div>
         </div>
 
@@ -215,8 +215,10 @@ const heroAlt = '';
     if (includeLongFields) {
       lines.push(`自己PR：${fieldValue('pr')}`);
       lines.push(`志望動機：${fieldValue('motive')}`);
-    } else {
+    } else if (includeKana) {
       lines.push('（自己PRと志望動機は、このメールに書き足してください）');
+    } else {
+      lines.push('（フリガナ、自己PR、志望動機は、このメールに書き足してください）');
     }
     lines.push('※履歴書を添付してください。');
     return lines.join('\r\n');

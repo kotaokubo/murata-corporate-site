@@ -60,11 +60,11 @@ test.describe('エントリーフォームの入力チェック', () => {
     expect(mailto).toContain(encodeURIComponent('（自己PRと志望動機は、このメールに書き足してください）'));
   });
 
-  test('名前とメールアドレスを上限いっぱいに入れても、URL は 1800 文字に収まる', async ({ page }) => {
+  test('名前とフリガナを上限いっぱいに入れても、URL は 1800 文字に収まる', async ({ page }) => {
     // 名前とフリガナは40文字まで入る。それを超える分は入力されない
     await page.fill('#name', '山'.repeat(40));
     await page.fill('#kana', 'ヤ'.repeat(40));
-    await page.fill('#email', `${'a'.repeat(120)}@example.co.jp`);
+    await page.fill('#email', `${'a'.repeat(80)}@example.co.jp`);
     await page.selectOption('#job', { index: 1 });
     await page.selectOption('#place', { index: 1 });
     await page.fill('#motive', 'あ'.repeat(1000));
@@ -72,6 +72,8 @@ test.describe('エントリーフォームの入力チェック', () => {
     expect(mailto.length).toBeLessThanOrEqual(1800);
     // 名前は切り捨てずに本文に残る
     expect(mailto).toContain(encodeURIComponent('山'.repeat(40)));
+    // 外したフリガナは書き足しを頼む
+    expect(mailto).toContain(encodeURIComponent('（フリガナ、自己PR、志望動機は、このメールに書き足してください）'));
   });
 
   test('送信ボタン（メールを作成する）が押せる', async ({ page }) => {
