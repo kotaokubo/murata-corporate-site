@@ -151,6 +151,43 @@ describe('check-links', () => {
     assert.ok(!errors.some((e) => e.includes('#faq')));
   });
 
+  it('同じホストの絶対 URL で存在しない先は失敗する', () => {
+    writeFileSync(
+      join(tmp, 'abs-missing.html'),
+      `<!doctype html><html><body>
+        <a href="${SITE}/missing-abs/">無い絶対 URL</a>
+      </body></html>`,
+    );
+    const { errors } = checkDist(tmp, { siteOrigin: SITE });
+    assert.ok(
+      errors.some(
+        (e) => e.includes('/abs-missing.html') && e.includes('/missing-abs/'),
+      ),
+      `expected missing same-host absolute URL error, got: ${errors.join(' | ')}`,
+    );
+    rmSync(join(tmp, 'abs-missing.html'), { force: true });
+  });
+
+  it('同じホストの絶対 URL で存在する先は成功する', () => {
+    writeFileSync(
+      join(tmp, 'abs-ok.html'),
+      `<!doctype html><html><body>
+        <a href="${SITE}/company/">ある絶対 URL</a>
+        <a href="https://example.com/other/">他ホスト</a>
+      </body></html>`,
+    );
+    const { errors } = checkDist(tmp, { siteOrigin: SITE });
+    assert.ok(
+      !errors.some((e) => e.includes('/abs-ok.html') && e.includes('/company/')),
+      `unexpected error for existing same-host absolute URL: ${errors.join(' | ')}`,
+    );
+    assert.ok(
+      !errors.some((e) => e.includes('example.com')),
+      `other hosts must stay unchecked: ${errors.join(' | ')}`,
+    );
+    rmSync(join(tmp, 'abs-ok.html'), { force: true });
+  });
+
   it('srcset の欠けた候補を失敗にする', () => {
     const { errors } = checkDist(tmp, { siteOrigin: SITE });
     assert.ok(errors.some((e) => e.includes('missing@2x.png')));

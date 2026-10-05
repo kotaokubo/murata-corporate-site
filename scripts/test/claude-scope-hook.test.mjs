@@ -102,6 +102,29 @@ test('リポジトリの外のパスは何も出さない', () => {
   assert.equal(stderr, '');
 });
 
+test('名前が .. で始まるリポジトリ内のファイル（..private/config）は区分 C として確認を求める', () => {
+  const root = withTempDir();
+  try {
+    gitInit(root);
+    const targetRel = path.join('..private', 'config');
+    const targetAbs = path.join(root, targetRel);
+    fs.mkdirSync(path.dirname(targetAbs), { recursive: true });
+    fs.writeFileSync(targetAbs, 'x\n');
+
+    const { status, stdout } = runHook({
+      tool_name: 'Edit',
+      tool_input: { file_path: targetAbs },
+      cwd: root,
+    });
+    assert.equal(status, 0);
+    const out = JSON.parse(stdout);
+    assert.equal(out.hookSpecificOutput.permissionDecision, 'ask');
+    assert.match(out.hookSpecificOutput.permissionDecisionReason, /区分 C/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('NotebookEdit の notebook_path を判定する', () => {
   const { status, stdout } = runHook({
     tool_name: 'NotebookEdit',

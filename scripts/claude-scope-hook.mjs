@@ -167,7 +167,14 @@ function toRepoRelative(absPath, repoRoot) {
   const relative = path.relative(repoRoot, absPath);
   const normalized = relative.split(path.sep).join('/');
   if (!normalized || normalized === '.') return null;
-  if (normalized.startsWith('..') || path.isAbsolute(normalized)) return null;
+  // `..` そのもの、または `../` / `..${path.sep}` でリポジトリの外へ出る場合だけ外とみなす。
+  // `..private/config` のように名前が `..` で始まる正当なパスは中として扱う。
+  const leavesRepo =
+    relative === '..' ||
+    relative.startsWith('..' + path.sep) ||
+    normalized === '..' ||
+    normalized.startsWith('../');
+  if (leavesRepo || path.isAbsolute(normalized)) return null;
   return normalized;
 }
 

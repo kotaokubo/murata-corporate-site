@@ -60,6 +60,7 @@ const businessLabel = labelWithUntranslatedSuffix(page.ourBusiness.ctaLabel, '/b
 const companyHref = hrefForLang('/company/', lang);
 const companyLabel = labelWithUntranslatedSuffix(page.about.ctaLabel, '/company/', lang);
 const recruitHref = '/recruit/';
+const recruitDetailHref = '/recruit/#job-requirements';
 const recruitLabel = labelWithUntranslatedSuffix(page.recruit.ctaLabel, '/recruit/', lang);
 const recruitSpLabel = labelWithUntranslatedSuffix(
   page.recruit.sp?.ctaLabel ?? page.recruit.ctaLabel,
@@ -254,7 +255,7 @@ const heroAlt = i18n(lang, 'heroAlt');
         <ul class="recruit-cards">
           {page.recruit.cards.map((card) => (
             <li>
-              <a href={recruitHref} class="recruit-card">
+              <a href={recruitDetailHref} class="recruit-card">
                 <span class="recruit-card-title">{card.title}</span>
                 <span class="recruit-card-link">{recruitCardLink(card.linkLabel)}</span>
               </a>
