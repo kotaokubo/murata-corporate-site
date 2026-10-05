@@ -17,4 +17,5 @@
 # 区分 B の場所にあっても、個人情報や公開設定に関わるものは区分 C（scripts/scope.mjs の SENSITIVE と揃える）
 /src/pages/privacy.astro          @kotaokubo
 /src/pages/recruit/entry.astro    @kotaokubo
+/src/content/pages/entry.yml      @kotaokubo
 /src/layouts/BaseLayout.astro     @kotaokubo
