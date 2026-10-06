@@ -456,7 +456,19 @@ export function checkDist(distDir, options = {}) {
     idCache.set(htmlFile, pageIds);
 
     for (const ref of collectRefs(html)) {
-      const { kind, url } = ref;
+      const { kind } = ref;
+      let url = ref.url;
+      // 自サイトの絶対 URL はパスに直してサイト内リンクとして調べる（他ホストは今どおり調べない）
+      const trimmed = url == null ? '' : String(url).trim();
+      if (/^https?:\/\//i.test(trimmed)) {
+        try {
+          const abs = new URL(trimmed);
+          if (abs.origin !== siteOrigin) continue;
+          url = `${abs.pathname}${abs.search}${abs.hash}`;
+        } catch {
+          continue;
+        }
+      }
       if (!isInternalRef(url)) continue;
       const resolved = resolveRef(pageUrl, url);
       if (!resolved) continue;
