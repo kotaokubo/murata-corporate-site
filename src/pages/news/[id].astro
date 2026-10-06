@@ -14,7 +14,7 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const fmt = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '.');
 ---
-<BaseLayout title={entry.data.title} description={entry.data.description} ogImage={entry.data.image?.src}>
+<BaseLayout title={entry.data.title} description={entry.data.description} ogImage={entry.data.image?.src} ogImageAlt={entry.data.image ? entry.data.imageAlt : undefined}>
   <PageHero title="お知らせ" eyebrow="NEWS" />
   <article class="section">
     <div class="container article">
