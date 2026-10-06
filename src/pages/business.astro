@@ -1,12 +1,1260 @@
 ---
+import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import CtaButton from '../components/CtaButton.astro';
+import ImageCarousel from '../components/ImageCarousel.astro';
+import { nav } from '../lib/site';
+
+import heroImg from '../assets/images/business/hero.png';
+import wholesaleRing from '../assets/images/business/wholesale-ring.png';
+import wholesaleNecklace from '../assets/images/business/wholesale-necklace.png';
+import wholesaleBracelet from '../assets/images/business/wholesale-bracelet.png';
+import wholesaleGemstones from '../assets/images/business/wholesale-gemstones.png';
+import repairRhodium from '../assets/images/business/repair-rhodium.jpg';
+import repairLaser from '../assets/images/business/repair-laser.jpg';
+import strengthDev from '../assets/images/business/strength-dev.png';
+import strengthNetwork from '../assets/images/business/strength-network.png';
+import strengthAtelier from '../assets/images/business/strength-atelier.png';
+import strengthFresh from '../assets/images/business/strength-fresh.png';
+import tokyoInterior from '../assets/images/business/tokyo-interior.png';
+import tokyoExterior from '../assets/images/business/tokyo-exterior.png';
+import onlineShopImg from '../assets/images/business/online-shop.jpg';
+
+const entry = await getEntry('pages', 'business');
+if (!entry) throw new Error('src/content/pages/business.yml が見つかりません');
+// content.config の pages schema 型は home に寄せているため、事業内容の形へ絞り込む
+const t = entry.data as unknown as {
+  meta: { title: string; description: string };
+  hero: { eyebrow: string; title: string };
+  wholesale: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    body: string;
+    steps: { en: string; ja: string }[];
+    slides: { caption: string }[];
+    sp?: { steps: { en: string; ja: string }[]; body: string };
+  };
+  craft: {
+    eyebrow: string;
+    title: string;
+    steps: { num: string; label: string }[];
+  };
+  repair: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    slides: { caption: string }[];
+    sp?: { lead: string; services: string; closing: string; slides?: { caption: string }[] };
+  };
+  endToEnd: {
+    title: string;
+    body: string;
+    sp?: { eyebrow: string; body: string };
+  };
+  strength: {
+    eyebrow: string;
+    title: string;
+    cards: { title: string; body: string }[];
+  };
+  tokyo: {
+    eyebrow: string;
+    title: string;
+    company: string;
+    branch: string;
+    postal: string;
+    address: string;
+    building: string;
+    telLabel: string;
+    telHref: string;
+    mapLabel: string;
+    mapHref: string;
+    galleryLabel: string;
+    features: { title: string; body: string }[];
+  };
+  onlineShop: {
+    eyebrow: string;
+    title: string;
+    overlay: string;
+    body: string;
+    ctaLabel: string;
+    note: string;
+  };
+};
+
+const shopUrl = nav.find((n) => n.label === 'オンラインショップ')?.href ?? '';
+
+const wholesaleImages = [wholesaleRing, wholesaleNecklace, wholesaleBracelet, wholesaleGemstones];
+const wholesaleAlts = [
+  '台座に飾られたダイヤモンドのリング',
+  '金の留め具が付いたパールのブレスレット',
+  'エメラルドとダイヤモンドを交互に並べたゴールドのリング',
+  '白い布の上に並ぶサファイアやルビーなどのルース',
+];
+
+const repairImages = [repairRhodium, repairLaser];
+const repairAlts = [
+  'ロジウムメッキ加工の様子',
+  'レーザー溶接でジュエリーを修理する様子',
+];
+
+const strengthImages = [strengthDev, strengthNetwork, strengthAtelier, strengthFresh];
+const strengthAlts = [
+  '机に向かってジュエリーのデザイン画を描く女性',
+  '各地に印が立つ世界地図',
+  '工具でジュエリーを加工する職人の手元',
+  'トレーに並ぶ色石とダイヤモンドの原石',
+];
+
+const tokyoGallery = [
+  { src: tokyoInterior, alt: '村田宝飾ビル内の商品棚と陳列ケース' },
+  { src: tokyoExterior, alt: '村田宝飾ビルの外観' },
+];
+
+const wholesaleStepsPc = t.wholesale.steps;
+const wholesaleStepsSp = t.wholesale.sp?.steps ?? t.wholesale.steps;
+const repairSlidesPc = t.repair.slides;
+const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
 ---
-<BaseLayout title="事業内容" description="村田宝飾の事業内容です。">
-  <PageHero title="事業内容" eyebrow="SERVICE" />
-  <section class="section">
-    <div class="container">
-      <p>【仮】Figma（226:150 / 329:156）のデザインを実装する。</p>
+<BaseLayout title={t.meta.title} description={t.meta.description}>
+  <PageHero
+    title={t.hero.title}
+    eyebrow={t.hero.eyebrow}
+    image={heroImg}
+    imageAlt=""
+  />
+
+  <div class="divider" aria-hidden="true"><span></span></div>
+
+  <!-- WHOLESALE -->
+  <section class="section-wholesale">
+    <div class="inner">
+      <SectionHeading eyebrow={t.wholesale.eyebrow} title={t.wholesale.title} />
+      <p class="intro">{t.wholesale.intro}</p>
+
+      <ol class="flow-pc" aria-label="ビジネスフロー">
+        {wholesaleStepsPc.map((step: { en: string; ja: string }) => (
+          <li class="flow-pc-item">
+            <span class="flow-en">{step.en}</span>
+            <span class="flow-dot" aria-hidden="true"></span>
+            <span class="flow-ja">{step.ja}</span>
+          </li>
+        ))}
+      </ol>
+
+      <ol class="flow-sp" aria-label="ビジネスフロー">
+        {wholesaleStepsSp.map((step: { en: string; ja: string }, i: number) => (
+          <li class="flow-sp-item">
+            <span class="flow-sp-marker" aria-hidden="true">
+              <span class="flow-sp-dot"></span>
+              {i < wholesaleStepsSp.length - 1 && <span class="flow-sp-line"></span>}
+            </span>
+            <span class="flow-sp-text">
+              <span class="flow-en">{step.en}</span>
+              <span class="flow-ja">{step.ja}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+
+      <p class="body body-pc">{t.wholesale.body}</p>
+      <p class="body body-sp">{t.wholesale.sp?.body ?? t.wholesale.body}</p>
+
+      <ImageCarousel label="取扱商品" class="wholesale-carousel">
+        {t.wholesale.slides.map((slide: { caption: string }, i: number) => (
+          <figure class="slide">
+            <div class="slide-img-wrap">
+              <Image
+                src={wholesaleImages[i]}
+                alt={wholesaleAlts[i]}
+                class="slide-img"
+                widths={[342, 520, 1040, 1152]}
+                sizes="(max-width: 1099px) 100vw, 1120px"
+              />
+            </div>
+            <figcaption class="slide-caption">{slide.caption}</figcaption>
+          </figure>
+        ))}
+      </ImageCarousel>
+    </div>
+  </section>
+
+  <!-- CRAFT -->
+  <section class="section-craft">
+    <div class="inner craft-grid">
+      <div class="craft-copy">
+        <SectionHeading eyebrow={t.craft.eyebrow} title={t.craft.title} />
+        <ol class="craft-steps">
+          {t.craft.steps.map((step: { num: string; label: string }) => (
+            <li class="craft-step">
+              <span class="craft-num">{step.num}</span>
+              <span class="craft-label">{step.label}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPAIR -->
+  <section class="section-repair">
+    <div class="inner repair-grid">
+      <div class="repair-copy">
+        <SectionHeading eyebrow={t.repair.eyebrow} title={t.repair.title} />
+        <p class="body repair-body-pc">{t.repair.body}</p>
+        <div class="repair-body-sp">
+          <p class="body">{t.repair.sp?.lead ?? t.repair.body}</p>
+          <p class="body repair-services">{t.repair.sp?.services}</p>
+          <p class="body">{t.repair.sp?.closing}</p>
+        </div>
+      </div>
+      <ImageCarousel label="修理・加工" class="repair-carousel">
+        {repairSlidesPc.map((slide: { caption: string }, i: number) => (
+          <figure class="slide">
+            <div class="slide-img-wrap">
+              <Image
+                src={repairImages[i]}
+                alt={repairAlts[i]}
+                class="slide-img"
+                widths={[342, 520, 1040]}
+                sizes="(max-width: 1099px) 100vw, 520px"
+              />
+            </div>
+            <figcaption class="slide-caption">
+              <span class="caption-pc">{slide.caption}</span>
+              <span class="caption-sp">{repairSlidesSp[i]?.caption ?? slide.caption}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </ImageCarousel>
+    </div>
+  </section>
+
+  <div class="divider" aria-hidden="true"><span></span></div>
+
+  <!-- END TO END -->
+  <section class="section-e2e">
+    <div class="inner e2e-inner">
+      {t.endToEnd.sp?.eyebrow && (
+        <div class="e2e-eyebrow-sp">
+          <p class="e2e-eyebrow">{t.endToEnd.sp.eyebrow}</p>
+          <span class="e2e-eyebrow-line" aria-hidden="true"></span>
+        </div>
+      )}
+      <h2 class="e2e-title">{t.endToEnd.title}</h2>
+      <p class="e2e-body e2e-body-pc">{t.endToEnd.body}</p>
+      <p class="e2e-body e2e-body-sp">{t.endToEnd.sp?.body ?? t.endToEnd.body}</p>
+    </div>
+  </section>
+
+  <div class="divider" aria-hidden="true"><span></span></div>
+
+  <!-- STRENGTH -->
+  <section class="section-strength">
+    <div class="inner">
+      <SectionHeading eyebrow={t.strength.eyebrow} title={t.strength.title} />
+      <ul class="strength-grid">
+        {t.strength.cards.map((card: { title: string; body: string }, i: number) => (
+          <li class="strength-card">
+            <div class="strength-img-wrap">
+              <Image
+                src={strengthImages[i]}
+                alt={strengthAlts[i]}
+                class="strength-img"
+                widths={[342, 540, 1080]}
+                sizes="(max-width: 1099px) 100vw, 540px"
+              />
+            </div>
+            <div class="strength-text">
+              <h3 class="strength-title">{card.title}</h3>
+              <p class="strength-body">{card.body}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- TOKYO -->
+  <section class="section-tokyo">
+    <div class="inner">
+      <div class="tokyo-top">
+        <div class="tokyo-copy">
+          <SectionHeading eyebrow={t.tokyo.eyebrow} title={t.tokyo.title} />
+          <div class="tokyo-address">
+            <p class="tokyo-company">{t.tokyo.company}</p>
+            <p class="tokyo-branch">{t.tokyo.branch}</p>
+            <p class="tokyo-line">{t.tokyo.postal}</p>
+            <p class="tokyo-line">{t.tokyo.address}</p>
+            <p class="tokyo-line">{t.tokyo.building}</p>
+            <p class="tokyo-tel">
+              <a href={t.tokyo.telHref}>{t.tokyo.telLabel}</a>
+            </p>
+          </div>
+        </div>
+        <a class="tokyo-map" href={t.tokyo.mapHref} target="_blank" rel="noopener" aria-label="東京店舗の地図（新しいタブで開く）">
+          <span class="tokyo-map-badge">{t.tokyo.mapLabel}</span>
+        </a>
+      </div>
+
+      <div class="tokyo-bottom">
+        <div class="tokyo-gallery-block">
+          <p class="tokyo-gallery-label tokyo-gallery-label-sp">{t.tokyo.galleryLabel}</p>
+          <ImageCarousel label="店舗ギャラリー" class="tokyo-carousel">
+            {tokyoGallery.map((item) => (
+              <figure class="gallery-slide">
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  class="gallery-img"
+                  widths={[342, 590, 1180]}
+                  sizes="(max-width: 1099px) 100vw, 590px"
+                />
+              </figure>
+            ))}
+          </ImageCarousel>
+        </div>
+        <ul class="tokyo-features">
+          {t.tokyo.features.map((f: { title: string; body: string }) => (
+            <li class="tokyo-feature">
+              <h3 class="tokyo-feature-title">{f.title}</h3>
+              <p class="tokyo-feature-body">{f.body}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ONLINE SHOP -->
+  <section class="section-online">
+    <div class="inner online-grid">
+      <div class="online-copy">
+        <SectionHeading eyebrow={t.onlineShop.eyebrow} title={t.onlineShop.title} />
+        <p class="body">{t.onlineShop.body}</p>
+        <div class="online-actions">
+          <CtaButton href={shopUrl} label={t.onlineShop.ctaLabel} external class="online-cta" />
+          <p class="online-note">{t.onlineShop.note}</p>
+        </div>
+      </div>
+      <div class="online-visual">
+        <Image
+          src={onlineShopImg}
+          alt="星と蝶のダイヤのネックレスと「The Jewelry Concierge」の文字"
+          class="online-img"
+          widths={[342, 614, 1228]}
+          sizes="(max-width: 1099px) 100vw, 614px"
+        />
+        <p class="online-overlay">{t.onlineShop.overlay}</p>
+      </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .inner {
+    width: min(100% - 48px, var(--content-width));
+    margin-inline: auto;
+  }
+
+  .divider {
+    display: flex;
+    justify-content: center;
+    background: rgba(176, 141, 87, 0.4);
+    height: 1px;
+  }
+
+  .divider span {
+    display: block;
+    width: min(1120px, 100%);
+    height: 1px;
+    background: rgba(176, 141, 87, 0.35);
+  }
+
+  .body {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 32px;
+    letter-spacing: 1.2px;
+    color: var(--color-ink);
+    white-space: pre-line;
+  }
+
+  .intro {
+    margin: 48px 0 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 1.8;
+    letter-spacing: 0.8px;
+    color: var(--color-navy);
+    white-space: pre-line;
+  }
+
+  /* ===== WHOLESALE ===== */
+  .section-wholesale {
+    background: var(--color-bg);
+    padding: 160px 0;
+  }
+
+  .section-wholesale :global(.section-heading) {
+    margin-bottom: 0;
+  }
+
+  .flow-pc {
+    list-style: none;
+    margin: 48px 0 0;
+    padding: 40px 0 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    position: relative;
+  }
+
+  .flow-pc::before {
+    content: '';
+    position: absolute;
+    left: calc(100% / 12);
+    right: calc(100% / 12);
+    top: 54px;
+    height: 1px;
+    background: rgba(176, 141, 87, 0.35);
+  }
+
+  .flow-pc-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    position: relative;
+  }
+
+  .flow-en {
+    font-family: var(--font-en-serif);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 14px;
+    letter-spacing: 1.5px;
+    color: var(--color-gold);
+  }
+
+  .flow-pc-item:first-child .flow-en {
+    font-size: 14px;
+  }
+
+  .flow-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-gold);
+    z-index: 1;
+  }
+
+  .flow-ja {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 2px;
+    color: var(--color-navy);
+  }
+
+  .flow-sp {
+    display: none;
+  }
+
+  .body-sp {
+    display: none;
+  }
+
+  .body-pc {
+    margin-top: 48px;
+  }
+
+  .wholesale-carousel {
+    margin-top: 48px;
+  }
+
+  .slide {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+
+  .slide-img-wrap {
+    width: 100%;
+    aspect-ratio: 520 / 360;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    background: var(--color-bg-soft);
+  }
+
+  .slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .slide-caption {
+    margin: 0;
+    padding: 0 16px;
+    font-family: var(--font-jp);
+    font-size: 13px;
+    line-height: 1.6;
+    letter-spacing: 0.8px;
+    color: #6b7280;
+  }
+
+  .caption-sp {
+    display: none;
+  }
+
+  /* ===== CRAFT ===== */
+  .section-craft {
+    background: var(--color-bg-soft);
+    padding: 160px 0;
+  }
+
+  .craft-grid {
+    display: block;
+  }
+
+  .craft-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 480px;
+  }
+
+  .craft-steps {
+    list-style: none;
+    margin: 0;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .craft-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .craft-num {
+    font-family: var(--font-en-serif);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--color-gold);
+    flex-shrink: 0;
+  }
+
+  .craft-label {
+    font-family: var(--font-jp);
+    font-size: 16px;
+    line-height: 27.65px;
+    letter-spacing: 0.61px;
+    color: var(--color-ink);
+  }
+
+  /* ===== REPAIR ===== */
+  .section-repair {
+    background: var(--color-bg);
+    padding: 160px 0;
+  }
+
+  .repair-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 480px) minmax(0, 590px);
+    gap: 50px;
+    align-items: center;
+  }
+
+  .repair-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .repair-body-sp {
+    display: none;
+  }
+
+  .repair-carousel .slide-img-wrap {
+    border-radius: 12px 12px 0 0;
+  }
+
+  /* ===== END TO END ===== */
+  .section-e2e {
+    background: var(--color-navy);
+    padding: 160px 0;
+  }
+
+  .e2e-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    text-align: center;
+  }
+
+  .e2e-eyebrow-sp {
+    display: none;
+  }
+
+  .e2e-title {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 48px;
+    letter-spacing: 2px;
+    color: var(--color-bg-soft);
+    white-space: pre-line;
+  }
+
+  .e2e-body {
+    margin: 0;
+    max-width: 920px;
+    font-family: var(--font-jp);
+    font-size: 16px;
+    line-height: 30px;
+    letter-spacing: 0.2px;
+    color: var(--color-white);
+    white-space: pre-line;
+  }
+
+  .e2e-body-sp {
+    display: none;
+  }
+
+  /* ===== STRENGTH ===== */
+  .section-strength {
+    background: var(--color-bg-soft);
+    padding: 160px 0;
+  }
+
+  .section-strength :global(.section-heading) {
+    margin-bottom: 80px;
+  }
+
+  .strength-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px;
+  }
+
+  .strength-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .strength-img-wrap {
+    width: 100%;
+    aspect-ratio: 540 / 180;
+    overflow: hidden;
+    background: #ebe8e3;
+    border: 1px solid rgba(209, 204, 196, 0.5);
+  }
+
+  .strength-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .strength-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .strength-title {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 1px;
+    color: var(--color-navy);
+  }
+
+  .strength-body {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: 16px;
+    line-height: 27.65px;
+    letter-spacing: 0.614px;
+    color: var(--color-ink);
+  }
+
+  /* ===== TOKYO ===== */
+  .section-tokyo {
+    background: var(--color-bg);
+    padding: 160px 0;
+  }
+
+  .tokyo-top {
+    display: grid;
+    grid-template-columns: minmax(0, 470px) minmax(0, 590px);
+    gap: 80px;
+    align-items: center;
+    margin-bottom: 80px;
+  }
+
+  .tokyo-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .tokyo-address {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tokyo-company,
+  .tokyo-branch,
+  .tokyo-line,
+  .tokyo-tel {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+
+  .tokyo-company {
+    font-weight: 600;
+    color: var(--color-navy);
+  }
+
+  .tokyo-branch {
+    color: var(--color-gold);
+    font-size: 12px;
+  }
+
+  .tokyo-tel a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .tokyo-tel a:hover {
+    color: var(--color-gold);
+  }
+
+  .tokyo-map {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 344px;
+    border: 1px solid rgba(209, 204, 196, 0.5);
+    border-radius: 2px;
+    background: var(--color-bg-soft);
+    text-decoration: none;
+    color: var(--color-navy);
+    gap: 12px;
+  }
+
+  .tokyo-map:hover {
+    background: rgba(176, 141, 87, 0.08);
+  }
+
+  .tokyo-map-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(209, 204, 196, 0.5);
+    background: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-en-serif);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+  }
+
+  .tokyo-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 590px) minmax(0, 450px);
+    gap: 80px;
+    align-items: center;
+  }
+
+  .tokyo-gallery-label {
+    margin: 0 0 12px;
+    font-family: var(--font-en-serif);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-navy);
+  }
+
+  .tokyo-gallery-label-sp {
+    display: none;
+  }
+
+  .gallery-slide {
+    margin: 0;
+    aspect-ratio: 590 / 420;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid rgba(209, 204, 196, 0.5);
+  }
+
+  .gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .tokyo-features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .tokyo-feature {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(3, 22, 85, 0.1);
+  }
+
+  .tokyo-feature:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .tokyo-feature-title {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--color-navy);
+  }
+
+  .tokyo-feature-body {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--color-navy);
+  }
+
+  /* ===== ONLINE ===== */
+  .section-online {
+    background: var(--color-bg-soft);
+    padding: 160px 0;
+  }
+
+  .online-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 469px) minmax(0, 1fr);
+    gap: 80px;
+    align-items: center;
+  }
+
+  .online-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .online-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .online-note {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: 12px;
+    line-height: 23px;
+    letter-spacing: 1.02px;
+    color: var(--color-ink);
+    text-align: center;
+  }
+
+  .section-online :global(.online-cta) {
+    color: var(--color-navy);
+  }
+
+  .online-visual {
+    position: relative;
+    min-height: 390px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .online-img {
+    width: 100%;
+    max-width: 614px;
+    height: auto;
+    aspect-ratio: 614 / 432;
+    object-fit: cover;
+    display: block;
+    transform: scaleX(-1);
+  }
+
+  .online-overlay {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-en-serif);
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(22px, 2.4vw, 36px);
+    letter-spacing: 2.78px;
+    color: var(--color-bg-cream);
+    text-align: center;
+    text-shadow: 0 0 1px #12235a;
+    pointer-events: none;
+    background: rgba(3, 22, 85, 0.18);
+  }
+
+  /* ===== SP ===== */
+  @media (max-width: 1099px) {
+    .inner {
+      width: min(100% - 48px, 342px);
+    }
+
+    .section-wholesale,
+    .section-craft,
+    .section-repair,
+    .section-e2e,
+    .section-strength,
+    .section-tokyo,
+    .section-online {
+      padding: 80px 0;
+    }
+
+    .intro {
+      margin-top: 30px;
+      font-size: 16px;
+      letter-spacing: 0.4px;
+    }
+
+    .body {
+      font-size: 14px;
+      line-height: 24px;
+      letter-spacing: 0;
+    }
+
+    .flow-pc,
+    .body-pc {
+      display: none;
+    }
+
+    .flow-sp {
+      display: flex;
+      flex-direction: column;
+      list-style: none;
+      margin: 30px 0 0;
+      padding: 8px 20px 8px 30px;
+      gap: 0;
+    }
+
+    .flow-sp-item {
+      display: flex;
+      gap: 30px;
+      min-height: 76px;
+    }
+
+    .flow-sp-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 8px;
+      padding-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .flow-sp-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--color-gold);
+      flex-shrink: 0;
+    }
+
+    .flow-sp-line {
+      width: 1px;
+      flex: 1;
+      background: rgba(176, 141, 87, 0.35);
+      margin-top: 0;
+    }
+
+    .flow-sp-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 2px 0 24px;
+    }
+
+    .flow-en {
+      font-size: 14px;
+      line-height: 23px;
+      letter-spacing: 0.04em;
+    }
+
+    .flow-ja {
+      font-size: 14px;
+      line-height: 23px;
+      letter-spacing: 0;
+    }
+
+    .body-sp {
+      display: block;
+      margin-top: 30px;
+    }
+
+    .wholesale-carousel {
+      margin-top: 30px;
+    }
+
+    .slide-img-wrap {
+      aspect-ratio: 342 / 240;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .craft-copy {
+      max-width: none;
+    }
+
+    .repair-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .repair-body-pc {
+      display: none;
+    }
+
+    .repair-body-sp {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .repair-services {
+      color: var(--color-ink);
+    }
+
+    .caption-pc {
+      display: none;
+    }
+
+    .caption-sp {
+      display: inline;
+    }
+
+    .section-e2e {
+      background: var(--color-sub);
+    }
+
+    .e2e-inner {
+      align-items: flex-start;
+      gap: 30px;
+      text-align: left;
+    }
+
+    .e2e-eyebrow-sp {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .e2e-eyebrow {
+      margin: 0;
+      font-family: var(--font-en-serif);
+      font-size: 14px;
+      line-height: 23px;
+      letter-spacing: 3.84px;
+      color: var(--color-gold);
+    }
+
+    .e2e-eyebrow-line {
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--color-gold);
+    }
+
+    .e2e-title {
+      font-size: 20px;
+      line-height: 1.45;
+      letter-spacing: 0;
+      color: var(--color-white);
+      text-align: left;
+    }
+
+    .e2e-body-pc {
+      display: none;
+    }
+
+    .e2e-body-sp {
+      display: block;
+      color: var(--color-white-70);
+      font-size: 14px;
+      line-height: 24px;
+      text-align: left;
+    }
+
+    .section-strength :global(.section-heading) {
+      margin-bottom: 30px;
+    }
+
+    .strength-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .strength-img-wrap {
+      aspect-ratio: 342 / 160;
+    }
+
+    .strength-title {
+      font-size: 18px;
+    }
+
+    .strength-body {
+      font-size: 14px;
+      line-height: 24px;
+    }
+
+    .tokyo-top,
+    .tokyo-bottom {
+      grid-template-columns: 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .tokyo-address {
+      padding: 24px;
+      border: 1px solid rgba(209, 204, 196, 0.5);
+      border-radius: 8px;
+      background: var(--color-white);
+      gap: 16px;
+    }
+
+    .tokyo-company {
+      font-size: 14px;
+    }
+
+    .tokyo-map {
+      min-height: 240px;
+      border-radius: 8px;
+    }
+
+    .tokyo-gallery-label-sp {
+      display: block;
+    }
+
+    .gallery-slide {
+      aspect-ratio: 342 / 220;
+      border-radius: 8px;
+    }
+
+    .tokyo-features {
+      gap: 30px;
+    }
+
+    .tokyo-feature {
+      padding-bottom: 30px;
+      gap: 12px;
+    }
+
+    .tokyo-feature-title {
+      font-size: 16px;
+    }
+
+    .online-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    .online-actions {
+      margin-top: 10px;
+    }
+
+    .section-online :global(.online-cta) {
+      color: var(--color-gold);
+    }
+
+    .online-visual {
+      min-height: 192px;
+      aspect-ratio: 342 / 192;
+    }
+
+    .online-img {
+      max-width: none;
+      height: 100%;
+      transform: none;
+      object-fit: cover;
+    }
+
+    .online-overlay {
+      font-size: 26px;
+      letter-spacing: 1.5px;
+      background: rgba(3, 22, 85, 0.25);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .inner {
+      width: min(100% - 48px, 100%);
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1099px) {
+    .inner {
+      width: min(100% - 64px, 720px);
+    }
+  }
+
+  @media (min-width: 1100px) and (max-width: 1366px) {
+    .inner {
+      width: min(100% - 80px, var(--content-width));
+    }
+
+    .repair-grid {
+      gap: 40px;
+    }
+
+    .tokyo-top,
+    .tokyo-bottom,
+    .online-grid {
+      gap: 48px;
+    }
+  }
+</style>
