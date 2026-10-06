@@ -1,5 +1,6 @@
-# main への PR で「コードオーナー（大久保）の承認」が要るファイル（docs/development.md の ruleset「main-review」と組み合わせて効く）
-# 区分 C：大久保の承認がないと main に入らない
+# ruleset main-review は無効にする予定（docs/development.md）。有効なあいだは、このファイルで区分 C に大久保の承認を求める。無効にしたあとも、ruleset を戻すときのために残す
+# （main-review は、main への PR で「コードオーナー（大久保）の承認」を求める。docs/development.md を参照）
+# 区分 C：大久保と、許可したデザイナー（scripts/scope.mjs の C_ALLOWED）が扱う。main-review が有効なあいだは、大久保の承認がないと main に入らない
 *                         @kotaokubo
 
 # 区分 A：持ち主なし。必須チェックが通れば、事務の方が自分で main へマージできる

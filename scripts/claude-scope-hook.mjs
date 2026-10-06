@@ -5,7 +5,7 @@ import { existsSync, lstatSync, readFileSync, readlinkSync, realpathSync } from 
 import path from 'node:path';
 import { classify } from './scope.mjs';
 
-const ASK_REASON = 'このファイルは区分 C（大久保だけが変える）。大久保の依頼で変える場合だけ許可する';
+const ASK_REASON = 'このファイルは区分 C（大久保か、招待されたデザイナーが変える）。大久保かデザイナーの依頼で変える場合だけ許可する';
 const GIT_TIMEOUT_MS = 3000;
 const MAX_SYMLINK_DEPTH = 10;
 
