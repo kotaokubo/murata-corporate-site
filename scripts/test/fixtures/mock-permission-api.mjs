@@ -13,7 +13,13 @@ const roles = {
 };
 
 const server = http.createServer((req, res) => {
-  const m = req.url?.match(/^\/repos\/[^/]+\/[^/]+\/collaborators\/([^/]+)\/permission$/);
+  // 本物の API と同じく、GET と認証ヘッダー（テストは GITHUB_TOKEN=t で起動する）が無ければ 401 を返す
+  if (req.method !== 'GET' || req.headers.authorization !== 'Bearer t') {
+    res.writeHead(401);
+    res.end('unauthorized');
+    return;
+  }
+  const m =req.url?.match(/^\/repos\/[^/]+\/[^/]+\/collaborators\/([^/]+)\/permission$/);
   if (!m) {
     res.writeHead(404);
     res.end('not found');

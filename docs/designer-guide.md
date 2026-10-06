@@ -51,7 +51,11 @@ flowchart TD
 - 顧客や取引先の名前、個人情報（本人や先方の了承があるものを除く）
 - 卸価格や取引条件など、TJC（会員向けのネットショップ）の会員向けの情報
 - 社内の資料、パスワード、API キー
-- Figma のファイルのリンク、フレームの ID、Figma にある未公開の文言
+- Figma のファイルのリンク、フレームの ID
+
+Figma の画像は、Codex のタスクに添付して渡してかまいません（タスクの中身は公開されません）。
+ただし、Figma にある未公開の文言は、リポジトリ、PR、コメントには書かないでください。
+画像を渡すときは、Codex に「画像の文言を PR やコミットに書かないでください」と添えます。
 
 本番のホームページは、現在 https://murata-corporate-site.pages.dev/ です。
 https://www.murata-jewelry.co.jp は、まだ旧サイトのままです。
@@ -72,7 +76,7 @@ https://www.murata-jewelry.co.jp は、まだ旧サイトのままです。
 2. メールが見つからないときは、https://github.com/kotaokubo/murata-corporate-site/invitations を開く（GitHub にログインした状態で開く）
 3. 画面の「Accept invitation」を押す
 4. 招待の有効期限は7日です。過ぎて開けなくなったら、大久保に招待のやり直しを頼む
-5. 受けたあと、https://github.com/kotaokubo/murata-corporate-site を開き、リポジトリの画面が表示されることを確かめる。「Pull requests」タブが見えれば、リポジトリへのアクセスが付いています（個人のリポジトリでは、招待された人に「Settings」タブは出ません）
+5. 受けたら、大久保に「招待を受けた」と伝える。大久保が GitHub の設定画面（Collaborators）で、受けたことを確かめます。リポジトリは公開されているので、画面が開けるだけでは招待を受けたことの確かめにはなりません
 
 ## 4. ChatGPT と Codex を準備する
 
