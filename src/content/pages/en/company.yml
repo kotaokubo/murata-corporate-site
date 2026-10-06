@@ -1,0 +1,90 @@
+# AI による翻訳。日本語（../company.yml）を直したら、この訳も直す
+meta:
+  title: About Us
+  description: Corporate philosophy, a message from the president, and company overview of Murata Jewelry.
+
+hero:
+  eyebrow: ABOUT COMPANY
+  title: About Us
+
+subnav:
+  - label: About Us
+    href: /company/
+  - label: History
+    href: /history/
+
+philosophy:
+  eyebrow: PHILOSOPHY
+  title: Corporate Philosophy
+  headline: Connecting love through partnership
+  body: As the foremost partner for everyone—including our staff, partners, and customers—we connect craftsmanship and sincerity to our customers and contribute to the future of the industry.
+
+message:
+  eyebrow: MESSAGE
+  title: Message from the President
+  body: |
+    Since our founding in 1979, Murata Jewelry has delivered jewelry to jewelry retailers nationwide from our base in Matsuyama, Ehime, guided by the philosophy of being “the foremost partner for our customers.”
+
+    Drawing on solid craftsmanship and our own sourcing network, we deliver one by one, with care, unique jewelry where artisan handwork meets materials of the highest quality.
+
+    As a Jewelry Concierge, we will continue to offer radiance and value loved across generations.
+  role: President and Representative Director
+  name: Koichiro Murata
+
+profile:
+  eyebrow: COMPANY PROFILE
+  title: Company Overview
+  rows:
+    - label: Company name
+      value: Murata Jewelry Co., Ltd.
+    - label: Matsuyama Head Office
+      value: |
+        2-8-15 Nakamura, Matsuyama, Ehime 790-0964
+        TEL: 089-941-4135
+        FAX: 089-946-1971
+      sp:
+        value: |
+          2-8-15 Nakamura, Matsuyama, Ehime 790-0964
+          TEL: 089-941-4135
+          FAX: 089-946-1971
+    - label: Tokyo Head Office
+      value: |
+        5-7-5 Ueno, Taito-ku, Tokyo 110-0005
+        TEL: 03-5807-4345
+        FAX: 03-5807-4346
+      sp:
+        value: |
+          5-7-5 Ueno, Taito-ku, Tokyo 110-0005
+          TEL: 03-5807-4345
+          FAX: 03-5807-4346
+    - label: Kofu Branch
+      value: |
+        Tanaka Building 2F
+        3-3-30 Satoyoshi, Kofu, Yamanashi 400-0822
+      sp:
+        value: |
+          Tanaka Building 2F
+          3-3-30 Satoyoshi, Kofu, Yamanashi 400-0822
+    - label: Representative
+      value: President and Representative Director　Koichiro Murata
+      sp:
+        value: |
+          President and Representative Director
+          Koichiro Murata
+    - label: Established
+      value: December 1979
+    - label: Capital
+      value: ¥30 million
+    - label: Employees
+      value: "33"
+    - label: Business
+      value: |
+        Jewelry manufacturing and wholesale
+        Jewelry import and export
+        Jewelry processing in general
+    - label: Memberships
+      value: |
+        Japan Jewellery Association
+        Japan Gem Trader’s Association
+        Yamanashi Crystal Jewelry Cooperative
+        Jewelry Town Okachimachi

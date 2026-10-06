@@ -47,11 +47,6 @@
 /jewellery-gem-asia-hong-kong/  /news/  301
 /jewellery-gem-asia-hong-kong  /news/  301
 
-# 英語、中国語のトップ（多言語は未決定のため、トップへ）
-/en/  /  301
-/en  /  301
-/zh/  /  301
-/zh  /  301
 
 # イベントの記事（URL が日本語。ブラウザによって %xx の大文字と小文字が違うので両方書く）
 /%e3%82%b8%e3%83%a3%e3%83%91%e3%83%b3%e3%82%b8%e3%83%a5%e3%82%a8%e3%83%aa%e3%83%bc%e3%83%95%e3%82%a7%e3%82%a2%ef%bc%88jjf2023%ef%bc%89/  /news/  301
@@ -155,7 +150,51 @@
 /jma%E9%A6%99%E6%B8%AF%E5%9B%BD%E9%9A%9B%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%BC/  /news/  301
 /jma%E9%A6%99%E6%B8%AF%E5%9B%BD%E9%9A%9B%E3%82%B8%E3%83%A5%E3%82%A8%E3%83%AA%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%BC  /news/  301
 
+# 旧サイト英語・中国語 URL → 新サイトの英語・中国語（トップ /en/ /zh/ 自体は新ページがあるので書かない）
+/en/company-1/  /en/company/  301
+/en/company-1  /en/company/  301
+/en/company-2/  /en/company/  301
+/en/company-2  /en/company/  301
+/en/company-4/  /en/company/  301
+/en/company-4  /en/company/  301
+/en/offices/  /en/company/  301
+/en/offices  /en/company/  301
+/en/company-3/  /en/history/  301
+/en/company-3  /en/history/  301
+/en/features/  /en/business/  301
+/en/features  /en/business/  301
+/en/services-1/  /en/business/  301
+/en/services-1  /en/business/  301
+/en/services-3/  /en/business/  301
+/en/services-3  /en/business/  301
+/en/services-12/  /en/business/  301
+/en/services-12  /en/business/  301
+/en/services-13/  /en/business/  301
+/en/services-13  /en/business/  301
+/en/contacts/  /en/#contact  301
+/en/contacts  /en/#contact  301
+/zh/company-1/  /zh/company/  301
+/zh/company-1  /zh/company/  301
+/zh/company-2/  /zh/company/  301
+/zh/company-2  /zh/company/  301
+/zh/company-4/  /zh/company/  301
+/zh/company-4  /zh/company/  301
+/zh/offices/  /zh/company/  301
+/zh/offices  /zh/company/  301
+/zh/company-3/  /zh/history/  301
+/zh/company-3  /zh/history/  301
+/zh/features/  /zh/business/  301
+/zh/features  /zh/business/  301
+/zh/services-1/  /zh/business/  301
+/zh/services-1  /zh/business/  301
+/zh/services-3/  /zh/business/  301
+/zh/services-3  /zh/business/  301
+/zh/services-12/  /zh/business/  301
+/zh/services-12  /zh/business/  301
+/zh/services-13/  /zh/business/  301
+/zh/services-13  /zh/business/  301
+/zh/contacts/  /zh/#contact  301
+/zh/contacts  /zh/#contact  301
+
 # ここから下は * を使う行
 /events/*  /news/  301
-/en/*  /  301
-/zh/*  /  301
