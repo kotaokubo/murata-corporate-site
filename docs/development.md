@@ -34,7 +34,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 1. `main` から `work/...` を切る
 2. 手元で `npm run build` と `npm run test:e2e` を通す
 3. `staging` へ PR → マージ → 検証用 URL で確認
-4. 同じ作業ブランチから `main` へ PR → 必須チェックが通り、区分 B を含むなら事務の方が影響するページをすべて確かめる → **事務の方（または大久保）がマージ** → 本番に出る
+4. 同じ作業ブランチから `main` へ PR → 必須チェックが通り、区分 B を含むなら事務の方が影響するページをすべて確かめる → **PR を出した本人（事務の方、デザイナー、大久保）がマージ** → 本番に出る
 5. `main` へマージすると、作業ブランチは自動で消える（`.github/workflows/delete-merged-branch.yml`）。`staging` へのマージでは消えない
 6. `staging` は毎朝 `main` を自動で取り込む（`.github/workflows/sync-staging.yml`）
 
@@ -48,7 +48,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 | --- | --- |
 | `build` | 型の検査（`astro check`）とビルド。お知らせの書式の誤りもここで止まる |
 | `playwright` | トップページからサイト内のリンクでたどれるページが開くか、ブラウザのエラー、お問い合わせ欄、メニュー、下書きが本番に出ないか、noindex、エントリーフォームの入力チェック。撮影画像を Checks 画面に保存 |
-| `scope` | 変更したファイルを区分 A・B・C に分ける。区分 C を含む PR は、PR の作成者と最後に変更を送った（push した）人の両方が `scripts/scope.mjs` の `C_ALLOWED`（GitHub のユーザー名の許可リスト）に載っているときだけ通す。載っていない人が一人でも含まれれば失敗する。権限の API は使わない（個人のリポジトリでは、招待された人が全員 Write になり、権限で人を区別できないため）。区分 A と B だけの PR は、誰が出しても影響しない。`guard.yml` で動かすので、PR の中から書き換えて緩めることはできない。今の `C_ALLOWED` は `kotaokubo` だけで、一覧の変更も区分 C である |
+| `scope` | 変更したファイルを区分 A・B・C に分ける。区分 C を含む PR は、PR の作成者と最後に変更を送った（push した）人の両方が `scripts/scope.mjs` の `C_ALLOWED`（GitHub のユーザー名の許可リスト）に載っているときだけ通す。載っていない人が一人でも含まれれば失敗する。権限の API は使わない（個人のリポジトリでは、招待された人が全員 Write になり、権限で人を区別できないため）。区分 A と B だけの PR は、誰が出しても影響しない。`guard.yml` で動かすので、PR の中から書き換えて緩めることはできない。今の `C_ALLOWED` は `kotaokubo` だけで、一覧の変更も区分 C である。既知の制約：「最後に変更を送った人」は、そのイベントを起こした人（`github.event.sender`）である。PR を Close して Reopen すると、Reopen した人で判定し直される。許可されていない人が許可済みの人の PR に区分 C の変更を push すると一度は失敗するが、許可済みの人が Reopen すると通る。うっかりの push は止まるので、この形にしている。Codex の Web 版の PR が bot の名前で出る場合でも、bot の名前を `C_ALLOWED` に足さない（足すと、事務の方の依頼とデザイナーの依頼を区別できなくなる） |
 | `staging-verified` | `main` への PR の最新の変更が `staging` に入っているか。入っていなければ失敗（大久保の `hotfix/` は例外） |
 | `secrets` | パスワードや API キーらしき文字列（gitleaks） |
 | `codex-review` | PR の最新のコミットに Codex のレビュー（または指摘なしの 👍）が付いているか。付くまで最大25分待つ。PR を出したら必ず `@codex review` とコメントしてレビューを依頼する（自動では付かないことがある）。間に合わずに失敗したら、レビューが付いてから再実行する。指摘は「会話の解決」の設定で、すべて解決するまでマージできない |
@@ -93,6 +93,7 @@ Claude Code では、ファイルを書き換える前に `.claude/settings.json
 - General：「Automatically delete head branches」は無効。有効だと `staging` へのマージで作業ブランチが消え、同じブランチから `main` へ PR を出せなくなる。`main` へのマージ後の削除は `delete-merged-branch.yml` が行う
 - Actions → General：「Require approval for all external contributors」。外部の人のワークフローは承認制
 - Actions の既定の権限：read
+- Actions event policy で `pull_request_target` を明示的に許可する。**2026-11-02 までに必要で、未設定**。公開リポジトリでは、この日から既定の方針が適用され、許可が無いと `guard.yml`（`scope`、`staging-verified`、`codex-review`）が動かず、すべての PR が merge できなくなる（GitHub の「Securely using pull_request_target」）
 - Rules → Rulesets は次の3つ
   - **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）、**Require conversation resolution before merging**（Codex の指摘をすべて解決しないとマージできない）
   - **main-review**（対象：`main`、bypass：Repository admin）：Require a pull request before merging（Require review from Code Owners、Dismiss stale pull request approvals、Require approval of the most recent reviewable push）。**無効にする予定**（大久保の確認待ちで、まだ有効）。理由は、個人のリポジトリには Maintain の権限段階が無く、招待した人は全員 Write になり、Write は bypass の対象にできないため。もう一つの理由は、有効なままだと、`C_ALLOWED` に載ったデザイナーの区分 C の PR が、大久保の承認待ちで止まるため。無効にすれば、一覧に載ったデザイナーが大久保の承認なしで区分 C を `main` に入れられる（未実施のあいだは、承認待ちで止まる状態である）。無効にすると、Code Owners の承認も、最後の push 以外の人の承認も求めなくなる。以下は、有効なあいだ、または ruleset を戻すときの内容である
