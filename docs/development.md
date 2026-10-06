@@ -50,6 +50,19 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 | `secrets` | パスワードや API キーらしき文字列（gitleaks） |
 | `codex-review` | PR の最新のコミットに Codex のレビュー（または指摘なしの 👍）が付いているか。付くまで最大25分待つ。PR を出したら必ず `@codex review` とコメントしてレビューを依頼する（自動では付かないことがある）。間に合わずに失敗したら、レビューが付いてから再実行する。指摘は「会話の解決」の設定で、すべて解決するまでマージできない |
 
+次の3つも `ci.yml` で動く。
+必須チェック（ruleset の Require status checks）に入れるかは大久保が決める。
+
+| 名前 | 内容 |
+| --- | --- |
+| `images` | PR で追加・変更された画像の形式（jpg / png / webp。拡張子と中身の一致）、ファイルサイズ（3MiB 以下）、長い辺（2400px 以下。推奨は 2000px まで）、お知らせ本文の空の画像説明を調べる。問題があれば失敗する |
+| `links` | 本番と同じ条件でビルドした `dist/` を調べ、サイト内のリンク・画像（`srcset` 含む）・CSS・スクリプト・サイトマップの指す先が存在するかを確かめる。無い先があれば失敗する。`#` 付きで移動先の `id` が無いときは警告だけにする |
+| `pii` | PR または push の追加行に電話番号やメールアドレスらしき文字列があれば GitHub の警告と Step Summary に出す。会社の掲載用連絡先（`src/lib/site.ts`）は除く。画像や PDF の中の文字は調べない。常に成功する（警告のみ） |
+
+`staging` 向けの PR と `staging` への push では、これら3つのチェック名の末尾にも「 (staging)」が付く（`guard.yml` と同じ理由）。
+
+手元では `npm run check:images`、`npm run check:links`（先に `npm run build`）、`npm run check:pii`（`BASE_SHA` と `HEAD_SHA` が必要）、スクリプトのテストは `npm run test:scripts`。
+
 `staging` 向けの PR でも `guard.yml` は動くが、チェック名の末尾に「 (staging)」が付き、`main` の必須チェックとは別に記録される。チェックの結果はコミットとチェック名の組ごとに1つしか残らないので、同じ名前のままだと、同じブランチから出した `staging` 向けの PR の結果で `main` 向けの PR の結果が上書きされる。
 
 ## 前提にしている GitHub と Cloudflare の設定

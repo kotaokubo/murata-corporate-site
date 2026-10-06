@@ -11,7 +11,11 @@
     "preview": "astro preview --port 4321",
     "test:e2e": "playwright test",
     "check:scope": "node scripts/check-scope.mjs",
-    "check:staging": "node scripts/check-staging-verified.mjs"
+    "check:staging": "node scripts/check-staging-verified.mjs",
+    "check:images": "node scripts/check-images.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:pii": "node scripts/check-pii.mjs",
+    "test:scripts": "node --test scripts/test/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/check": "0.9.10",
