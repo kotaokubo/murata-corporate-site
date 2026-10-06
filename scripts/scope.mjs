@@ -8,6 +8,7 @@ const SENSITIVE = [
 export function classify(file) {
   if (SENSITIVE.includes(file)) return 'C';
   if (/^src\/content\/news\//.test(file)) return 'A';
+  if (/^src\/content\/pages\//.test(file)) return 'A';
   if (/^src\/assets\/images\//.test(file)) return 'A';
   if (/^public\/images\//.test(file)) return 'A';
   if (/^src\/(pages|components|layouts|styles)\//.test(file)) return 'B';

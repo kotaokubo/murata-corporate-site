@@ -4,6 +4,7 @@
 
 # 区分 A：持ち主なし。必須チェックが通れば、事務の方が自分で main へマージできる
 /src/content/news/
+/src/content/pages/
 /src/assets/images/
 /public/images/
 
