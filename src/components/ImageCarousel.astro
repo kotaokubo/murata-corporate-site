@@ -59,7 +59,7 @@ const styleVars = slideWidthPc != null ? `--slide-w: ${slideWidthPc}px` : undefi
     const slides = Array.from(track.children) as HTMLElement[];
     if (slides.length === 0) return;
 
-    const slideTemplate = root.dataset.slideLabelTemplate || '{n}枚目';
+    const slideTemplate = root.dataset.slideLabelTemplate || '写真の表示位置 {n}／{total}';
     let index = 0;
     let positions: number[] = [];
     let dots: HTMLButtonElement[] = [];
@@ -87,7 +87,8 @@ const styleVars = slideWidthPc != null ? `--slide-w: ${slideWidthPc}px` : undefi
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'carousel-dot';
-        btn.setAttribute('aria-label', slideTemplate.replace('{n}', String(i + 1)));
+        // 点は写真1枚ではなく表示位置を選ぶ（PC では1つの位置に複数の写真が見える）
+        btn.setAttribute('aria-label', slideTemplate.replace('{n}', String(i + 1)).replace('{total}', String(positions.length)));
         btn.addEventListener('click', () => goTo(i));
         dotsWrap!.appendChild(btn);
       });
@@ -189,7 +190,8 @@ const styleVars = slideWidthPc != null ? `--slide-w: ${slideWidthPc}px` : undefi
 
   @media (min-width: 1100px) {
     .carousel[data-slide-width-pc] .carousel-track > :global(*) {
-      flex: 0 0 var(--slide-w);
+      /* 表示枠が写真の幅より狭いとき（1100〜1119px など）は、表示枠に収める */
+      flex: 0 0 min(var(--slide-w), 100%);
     }
   }
 
