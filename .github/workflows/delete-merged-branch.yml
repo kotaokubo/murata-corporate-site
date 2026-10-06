@@ -13,11 +13,11 @@ permissions:
 
 jobs:
   delete:
-    # このリポジトリの work/ と hotfix/ だけを消す。main と staging は ruleset でも削除を禁止している
+    # このリポジトリの work/ と hotfix/ と codex/（Codex の Web 版が作る枝）だけを消す。main と staging は ruleset でも削除を禁止している
     if: >-
       github.event.pull_request.merged == true &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      (startsWith(github.event.pull_request.head.ref, 'work/') || startsWith(github.event.pull_request.head.ref, 'hotfix/'))
+      (startsWith(github.event.pull_request.head.ref, 'work/') || startsWith(github.event.pull_request.head.ref, 'hotfix/') || startsWith(github.event.pull_request.head.ref, 'codex/'))
     runs-on: ubuntu-latest
     steps:
       - name: 作業ブランチを消す
@@ -28,7 +28,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           # ブランチ名は URL に埋めるので、英数字と . _ - だけを許す（# や ? で別のブランチを指させない）
-          if [[ ! "$HEAD_REF" =~ ^(work|hotfix)/[A-Za-z0-9._-]+$ ]]; then
+          if [[ ! "$HEAD_REF" =~ ^(work|hotfix|codex)/[A-Za-z0-9._-]+$ ]]; then
             echo "ブランチ名 $HEAD_REF は自動では消さない。必要なら手で消す"
             exit 0
           fi

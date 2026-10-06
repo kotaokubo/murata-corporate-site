@@ -23,8 +23,8 @@ test('canChangeC: maintain は true', () => {
   assert.equal(canChangeC('designer', 'maintain'), true);
 });
 
-test('canChangeC: write は false', () => {
-  assert.equal(canChangeC('someone', 'write'), false);
+test('canChangeC: write は true', () => {
+  assert.equal(canChangeC('someone', 'write'), true);
 });
 
 test('canChangeC: triage は false', () => {

@@ -1,4 +1,4 @@
-// お知らせと法務文書・ページ文言の書式。区分 C（大久保だけが変える）
+// お知らせと法務文書・ページ文言の書式。区分 C（大久保か、招待された人が変える）
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';

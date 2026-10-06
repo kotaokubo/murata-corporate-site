@@ -1,5 +1,5 @@
-// 必須チェック「変更範囲」。区分 C のファイルを変えた PR は、大久保か、このリポジトリで
-// Maintain 以上（admin / maintain）の権限を持つ人だけ通す。大久保は API を呼ばずに常に許可する
+// 必須チェック「変更範囲」。区分 C のファイルを変えた PR は、大久保か、このリポジトリに
+// 招待された人（Write 以上：admin / maintain / write）だけ通す。大久保は API を呼ばずに常に許可する
 // 使い方：BASE_SHA HEAD_SHA PR_AUTHOR を環境変数で渡す（GitHub Actions から呼ぶ）。
 // 区分 C があり作成者が大久保以外のときは GITHUB_TOKEN と REPO も必要
 import { execFileSync } from 'node:child_process';
@@ -8,6 +8,7 @@ import { classify, LABEL, canChangeC } from './scope.mjs';
 
 const OWNER = 'kotaokubo';
 const { BASE_SHA, HEAD_SHA, PR_AUTHOR = '', GITHUB_STEP_SUMMARY, GITHUB_TOKEN, REPO } = process.env;
+const GITHUB_API_URL = process.env.GITHUB_API_URL || 'https://api.github.com';
 if (!BASE_SHA || !HEAD_SHA) {
   console.error('BASE_SHA と HEAD_SHA が必要です');
   process.exit(2);
@@ -32,17 +33,18 @@ async function resolveCPermission() {
   }
   try {
     const res = await fetch(
-      `https://api.github.com/repos/${REPO}/collaborators/${encodeURIComponent(PR_AUTHOR)}/permission`,
+      `${GITHUB_API_URL}/repos/${REPO}/collaborators/${encodeURIComponent(PR_AUTHOR)}/permission`,
       {
         headers: {
           Authorization: `Bearer ${GITHUB_TOKEN}`,
           Accept: 'application/vnd.github+json',
           'X-GitHub-Api-Version': '2022-11-28',
         },
+        signal: AbortSignal.timeout(15000),
       },
     );
     if (!res.ok) {
-      return { allowed: false, reason: `権限 API が ${res.status} を返しました（collaborator でない場合は 404）` };
+      return { allowed: false, reason: `権限 API が ${res.status} を返しました` };
     }
     const data = await res.json();
     const roleName = data.role_name;
@@ -56,7 +58,7 @@ const { allowed, roleName, reason } = await resolveCPermission();
 if (roleName !== undefined) summary += `作成者の権限：${roleName}\n\n`;
 if (reason) summary += `権限の確認結果：${reason}\n\n`;
 if (!allowed) {
-  summary += '**失敗：区分 C のファイルは、大久保か、このリポジトリで Maintain 以上の権限を持つ人だけが変えられます。大久保へ連絡してください。**\n';
+  summary += '**失敗：区分 C のファイルは、大久保か、このリポジトリに招待された人（Write 以上）だけが変えられます。大久保へ連絡してください。**\n';
 }
 console.log(summary);
 if (GITHUB_STEP_SUMMARY) appendFileSync(GITHUB_STEP_SUMMARY, summary);
