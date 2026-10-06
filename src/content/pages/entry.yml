@@ -60,10 +60,7 @@ form:
       placeholder: 弊社を志望される理由や、入社後に挑戦したいことなどをご自由にご記入ください。
     resume:
       label: 履歴書添付
-      dropLabel: ファイルをドラッグ＆ドロップするか、パソコンから選択
-      spDropLabel: タップしてファイルを選択
-      hint: ※ PDF、Word、Excel形式（最大10MBまで）
-      spHint: ※ PDF、Word、Excel形式（最大10MB）
+      notice: 履歴書（PDF、Word、Excel 形式、10MB 以下）は、送信ボタンを押したあとに開くメールに添付してください。
   privacy:
     title: 個人情報の取り扱いについて
     body: |
@@ -71,4 +68,3 @@ form:
       法令に基づく場合を除き、事前の同意なく第三者への提供は行いません。
       個人情報の開示や訂正をご希望の場合は、お問い合わせ窓口までご連絡ください。
     agreeLabel: 個人情報の取り扱いについて同意する
-  preparingNote: 【準備中】送信の仕組みは準備中です。

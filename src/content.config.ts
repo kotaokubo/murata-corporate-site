@@ -514,10 +514,7 @@ const entryPage = defineCollection({
         motive: obj({ label: nonEmpty, placeholder: nonEmpty }),
         resume: obj({
           label: nonEmpty,
-          dropLabel: nonEmpty,
-          spDropLabel: nonEmpty,
-          hint: nonEmpty,
-          spHint: nonEmpty,
+          notice: nonEmpty,
         }),
       }),
       privacy: obj({
@@ -525,7 +522,6 @@ const entryPage = defineCollection({
         body: nonEmpty,
         agreeLabel: nonEmpty,
       }),
-      preparingNote: nonEmpty,
     }),
   }),
 });
