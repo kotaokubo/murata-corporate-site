@@ -22,7 +22,7 @@ import iconPackage from '../assets/brand/icons/package.svg';
 import iconWrench from '../assets/brand/icons/wrench.svg';
 import iconTruck from '../assets/brand/icons/truck.svg';
 
-const homeEntry = await getEntry('pages', 'home');
+const homeEntry = await getEntry('homePage', 'home');
 if (!homeEntry) throw new Error('src/content/pages/home.yml が見つかりません');
 const t = homeEntry.data;
 

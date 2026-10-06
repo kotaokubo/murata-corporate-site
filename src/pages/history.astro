@@ -6,30 +6,9 @@ import PageSubnav from '../components/PageSubnav.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import pageHeroImg from '../assets/images/company/page-hero.png';
 
-const entry = await getEntry('pages', 'history');
+const entry = await getEntry('historyPage', 'history');
 if (!entry) throw new Error('src/content/pages/history.yml が見つかりません');
-const t = entry.data as unknown as {
-  meta: { title: string; description: string };
-  hero: { eyebrow: string; title: string };
-  subnav: { label: string; href: string }[];
-  intro: {
-    eyebrow: string;
-    title: string;
-    body: string;
-    sp?: { eyebrow: string; body: string };
-  };
-  timeline: { date: string; text: string; sp?: { text: string } }[];
-  houseBrands: {
-    eyebrow: string;
-    title: string;
-    items: { date: string; text: string; sp?: { text: string } }[];
-    noteBefore: string;
-    noteLinkLabel: string;
-    noteAfter: string;
-    noteHref: string;
-  };
-};
-if (!t.timeline) throw new Error('history.yml の形が違います');
+const t = entry.data;
 
 // ページ見出しの背景で、内容を伝えない飾りの写真
 const heroAlt = '';

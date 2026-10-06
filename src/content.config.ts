@@ -5,6 +5,9 @@ import { z } from 'astro/zod';
 
 const nonEmpty = z.string().trim().min(1);
 
+// 知らないキーを黙って捨てず、エラーにする（入れ子も含む）
+const obj = <T extends z.ZodRawShape>(shape: T) => z.object(shape).strict();
+
 const news = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/news' }),
   schema: ({ image }) =>
@@ -34,7 +37,7 @@ const ctaFields = {
   ctaLabel: nonEmpty,
 };
 
-const metaSchema = z.object({
+const metaSchema = obj({
   title: nonEmpty,
   description: nonEmpty,
 });
@@ -42,18 +45,18 @@ const metaSchema = z.object({
 // サイト内のパス（/ で始まる）だけを許す。外部 URL や javascript: を書けないようにする
 const internalPath = z.string().trim().regex(/^\/(?![\/\\])[^\s\\]*$/, 'サイト内のパス（/ で始まる）を書いてください');
 
-const stepEnJa = z.object({
+const stepEnJa = obj({
   en: nonEmpty,
   ja: nonEmpty,
 });
 
-const captionSlide = z.object({
+const captionSlide = obj({
   caption: nonEmpty,
 });
 
 const subnavSchema = z
   .array(
-    z.object({
+    obj({
       label: nonEmpty,
       href: internalPath,
     }),
@@ -61,192 +64,93 @@ const subnavSchema = z
   .min(1)
   .max(6);
 
-const partnersSchema = z.object({
-  meta: metaSchema,
-  pageHero: z.object({
-    eyebrow: nonEmpty,
-    title: nonEmpty,
-    sp: z.object({
-      title: nonEmpty,
-    }).optional(),
-  }),
-  intro: z.object({
-    title: nonEmpty,
-    body: nonEmpty,
-    ctaBusiness: nonEmpty,
-    ctaContact: nonEmpty,
-    sp: z.object({
-      title: nonEmpty,
-      body: nonEmpty,
-    }).optional(),
-  }),
-  reasons: z.object({
-    eyebrow: nonEmpty,
-    title: nonEmpty,
-    sp: z.object({
-      eyebrow: nonEmpty,
-      title: nonEmpty,
-    }).optional(),
-    items: z.array(z.object({
-      number: nonEmpty,
-      title: nonEmpty,
-      body: nonEmpty,
-      sp: z.object({
-        title: nonEmpty.optional(),
-        body: nonEmpty.optional(),
-      }).optional(),
-    })).length(4),
-  }),
-  consultations: z.object({
-    eyebrow: nonEmpty,
-    title: nonEmpty,
-    items: z.array(z.object({
-      en: nonEmpty,
-      title: nonEmpty,
-      bullets: z.array(nonEmpty).min(1).max(6),
-      sp: z.object({
-        en: nonEmpty,
-        title: nonEmpty,
-        bullets: z.array(nonEmpty).min(1).max(6),
-      }).optional(),
-    })).length(4),
-  }),
-  flow: z.object({
-    eyebrow: nonEmpty,
-    title: nonEmpty,
-    lead: nonEmpty,
-    steps: z.array(z.object({
-      number: nonEmpty,
-      title: nonEmpty,
-      body: nonEmpty,
-    })).length(4),
-  }),
-  faq: z.object({
-    eyebrow: nonEmpty,
-    title: nonEmpty,
-    items: z.array(z.object({
-      question: nonEmpty,
-      answer: z.string().trim(),
-    })).min(1).max(12),
-  }),
-});
-
-const newsPageSchema = z.object({
-  meta: metaSchema,
-  pageHero: z.object({
-    eyebrow: nonEmpty,
-    title: nonEmpty,
-    sp: z.object({
-      title: nonEmpty,
-    }).optional(),
-  }),
-  breadcrumb: z.object({
-    home: nonEmpty,
-    current: nonEmpty,
-  }),
-});
-
-// 下層ページの入口で、ページの形の型として使う
-export type PartnersPageData = z.infer<typeof partnersSchema>;
-export type NewsPageData = z.infer<typeof newsPageSchema>;
-
-const pages = defineCollection({
-  loader: glob({ pattern: '**/*.yml', base: './src/content/pages' }),
-  schema: ({ image }) => {
-    const homePageSchema = z.object({
+const homePage = defineCollection({
+  loader: glob({ pattern: 'home.yml', base: './src/content/pages' }),
+  schema: ({ image }) =>
+    obj({
       meta: metaSchema,
-      hero: z.object({
+      hero: obj({
         catchphrase: nonEmpty,
         scroll: nonEmpty,
       }),
-      concept: z.object({
+      concept: obj({
         eyebrow: nonEmpty,
         title: nonEmpty,
         body: nonEmpty,
-        sp: z
-          .object({
-            title: nonEmpty,
-            body: nonEmpty,
-          })
-          .optional(),
+        sp: obj({
+          title: nonEmpty,
+          body: nonEmpty,
+        }).optional(),
       }),
-      ourBusiness: z.object({
+      ourBusiness: obj({
         eyebrow: nonEmpty,
         title: nonEmpty,
         body: nonEmpty,
         ...ctaFields,
         steps: z
           .array(
-            z.object({
+            obj({
               en: nonEmpty,
               ja: nonEmpty,
             }),
           )
           .length(6),
-        sp: z
-          .object({
-            title: nonEmpty,
-          })
-          .optional(),
+        sp: obj({
+          title: nonEmpty,
+        }).optional(),
       }),
-      about: z.object({
+      about: obj({
         eyebrow: nonEmpty,
         title: nonEmpty,
         body: nonEmpty,
         ...ctaFields,
-        sp: z
-          .object({
-            eyebrow: nonEmpty,
-            body: nonEmpty,
-          })
-          .optional(),
+        sp: obj({
+          eyebrow: nonEmpty,
+          body: nonEmpty,
+        }).optional(),
       }),
-      recruit: z.object({
+      recruit: obj({
         eyebrow: nonEmpty,
         title: nonEmpty,
         lead: nonEmpty,
         ...ctaFields,
         cards: z
           .array(
-            z.object({
+            obj({
               title: nonEmpty,
               linkLabel: nonEmpty,
             }),
           )
           .min(1)
           .max(6),
-        sp: z
-          .object({
-            lead: nonEmpty,
-            ctaLabel: nonEmpty.optional(),
-          })
-          .optional(),
+        sp: obj({
+          lead: nonEmpty,
+          ctaLabel: nonEmpty.optional(),
+        }).optional(),
       }),
-      news: z.object({
+      news: obj({
         eyebrow: nonEmpty,
         title: nonEmpty,
         ...ctaFields,
       }),
-      onlineShop: z.object({
+      onlineShop: obj({
         eyebrow: nonEmpty,
         title: nonEmpty,
         overlay: nonEmpty,
         body: nonEmpty,
         ...ctaFields,
         note: nonEmpty,
-        sp: z
-          .object({
-            body: nonEmpty,
-          })
-          .optional(),
+        sp: obj({
+          body: nonEmpty,
+        }).optional(),
       }),
-      instagram: z.object({
+      instagram: obj({
         eyebrow: nonEmpty,
         title: nonEmpty,
         ...ctaFields,
         images: z
           .array(
-            z.object({
+            obj({
               src: image(),
               alt: nonEmpty,
             }),
@@ -254,12 +158,12 @@ const pages = defineCollection({
           .max(8)
           .default([]),
       }),
-      faq: z.object({
+      faq: obj({
         eyebrow: nonEmpty,
         title: nonEmpty,
         items: z
           .array(
-            z.object({
+            obj({
               question: nonEmpty,
               // 空答えはトップで非表示にする運用のため、空文字を許す
               answer: z.string().trim(),
@@ -268,375 +172,481 @@ const pages = defineCollection({
           .min(1)
           .max(12),
       }),
-    });
+    }),
+});
 
-    const companyPageSchema = z.object({
-      meta: metaSchema,
-      hero: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-      }),
-      subnav: subnavSchema,
-      philosophy: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        headline: nonEmpty,
-        body: nonEmpty,
-      }),
-      message: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        body: nonEmpty,
-        role: nonEmpty,
-        name: nonEmpty,
-      }),
-      profile: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        rows: z
-          .array(
-            z.object({
-              label: nonEmpty,
-              value: nonEmpty,
-              sp: z
-                .object({
-                  value: nonEmpty,
-                })
-                .optional(),
-            }),
-          )
-          .min(1)
-          .max(20),
-      }),
-    });
-
-    const historyPageSchema = z.object({
-      meta: metaSchema,
-      hero: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-      }),
-      subnav: subnavSchema,
-      intro: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        body: nonEmpty,
-        sp: z
-          .object({
-            eyebrow: nonEmpty,
-            body: nonEmpty,
-          })
-          .optional(),
-      }),
-      timeline: z
+const companyPage = defineCollection({
+  loader: glob({ pattern: 'company.yml', base: './src/content/pages' }),
+  schema: obj({
+    meta: metaSchema,
+    hero: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+    }),
+    subnav: subnavSchema,
+    philosophy: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      headline: nonEmpty,
+      body: nonEmpty,
+    }),
+    message: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      body: nonEmpty,
+      role: nonEmpty,
+      name: nonEmpty,
+    }),
+    profile: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      rows: z
         .array(
-          z.object({
-            date: nonEmpty,
-            text: nonEmpty,
-            sp: z
-              .object({
-                text: nonEmpty,
-              })
-              .optional(),
+          obj({
+            label: nonEmpty,
+            value: nonEmpty,
+            sp: obj({
+              value: nonEmpty,
+            }).optional(),
           }),
         )
         .min(1)
-        .max(40),
-      houseBrands: z.object({
+        .max(20),
+    }),
+  }),
+});
+
+const historyPage = defineCollection({
+  loader: glob({ pattern: 'history.yml', base: './src/content/pages' }),
+  schema: obj({
+    meta: metaSchema,
+    hero: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+    }),
+    subnav: subnavSchema,
+    intro: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      body: nonEmpty,
+      sp: obj({
         eyebrow: nonEmpty,
-        title: nonEmpty,
-        items: z
-          .array(
-            z.object({
-              date: nonEmpty,
+        body: nonEmpty,
+      }).optional(),
+    }),
+    timeline: z
+      .array(
+        obj({
+          date: nonEmpty,
+          text: nonEmpty,
+          sp: obj({
+            text: nonEmpty,
+          }).optional(),
+        }),
+      )
+      .min(1)
+      .max(40),
+    houseBrands: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      items: z
+        .array(
+          obj({
+            date: nonEmpty,
+            text: nonEmpty,
+            sp: obj({
               text: nonEmpty,
-              sp: z
-                .object({
-                  text: nonEmpty,
-                })
-                .optional(),
-            }),
-          )
-          .min(1)
-          .max(20),
-        noteBefore: nonEmpty,
-        noteLinkLabel: nonEmpty,
-        noteAfter: nonEmpty,
-        noteHref: internalPath,
-      }),
-    });
+            }).optional(),
+          }),
+        )
+        .min(1)
+        .max(20),
+      noteBefore: nonEmpty,
+      noteLinkLabel: nonEmpty,
+      noteAfter: nonEmpty,
+      noteHref: internalPath,
+    }),
+  }),
+});
 
-    const businessPageSchema = z.object({
-      meta: metaSchema,
-      hero: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-      }),
-      wholesale: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        intro: nonEmpty,
-        body: nonEmpty,
+const businessPage = defineCollection({
+  loader: glob({ pattern: 'business.yml', base: './src/content/pages' }),
+  schema: obj({
+    meta: metaSchema,
+    hero: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+    }),
+    wholesale: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      intro: nonEmpty,
+      body: nonEmpty,
+      steps: z.array(stepEnJa).length(6),
+      slides: z.array(captionSlide).length(4),
+      sp: obj({
         steps: z.array(stepEnJa).length(6),
-        slides: z.array(captionSlide).length(4),
-        sp: z
-          .object({
-            steps: z.array(stepEnJa).length(6),
+        body: nonEmpty,
+      }).optional(),
+    }),
+    craft: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      steps: z
+        .array(
+          obj({
+            num: nonEmpty,
+            label: nonEmpty,
+          }),
+        )
+        .length(8),
+      // 製作工程の写真は、使える写真が届くまで置かない（届いたら写真と見出しを足す）
+    }),
+    repair: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      body: nonEmpty,
+      slides: z.array(captionSlide).length(2),
+      sp: obj({
+        lead: nonEmpty,
+        services: nonEmpty,
+        closing: nonEmpty,
+        slides: z.array(captionSlide).length(2).optional(),
+      }).optional(),
+    }),
+    endToEnd: obj({
+      title: nonEmpty,
+      body: nonEmpty,
+      sp: obj({
+        eyebrow: nonEmpty,
+        body: nonEmpty,
+      }).optional(),
+    }),
+    strength: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      cards: z
+        .array(
+          obj({
+            title: nonEmpty,
             body: nonEmpty,
-          })
-          .optional(),
-      }),
-      craft: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        steps: z
-          .array(
-            z.object({
-              num: nonEmpty,
-              label: nonEmpty,
-            }),
-          )
-          .length(8),
-        // 製作工程の写真は、使える写真が届くまで置かない（届いたら写真と見出しを足す）
-      }),
-      repair: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        body: nonEmpty,
-        slides: z.array(captionSlide).length(2),
-        sp: z
-          .object({
-            lead: nonEmpty,
-            services: nonEmpty,
-            closing: nonEmpty,
-            slides: z.array(captionSlide).length(2).optional(),
-          })
-          .optional(),
-      }),
-      endToEnd: z.object({
-        title: nonEmpty,
-        body: nonEmpty,
-        sp: z
-          .object({
-            eyebrow: nonEmpty,
+          }),
+        )
+        .length(4),
+    }),
+    tokyo: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      company: nonEmpty,
+      branch: nonEmpty,
+      postal: nonEmpty,
+      address: nonEmpty,
+      building: nonEmpty,
+      telLabel: nonEmpty,
+      telHref: z.string().trim().regex(/^tel:\+?[0-9-]+$/, 'tel: で始まる電話番号を書いてください'),
+      mapLabel: nonEmpty,
+      mapHref: z.string().trim().regex(/^https:\/\/[^\s]+$/, 'https:// で始まる地図の URL を書いてください'),
+      galleryLabel: nonEmpty,
+      features: z
+        .array(
+          obj({
+            title: nonEmpty,
             body: nonEmpty,
-          })
-          .optional(),
-      }),
-      strength: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        cards: z
-          .array(
-            z.object({
-              title: nonEmpty,
-              body: nonEmpty,
-            }),
-          )
-          .length(4),
-      }),
-      tokyo: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        company: nonEmpty,
-        branch: nonEmpty,
-        postal: nonEmpty,
-        address: nonEmpty,
-        building: nonEmpty,
-        telLabel: nonEmpty,
-        telHref: z.string().trim().regex(/^tel:\+?[0-9-]+$/, 'tel: で始まる電話番号を書いてください'),
-        mapLabel: nonEmpty,
-        mapHref: z.string().trim().regex(/^https:\/\/[^\s]+$/, 'https:// で始まる地図の URL を書いてください'),
-        galleryLabel: nonEmpty,
-        features: z
-          .array(
-            z.object({
-              title: nonEmpty,
-              body: nonEmpty,
-            }),
-          )
-          .length(2),
-      }),
-      onlineShop: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        overlay: nonEmpty,
-        body: nonEmpty,
-        ...ctaFields,
-        note: nonEmpty,
-      }),
-    });
+          }),
+        )
+        .length(2),
+    }),
+    onlineShop: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      overlay: nonEmpty,
+      body: nonEmpty,
+      ...ctaFields,
+      note: nonEmpty,
+    }),
+  }),
+});
 
-    const recruitPageSchema = z.object({
-      meta: metaSchema,
-      hero: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-      }),
-      message: z.object({
-        eyebrow: nonEmpty,
+const recruitPage = defineCollection({
+  loader: glob({ pattern: 'recruit.yml', base: './src/content/pages' }),
+  schema: obj({
+    meta: metaSchema,
+    hero: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+    }),
+    message: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      headline: nonEmpty,
+      body1: nonEmpty,
+      body2: nonEmpty,
+      ctaRequirements: nonEmpty,
+      ctaEntry: nonEmpty,
+      sp: obj({
         title: nonEmpty,
         headline: nonEmpty,
         body1: nonEmpty,
         body2: nonEmpty,
-        ctaRequirements: nonEmpty,
-        ctaEntry: nonEmpty,
-        sp: z.object({
-          title: nonEmpty,
-          headline: nonEmpty,
-          body1: nonEmpty,
-          body2: nonEmpty,
-        }),
       }),
-      staffInterview: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        items: z
-          .array(
-            z.object({
-              role: nonEmpty,
-              name: nonEmpty,
-              // 写真のファイル（src/assets/images/recruit/staff-<photo>.jpg）。順序を入れ替えても写真が人に付いていく
-              photo: z.enum(['omoto', 'sakamoto', 'mandal']),
-              sections: z.array(nonEmpty).min(1).max(4),
-              // PC で一言がカード下部に無い場合は空文字
-              message: z.string().trim(),
-              spBody: nonEmpty,
-            }),
-          )
-          .length(3),
-      }),
-      midCta: z.object({
-        message: nonEmpty,
-        ...ctaFields,
-      }),
-      selectionFlow: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
+    }),
+    staffInterview: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      items: z
+        .array(
+          obj({
+            role: nonEmpty,
+            name: nonEmpty,
+            // 写真のファイル（src/assets/images/recruit/staff-<photo>.jpg）。順序を入れ替えても写真が人に付いていく
+            photo: z.enum(['omoto', 'sakamoto', 'mandal']),
+            sections: z.array(nonEmpty).min(1).max(4),
+            // PC で一言がカード下部に無い場合は空文字
+            message: z.string().trim(),
+            spBody: nonEmpty,
+          }),
+        )
+        .length(3),
+    }),
+    midCta: obj({
+      message: nonEmpty,
+      ...ctaFields,
+    }),
+    selectionFlow: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      steps: z
+        .array(
+          obj({
+            en: nonEmpty,
+            ja: nonEmpty,
+          }),
+        )
+        .length(5),
+      sp: obj({
         steps: z
           .array(
-            z.object({
+            obj({
               en: nonEmpty,
               ja: nonEmpty,
             }),
           )
           .length(5),
-        sp: z.object({
-          steps: z
-            .array(
-              z.object({
-                en: nonEmpty,
-                ja: nonEmpty,
-              }),
-            )
-            .length(5),
-        }),
       }),
-      jobRequirements: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-        jobs: z
-          .array(
-            z.object({
-              title: nonEmpty,
-              rows: z
-                .array(
-                  z.object({
-                    label: nonEmpty,
-                    value: nonEmpty,
-                  }),
-                )
-                .min(3)
-                .max(10),
-            }),
-          )
-          .length(3),
-        stats: z
-          .array(
-            z.object({
-              title: nonEmpty,
-              value: nonEmpty,
-              unit: nonEmpty,
-            }),
-          )
-          .length(5),
-        bottomCta: z.object({
-          message: nonEmpty,
-          ...ctaFields,
-        }),
-      }),
-    });
-
-    const entryPageSchema = z.object({
-      meta: metaSchema,
-      hero: z.object({
-        eyebrow: nonEmpty,
-        title: nonEmpty,
-      }),
-      lead: z.object({
-        title: nonEmpty,
-        body: nonEmpty,
-        sp: z.object({
-          title: nonEmpty,
-          body: nonEmpty,
-        }),
-      }),
-      form: z.object({
-        requiredLabel: nonEmpty,
-        optionalLabel: nonEmpty,
-        fields: z.object({
-          name: z.object({ label: nonEmpty, placeholder: nonEmpty }),
-          kana: z.object({ label: nonEmpty, placeholder: nonEmpty }),
-          email: z.object({ label: nonEmpty, placeholder: nonEmpty }),
-          tel: z.object({
-            label: nonEmpty,
-            placeholder: nonEmpty,
-            spPlaceholder: nonEmpty,
+    }),
+    jobRequirements: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      jobs: z
+        .array(
+          obj({
+            title: nonEmpty,
+            rows: z
+              .array(
+                obj({
+                  label: nonEmpty,
+                  value: nonEmpty,
+                }),
+              )
+              .min(3)
+              .max(10),
           }),
-          job: z.object({
-            label: nonEmpty,
-            placeholder: nonEmpty,
-            spPlaceholder: nonEmpty,
-            options: z.array(nonEmpty).min(1).max(6),
+        )
+        .length(3),
+      stats: z
+        .array(
+          obj({
+            title: nonEmpty,
+            value: nonEmpty,
+            unit: nonEmpty,
           }),
-          place: z.object({
-            label: nonEmpty,
-            placeholder: nonEmpty,
-            spPlaceholder: nonEmpty,
-            options: z.array(nonEmpty).min(1).max(6),
-          }),
-          pr: z.object({ label: nonEmpty, placeholder: nonEmpty }),
-          motive: z.object({ label: nonEmpty, placeholder: nonEmpty }),
-          resume: z.object({
-            label: nonEmpty,
-            dropLabel: nonEmpty,
-            spDropLabel: nonEmpty,
-            hint: nonEmpty,
-            spHint: nonEmpty,
-          }),
-        }),
-        privacy: z.object({
-          title: nonEmpty,
-          body: nonEmpty,
-          agreeLabel: nonEmpty,
-        }),
-        preparingNote: nonEmpty,
+        )
+        .length(5),
+      bottomCta: obj({
+        message: nonEmpty,
+        ...ctaFields,
       }),
-    });
-
-    // 実行時はページごとの形を検証する。型はトップページ形に固定し、
-    // index.astro を変えずに済むようにする（各下層ページは入口で絞り込む）
-    return z.union([
-      homePageSchema,
-      companyPageSchema,
-      historyPageSchema,
-      businessPageSchema,
-      recruitPageSchema,
-      entryPageSchema,
-      partnersSchema,
-      newsPageSchema,
-    ]) as unknown as typeof homePageSchema;
-  },
+    }),
+  }),
 });
 
-export const collections = { news, legal, pages };
+const entryPage = defineCollection({
+  loader: glob({ pattern: 'entry.yml', base: './src/content/pages' }),
+  schema: obj({
+    meta: metaSchema,
+    hero: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+    }),
+    lead: obj({
+      title: nonEmpty,
+      body: nonEmpty,
+      sp: obj({
+        title: nonEmpty,
+        body: nonEmpty,
+      }),
+    }),
+    form: obj({
+      requiredLabel: nonEmpty,
+      optionalLabel: nonEmpty,
+      fields: obj({
+        name: obj({ label: nonEmpty, placeholder: nonEmpty }),
+        kana: obj({ label: nonEmpty, placeholder: nonEmpty }),
+        email: obj({ label: nonEmpty, placeholder: nonEmpty }),
+        tel: obj({
+          label: nonEmpty,
+          placeholder: nonEmpty,
+          spPlaceholder: nonEmpty,
+        }),
+        job: obj({
+          label: nonEmpty,
+          placeholder: nonEmpty,
+          spPlaceholder: nonEmpty,
+          options: z.array(nonEmpty).min(1).max(6),
+        }),
+        place: obj({
+          label: nonEmpty,
+          placeholder: nonEmpty,
+          spPlaceholder: nonEmpty,
+          options: z.array(nonEmpty).min(1).max(6),
+        }),
+        pr: obj({ label: nonEmpty, placeholder: nonEmpty }),
+        motive: obj({ label: nonEmpty, placeholder: nonEmpty }),
+        resume: obj({
+          label: nonEmpty,
+          dropLabel: nonEmpty,
+          spDropLabel: nonEmpty,
+          hint: nonEmpty,
+          spHint: nonEmpty,
+        }),
+      }),
+      privacy: obj({
+        title: nonEmpty,
+        body: nonEmpty,
+        agreeLabel: nonEmpty,
+      }),
+      preparingNote: nonEmpty,
+    }),
+  }),
+});
+
+const partnersPage = defineCollection({
+  loader: glob({ pattern: 'partners.yml', base: './src/content/pages' }),
+  schema: obj({
+    meta: metaSchema,
+    pageHero: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      sp: obj({
+        title: nonEmpty,
+      }).optional(),
+    }),
+    intro: obj({
+      title: nonEmpty,
+      body: nonEmpty,
+      ctaBusiness: nonEmpty,
+      ctaContact: nonEmpty,
+      sp: obj({
+        title: nonEmpty,
+        body: nonEmpty,
+      }).optional(),
+    }),
+    reasons: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      sp: obj({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+      }).optional(),
+      items: z
+        .array(
+          obj({
+            number: nonEmpty,
+            title: nonEmpty,
+            body: nonEmpty,
+            sp: obj({
+              title: nonEmpty.optional(),
+              body: nonEmpty.optional(),
+            }).optional(),
+          }),
+        )
+        .length(4),
+    }),
+    consultations: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      items: z
+        .array(
+          obj({
+            en: nonEmpty,
+            title: nonEmpty,
+            bullets: z.array(nonEmpty).min(1).max(6),
+            sp: obj({
+              en: nonEmpty,
+              title: nonEmpty,
+              bullets: z.array(nonEmpty).min(1).max(6),
+            }).optional(),
+          }),
+        )
+        .length(4),
+    }),
+    flow: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      lead: nonEmpty,
+      steps: z
+        .array(
+          obj({
+            number: nonEmpty,
+            title: nonEmpty,
+            body: nonEmpty,
+          }),
+        )
+        .length(4),
+    }),
+    faq: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      items: z
+        .array(
+          obj({
+            question: nonEmpty,
+            answer: z.string().trim(),
+          }),
+        )
+        .min(1)
+        .max(12),
+    }),
+  }),
+});
+
+const newsPage = defineCollection({
+  loader: glob({ pattern: 'news.yml', base: './src/content/pages' }),
+  schema: obj({
+    meta: metaSchema,
+    pageHero: obj({
+      eyebrow: nonEmpty,
+      title: nonEmpty,
+      sp: obj({
+        title: nonEmpty,
+      }).optional(),
+    }),
+    breadcrumb: obj({
+      home: nonEmpty,
+      current: nonEmpty,
+    }),
+  }),
+});
+
+export const collections = {
+  news,
+  legal,
+  homePage,
+  companyPage,
+  historyPage,
+  businessPage,
+  recruitPage,
+  entryPage,
+  partnersPage,
+  newsPage,
+};
