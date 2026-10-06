@@ -1,4 +1,5 @@
 # main への PR で「コードオーナー（大久保）の承認」が要るファイル（docs/development.md の ruleset「main-review」と組み合わせて効く）
+# ruleset main-review の bypass（Repository admin と Maintain）を持つ人は、この承認なしで main に入れられる
 # 区分 C：大久保の承認がないと main に入らない
 *                         @kotaokubo
 

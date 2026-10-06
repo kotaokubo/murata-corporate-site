@@ -15,6 +15,7 @@ Node.js 22 が要ります。
 
 ```sh
 npm ci
+npx playwright install --with-deps chromium   # 初回と、Playwright を更新したあと（無いと test:e2e がブラウザ無しで失敗する）
 npm run dev          # http://localhost:4321 で確認（下書きも表示される）
 npm run build        # 型の検査とビルド
 npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つの幅で全ページを撮影する）
@@ -27,7 +28,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 | ブランチ | 役割 | 公開先 |
 | --- | --- | --- |
 | `main` | 本番 | www.murata-jewelry.co.jp（切り替えまでは `<プロジェクト名>.pages.dev`） |
-| `staging` | 検証 | `staging.<プロジェクト名>.pages.dev`（Cloudflare Access で閲覧制限） |
+| `staging` | 検証 | `staging.<プロジェクト名>.pages.dev`（閲覧の制限なし。検索には載らない） |
 | `work/...` | 作業 | なし |
 
 1. `main` から `work/...` を切る
@@ -47,7 +48,7 @@ npm run test:e2e     # Playwright（本番と同じ出力でテストし、4つ�
 | --- | --- |
 | `build` | 型の検査（`astro check`）とビルド。お知らせの書式の誤りもここで止まる |
 | `playwright` | トップページからサイト内のリンクでたどれるページが開くか、ブラウザのエラー、お問い合わせ欄、メニュー、下書きが本番に出ないか、noindex、エントリーフォームの入力チェック。撮影画像を Checks 画面に保存 |
-| `scope` | 変更したファイルを区分 A・B・C に分ける。大久保以外が区分 C を変えたら失敗。`guard.yml` で動かすので、PR の中から書き換えて緩めることはできない |
+| `scope` | 変更したファイルを区分 A・B・C に分ける。作成者が `kotaokubo` か、リポジトリで maintain 以上の権限を持つ人（デザイナー）なら区分 C を許可し、それ以外が区分 C を変えたら失敗。`guard.yml` で動かすので、PR の中から書き換えて緩めることはできない |
 | `staging-verified` | `main` への PR の最新の変更が `staging` に入っているか。入っていなければ失敗（大久保の `hotfix/` は例外） |
 | `secrets` | パスワードや API キーらしき文字列（gitleaks） |
 | `codex-review` | PR の最新のコミットに Codex のレビュー（または指摘なしの 👍）が付いているか。付くまで最大25分待つ。PR を出したら必ず `@codex review` とコメントしてレビューを依頼する（自動では付かないことがある）。間に合わずに失敗したら、レビューが付いてから再実行する。指摘は「会話の解決」の設定で、すべて解決するまでマージできない |
@@ -94,10 +95,11 @@ Claude Code では、ファイルを書き換える前に `.claude/settings.json
 - Actions の既定の権限：read
 - Rules → Rulesets は次の3つ
   - **main-protect**（対象：`main`、bypass：なし）：Restrict deletions、Block force pushes、Require a pull request before merging（承認数 0）、Require status checks to pass（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）、**Require conversation resolution before merging**（Codex の指摘をすべて解決しないとマージできない）
-  - **main-review**（対象：`main`、bypass：Repository admin）：Require a pull request before merging（Require review from Code Owners、Dismiss stale pull request approvals、Require approval of the most recent reviewable push）
-    - CODEOWNERS で、区分 A（お知らせと画像）と区分 B（`src/pages/`、`src/components/`、`src/layouts/`、`src/styles/`）の持ち主を外している。ただし、その中でも `src/pages/privacy.astro`、`src/pages/recruit/entry.astro`、`src/layouts/BaseLayout.astro` は区分 C として大久保の持ち物に戻している（`scripts/scope.mjs` の `SENSITIVE`）。区分 A・B だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 C を含む PR は大久保の承認が要る
+  - **main-review**（対象：`main`、bypass：Repository admin と Maintain）：Require a pull request before merging（Require review from Code Owners、Dismiss stale pull request approvals、Require approval of the most recent reviewable push）
+    - CODEOWNERS で、区分 A（お知らせと画像）と区分 B（`src/pages/`、`src/components/`、`src/layouts/`、`src/styles/`）の持ち主を外している。ただし、その中でも `src/pages/privacy.astro`、`src/pages/recruit/entry.astro`、`src/layouts/BaseLayout.astro` は区分 C として大久保の持ち物に戻している（`scripts/scope.mjs` の `SENSITIVE`）。区分 A・B だけの PR は、必須チェックが通れば事務の方が自分でマージできる。区分 C を含む PR は大久保の承認が要る。ただし、bypass を持つ Maintain 以上の人（デザイナー）は、この承認なしで `main` に入れられる
     - 区分 B は承認の代わりに、事務の方が影響するページを検証用の URL で重めに確かめる（AGENTS.md「区分 B のとき」）。全体の動作は必須チェックの Playwright で担保する
     - bypass に大久保（Repository admin）を入れているのは、大久保が自分の PR を承認できないため。bypass は main-review にだけ効き、main-protect の必須チェックは大久保も飛ばせない
+    - bypass に Maintain ロールも入れているのは、デザイナーが区分 C を大久保の承認なしで出せるようにするため。main-protect の必須チェック（`build`、`playwright`、`scope`、`staging-verified`、`secrets`、`codex-review`）と会話の解決は、デザイナーにも効いたままである
   - **staging-protect**（対象：`staging`、bypass：なし）：Restrict deletions、Block force pushes
     - `staging` は毎朝の自動取り込みが直接 push するので、PR 必須と必須チェックはかけていない。作業ブランチからは PR で入れる（AGENTS.md）
     - そのため `staging` には、区分 C の変更やチェックが失敗した変更も入りうる。入っても検証環境だけの話で、`main` へは main-protect の必須チェックで止まる
@@ -111,11 +113,23 @@ Claude Code では、ファイルを書き換える前に `.claude/settings.json
 
 ### Cloudflare Pages
 
-2026-10-04 時点では未設定。村田宝飾名義の Cloudflare アカウントができてから、次の内容で入れる。
+設定済み。本番は https://murata-corporate-site.pages.dev/ で公開している（2026-10-06 に `main` へ19本を merge）。`www.murata-jewelry.co.jp` はまだ旧サイトで、切り替えていない。設定の内容は次のとおり。
 
 - GitHub 連携でこのリポジトリを接続する
 - Build command：`npm run build`、Output：`dist`、環境変数 `NODE_VERSION=22`
 - Production branch：`main`
 - Preview branches：Custom → 含めるのは `staging` のみ
-- プレビューに Cloudflare Access をかける（事務の方、公開判断者、大久保だけ）
+- プレビューに閲覧の制限（Cloudflare Access）はかけない（2026-10-05 に大久保が決めた）。プレビューは Cloudflare が `X-Robots-Tag: noindex` を付け、本番以外のビルドは `meta robots noindex` も出すので、検索には載らない。ただし URL を知っている人は誰でも見られる（URL はリポジトリから推測できる）。下書きのお知らせも staging では表示されるので、公開前に漏れて困る内容は staging にも入れない
 - 本番の環境変数に `PUBLIC_GA4_ID`（GA4 の測定 ID）を入れる
+
+## デザイナーを迎えるとき
+
+外部のデザイナーには、区分 C を含めて任せる。作業環境は Codex の Web 版（ChatGPT の Codex 画面）である。
+デザイナーの人数と GitHub アカウントは未定。大久保が、迎えるたびに次を行う。
+
+- ruleset main-review の bypass に、Repository admin に加えて Maintain ロールが入っていることを GitHub の画面で確かめる（初回のみ）
+- GitHub で、デザイナーを **Maintain 権限**の collaborator として招待する
+- Codex の GitHub 連携とセットアップ用スクリプト（`npm ci` と `npx playwright install --with-deps chromium`、Node 22）の作り方を案内する。手順は [README.md](../README.md) の「デザイナーの方へ」にある
+- デザイナーの PR で `@codex review` のコメントが動くか（Codex のレビューが付き、`codex-review` が成功するか）を確かめる。**未検証**。動かなければ、デザイナーの代わりに大久保がコメントするなどの扱いを決める
+- 設計書（Notion）と Figma を共有する。Figma のリンクとフレームの ID は、このリポジトリに書かない
+- デザイナーの区分 C の PR で、必須チェック `scope` が成功し、大久保の承認なしに `main` へ入れられることを確かめる

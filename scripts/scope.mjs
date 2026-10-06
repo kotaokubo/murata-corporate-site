@@ -15,4 +15,10 @@ export function classify(file) {
   if (/^src\/(pages|components|layouts|styles)\//.test(file)) return 'B';
   return 'C';
 }
-export const LABEL = { A: '区分 A（内容の更新）', B: '区分 B（見た目と構成）', C: '区分 C（大久保だけが変える）' };
+export const LABEL = { A: '区分 A（内容の更新）', B: '区分 B（見た目と構成）', C: '区分 C（大久保か Maintain 以上が変える）' };
+
+// 区分 C を変えてよい人か。大久保は常に可。それ以外は GitHub の role_name が admin か maintain のときだけ可
+export function canChangeC(author, roleName) {
+  if (author === 'kotaokubo') return true;
+  return roleName === 'admin' || roleName === 'maintain';
+}
