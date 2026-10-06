@@ -1,7 +1,7 @@
 # 必須チェック「scope」「staging-verified」「codex-review」。
 # pull_request_target で動かすので、チェックの定義とスクリプトは常に main 側のものが使われる。
 # PR の中でこのファイルや scripts/ を書き換えても、そのPRのチェックには効かない（AI がチェックを緩めて通すことを防ぐ）。
-# ただし、区分 C を変えてよい人（大久保と招待された人）は、このファイルを変える PR を main に入れられる。その後の PR には効かない。
+# ただし、区分 C を変えてよい人（scripts/scope.mjs の C_ALLOWED に載っている人）は、このファイルを変える PR を main に入れられる。その後の PR には効かない。
 # 注意：PR 側のコードは一切実行しない（git の差分を見るだけ）。npm ci やビルドをここに足さないこと
 name: guard
 
@@ -32,8 +32,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
+          PR_SENDER: ${{ github.event.sender.login }}
 
   # staging 向けの PR では確かめることがないので、すぐ成功で終える。
   # ジョブごと飛ばす（if）と skipped が記録され、GitHub は必須チェックの skipped を成功と扱うので、そうしない

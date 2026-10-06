@@ -14,14 +14,14 @@
 | 採用情報 | `src/content/pages/recruit.yml` | A |
 | 新規お取引 | `src/content/pages/partners.yml` | A |
 | お知らせ一覧 | `src/content/pages/news.yml` | A |
-| エントリーフォーム | `src/content/pages/entry.yml` | C（大久保へ） |
+| エントリーフォーム | `src/content/pages/entry.yml` | C（大久保か、許可したデザイナーへ） |
 | お知らせの各記事 | `src/content/news/` の該当ファイル | A |
-| プライバシーポリシー | `src/content/legal/` | C（大久保へ） |
+| プライバシーポリシー | `src/content/legal/` | C（大久保か、許可したデザイナーへ） |
 
 英語の訳は `src/content/pages/en/`、中国語の訳は `src/content/pages/zh/` にあります。
 日本語を直したら、訳も直してください（AI に頼めます）。
 
-エントリーフォームの文言（個人情報の同意文や応募の案内）は区分 C です。直さず大久保へ連絡してください。
+エントリーフォームの文言（個人情報の同意文や応募の案内）は区分 C です。直さず、大久保か、許可したデザイナー（`scripts/scope.mjs` の `C_ALLOWED`）へ頼んでください。
 
 ## 手順（区分 A）
 

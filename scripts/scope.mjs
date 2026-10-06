@@ -15,10 +15,13 @@ export function classify(file) {
   if (/^src\/(pages|components|layouts|styles)\//.test(file)) return 'B';
   return 'C';
 }
-export const LABEL = { A: '区分 A（内容の更新）', B: '区分 B（見た目と構成）', C: '区分 C（大久保か、招待された人が変える）' };
+export const LABEL = { A: '区分 A（内容の更新）', B: '区分 B（見た目と構成）', C: '区分 C（大久保と、許可したデザイナーが変える）' };
 
-// 区分 C を変えてよい人か。大久保は常に可。それ以外は GitHub の role_name が admin / maintain / write のとき可
-export function canChangeC(author, roleName) {
-  if (author === 'kotaokubo') return true;
-  return roleName === 'admin' || roleName === 'maintain' || roleName === 'write';
+// 区分 C を変えてよい人の GitHub のユーザー名。大久保と、区分 C を任せるデザイナーを書く。事務の方は書かない（区分 A と B まで）。この一覧の変更も区分 C なので、一覧に載っている人の PR で足す。guard.yml は main 側のこのファイルを使うので、PR の中で一覧を書き換えても、その PR の判定には効かない
+export const C_ALLOWED = ['kotaokubo'];
+
+// 区分 C を変えてよい人か。許可リストに載っているときだけ可
+export function canChangeC(login) {
+  if (!login) return false;
+  return C_ALLOWED.includes(login);
 }
