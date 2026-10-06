@@ -34,14 +34,29 @@ const ctaFields = {
   ctaLabel: nonEmpty,
 };
 
+const metaSchema = z.object({
+  title: nonEmpty,
+  description: nonEmpty,
+});
+
+// サイト内のパス（/ で始まる）だけを許す。外部 URL や javascript: を書けないようにする
+const internalPath = z.string().trim().regex(/^\/(?![\/\\])[^\s\\]*$/, 'サイト内のパス（/ で始まる）を書いてください');
+
+const subnavSchema = z
+  .array(
+    z.object({
+      label: nonEmpty,
+      href: internalPath,
+    }),
+  )
+  .min(1)
+  .max(6);
+
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.yml', base: './src/content/pages' }),
-  schema: ({ image }) =>
-    z.object({
-      meta: z.object({
-        title: nonEmpty,
-        description: nonEmpty,
-      }),
+  schema: ({ image }) => {
+    const homePageSchema = z.object({
+      meta: metaSchema,
       hero: z.object({
         catchphrase: nonEmpty,
         scroll: nonEmpty,
@@ -50,47 +65,64 @@ const pages = defineCollection({
         eyebrow: nonEmpty,
         title: nonEmpty,
         body: nonEmpty,
-        sp: z.object({
-          title: nonEmpty,
-          body: nonEmpty,
-        }).optional(),
+        sp: z
+          .object({
+            title: nonEmpty,
+            body: nonEmpty,
+          })
+          .optional(),
       }),
       ourBusiness: z.object({
         eyebrow: nonEmpty,
         title: nonEmpty,
         body: nonEmpty,
         ...ctaFields,
-        steps: z.array(z.object({
-          en: nonEmpty,
-          ja: nonEmpty,
-        })).length(6),
-        sp: z.object({
-          title: nonEmpty,
-        }).optional(),
+        steps: z
+          .array(
+            z.object({
+              en: nonEmpty,
+              ja: nonEmpty,
+            }),
+          )
+          .length(6),
+        sp: z
+          .object({
+            title: nonEmpty,
+          })
+          .optional(),
       }),
       about: z.object({
         eyebrow: nonEmpty,
         title: nonEmpty,
         body: nonEmpty,
         ...ctaFields,
-        sp: z.object({
-          eyebrow: nonEmpty,
-          body: nonEmpty,
-        }).optional(),
+        sp: z
+          .object({
+            eyebrow: nonEmpty,
+            body: nonEmpty,
+          })
+          .optional(),
       }),
       recruit: z.object({
         eyebrow: nonEmpty,
         title: nonEmpty,
         lead: nonEmpty,
         ...ctaFields,
-        cards: z.array(z.object({
-          title: nonEmpty,
-          linkLabel: nonEmpty,
-        })).min(1).max(6),
-        sp: z.object({
-          lead: nonEmpty,
-          ctaLabel: nonEmpty.optional(),
-        }).optional(),
+        cards: z
+          .array(
+            z.object({
+              title: nonEmpty,
+              linkLabel: nonEmpty,
+            }),
+          )
+          .min(1)
+          .max(6),
+        sp: z
+          .object({
+            lead: nonEmpty,
+            ctaLabel: nonEmpty.optional(),
+          })
+          .optional(),
       }),
       news: z.object({
         eyebrow: nonEmpty,
@@ -104,9 +136,11 @@ const pages = defineCollection({
         body: nonEmpty,
         ...ctaFields,
         note: nonEmpty,
-        sp: z.object({
-          body: nonEmpty,
-        }).optional(),
+        sp: z
+          .object({
+            body: nonEmpty,
+          })
+          .optional(),
       }),
       instagram: z.object({
         eyebrow: nonEmpty,
@@ -125,13 +159,123 @@ const pages = defineCollection({
       faq: z.object({
         eyebrow: nonEmpty,
         title: nonEmpty,
-        items: z.array(z.object({
-          question: nonEmpty,
-          // 空答えはトップで非表示にする運用のため、空文字を許す
-          answer: z.string().trim(),
-        })).min(1).max(12),
+        items: z
+          .array(
+            z.object({
+              question: nonEmpty,
+              // 空答えはトップで非表示にする運用のため、空文字を許す
+              answer: z.string().trim(),
+            }),
+          )
+          .min(1)
+          .max(12),
       }),
-    }),
+    });
+
+    const companyPageSchema = z.object({
+      meta: metaSchema,
+      hero: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+      }),
+      subnav: subnavSchema,
+      philosophy: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        headline: nonEmpty,
+        body: nonEmpty,
+      }),
+      message: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        body: nonEmpty,
+        role: nonEmpty,
+        name: nonEmpty,
+      }),
+      profile: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        rows: z
+          .array(
+            z.object({
+              label: nonEmpty,
+              value: nonEmpty,
+              sp: z
+                .object({
+                  value: nonEmpty,
+                })
+                .optional(),
+            }),
+          )
+          .min(1)
+          .max(20),
+      }),
+    });
+
+    const historyPageSchema = z.object({
+      meta: metaSchema,
+      hero: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+      }),
+      subnav: subnavSchema,
+      intro: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        body: nonEmpty,
+        sp: z
+          .object({
+            eyebrow: nonEmpty,
+            body: nonEmpty,
+          })
+          .optional(),
+      }),
+      timeline: z
+        .array(
+          z.object({
+            date: nonEmpty,
+            text: nonEmpty,
+            sp: z
+              .object({
+                text: nonEmpty,
+              })
+              .optional(),
+          }),
+        )
+        .min(1)
+        .max(40),
+      houseBrands: z.object({
+        eyebrow: nonEmpty,
+        title: nonEmpty,
+        items: z
+          .array(
+            z.object({
+              date: nonEmpty,
+              text: nonEmpty,
+              sp: z
+                .object({
+                  text: nonEmpty,
+                })
+                .optional(),
+            }),
+          )
+          .min(1)
+          .max(20),
+        noteBefore: nonEmpty,
+        noteLinkLabel: nonEmpty,
+        noteAfter: nonEmpty,
+        noteHref: internalPath,
+      }),
+    });
+
+    // 実行時はページごとの形を検証する。型はトップページ形に固定し、
+    // index.astro を変えずに済むようにする（各下層ページは入口で絞り込む）
+    return z.union([
+      homePageSchema,
+      companyPageSchema,
+      historyPageSchema,
+    ]) as unknown as typeof homePageSchema;
+  },
 });
 
 export const collections = { news, legal, pages };
