@@ -5,21 +5,26 @@ interface Props {
   label?: string;
   class?: string;
   lang?: Lang;
+  /** PC（1100px 以上）でのカード幅（px）。省略時は表示枠いっぱい */
+  slideWidthPc?: number;
 }
-const { label, class: className = '', lang = 'ja' } = Astro.props;
+const { label, class: className = '', lang = 'ja', slideWidthPc } = Astro.props;
 const carouselLabel = label ?? i18n(lang, 'carouselDefaultLabel');
 const prevLabel = i18n(lang, 'carouselPrev').replace('{label}', carouselLabel);
 const nextLabel = i18n(lang, 'carouselNext').replace('{label}', carouselLabel);
 const dotsLabel = i18n(lang, 'carouselDots').replace('{label}', carouselLabel);
 const slideTemplate = i18n(lang, 'carouselSlide');
+const styleVars = slideWidthPc != null ? `--slide-w: ${slideWidthPc}px` : undefined;
 ---
 <div
   class:list={['carousel', className]}
   data-carousel
+  style={styleVars}
+  {...(slideWidthPc != null ? { 'data-slide-width-pc': String(slideWidthPc) } : {})}
   {...(lang === 'ja' ? {} : { 'data-slide-label-template': slideTemplate })}
 >
 
-  <div class="carousel-viewport" aria-live="polite">
+  <div class="carousel-viewport" data-carousel-viewport aria-live="polite">
     <div class="carousel-track" data-carousel-track>
       <slot />
     </div>
@@ -41,47 +46,104 @@ const slideTemplate = i18n(lang, 'carouselSlide');
 
 <script>
   function setupCarousel(root: HTMLElement) {
+    if (root.dataset.carouselReady === '1') return;
+    root.dataset.carouselReady = '1';
+
+    const viewport = root.querySelector<HTMLElement>('[data-carousel-viewport]');
     const track = root.querySelector<HTMLElement>('[data-carousel-track]');
     const dotsWrap = root.querySelector<HTMLElement>('[data-carousel-dots]');
     const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
     const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
-    if (!track || !dotsWrap || !prev || !next) return;
+    if (!viewport || !track || !dotsWrap || !prev || !next) return;
 
     const slides = Array.from(track.children) as HTMLElement[];
     if (slides.length === 0) return;
 
-    const slideTemplate = root.dataset.slideLabelTemplate || '{n}枚目';
+    const slideTemplate = root.dataset.slideLabelTemplate || '写真の表示位置 {n}／{total}';
     let index = 0;
+    let positions: number[] = [];
+    let dots: HTMLButtonElement[] = [];
 
-    dotsWrap.innerHTML = '';
-    slides.forEach((_, i) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'carousel-dot';
-      btn.setAttribute('aria-label', slideTemplate.replace('{n}', String(i + 1)));
-      btn.addEventListener('click', () => goTo(i));
-      dotsWrap.appendChild(btn);
-    });
+    function computePositions(): number[] {
+      const last = slides[slides.length - 1];
+      const maxOffset = Math.max(
+        0,
+        last.offsetLeft + last.offsetWidth - viewport!.clientWidth,
+      );
+      const pos: number[] = [];
+      for (let i = 0; i < slides.length; i++) {
+        const offset = Math.min(slides[i].offsetLeft, maxOffset);
+        if (pos.length === 0 || Math.abs(pos[pos.length - 1] - offset) > 1) {
+          pos.push(offset);
+        }
+        if (offset >= maxOffset - 1) break;
+      }
+      return pos.length > 0 ? pos : [0];
+    }
 
-    const dots = Array.from(dotsWrap.querySelectorAll<HTMLButtonElement>('.carousel-dot'));
-
-    function goTo(i: number) {
-      index = (i + slides.length) % slides.length;
-      track!.style.transform = `translateX(-${index * 100}%)`;
-      // 見えていない写真は、読み上げとキーボードの移動の対象から外す
-      slides.forEach((slide, si) => {
-        slide.inert = si !== index;
-        slide.setAttribute('aria-hidden', si === index ? 'false' : 'true');
+    function renderDots() {
+      dotsWrap!.innerHTML = '';
+      positions.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'carousel-dot';
+        // 点は写真1枚ではなく表示位置を選ぶ（PC では1つの位置に複数の写真が見える）
+        btn.setAttribute('aria-label', slideTemplate.replace('{n}', String(i + 1)).replace('{total}', String(positions.length)));
+        btn.addEventListener('click', () => goTo(i));
+        dotsWrap!.appendChild(btn);
       });
+      dots = Array.from(dotsWrap!.querySelectorAll<HTMLButtonElement>('.carousel-dot'));
+    }
+
+    // 送った先の位置から、表示枠に入る写真を計算する（アニメーションの途中の画面上の位置は使わない）
+    function updateVisibility() {
+      const offset = positions[index] ?? 0;
+      const viewWidth = viewport!.clientWidth;
+      slides.forEach((slide) => {
+        const left = slide.offsetLeft - offset;
+        const right = left + slide.offsetWidth;
+        const visible = right > 0.5 && left < viewWidth - 0.5;
+        slide.inert = !visible;
+        slide.setAttribute('aria-hidden', visible ? 'false' : 'true');
+      });
+    }
+
+    function syncDots() {
       dots.forEach((dot, di) => {
         dot.classList.toggle('is-active', di === index);
         dot.setAttribute('aria-current', di === index ? 'true' : 'false');
       });
     }
 
+    function goTo(i: number) {
+      if (positions.length === 0) return;
+      index = ((i % positions.length) + positions.length) % positions.length;
+      track!.style.transform = `translateX(-${positions[index]}px)`;
+      updateVisibility();
+      syncDots();
+    }
+
+    function refresh() {
+      const next = computePositions();
+      const countChanged = next.length !== positions.length;
+      positions = next;
+      if (index > positions.length - 1) index = positions.length - 1;
+      if (countChanged || dots.length !== positions.length) {
+        renderDots();
+      }
+      goTo(index);
+    }
+
     prev.addEventListener('click', () => goTo(index - 1));
     next.addEventListener('click', () => goTo(index + 1));
-    goTo(0);
+
+    const mql = window.matchMedia('(min-width: 1100px)');
+    mql.addEventListener('change', refresh);
+
+    const ro = new ResizeObserver(() => refresh());
+    ro.observe(viewport);
+
+    refresh();
   }
 
   function init() {
@@ -99,6 +161,7 @@ const slideTemplate = i18n(lang, 'carouselSlide');
     gap: 0;
     width: 100%;
     min-width: 0;
+    --slide-gap: 24px;
   }
 
   .carousel-viewport {
@@ -108,6 +171,7 @@ const slideTemplate = i18n(lang, 'carouselSlide');
 
   .carousel-track {
     display: flex;
+    gap: var(--slide-gap);
     transition: transform 0.35s ease;
     will-change: transform;
   }
@@ -122,6 +186,19 @@ const slideTemplate = i18n(lang, 'carouselSlide');
     flex: 0 0 100%;
     min-width: 0;
     box-sizing: border-box;
+  }
+
+  @media (min-width: 1100px) {
+    .carousel[data-slide-width-pc] .carousel-track > :global(*) {
+      /* 表示枠が写真の幅より狭いとき（1100〜1119px など）は、表示枠に収める */
+      flex: 0 0 min(var(--slide-w), 100%);
+    }
+  }
+
+  @media (max-width: 1099px) {
+    .carousel {
+      --slide-gap: 12px;
+    }
   }
 
   .carousel-nav {
