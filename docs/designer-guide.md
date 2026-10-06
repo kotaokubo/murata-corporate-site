@@ -118,8 +118,9 @@ npx playwright install --with-deps chromium
 2. Codex が変更を作り、GitHub に作業用の枝と PR を作る。Codex の Web 版が作る枝の名前は `codex/` で始まります。このまま使って構いません
 3. GitHub で、できた PR を開く
 4. PR の向き先（base）を確かめる。PR の題名の下に「`codex/...` wants to merge into `main`」のような表示があります。向き先は、Codex でタスクを始めたときに選んだ枝になります（未検証。多くは `main` の見込みです）
-5. 向き先が `main` になっていたら、題名の右にある「Edit」を押し、向き先を `staging` に変えて保存する。最初の PR は必ず `staging` 向けにします
-6. PR の本文（テンプレート）を確かめる。「依頼した人」には自分の名前、区分にはあてはまるものを入れる。「公開を判断した人」は main 向けの PR のときに書く項目で、自分で判断して出すなら自分の名前を書く
+5. 向き先が `main` になっていたら、題名の右にある「Edit」を押し、向き先を `staging` に変えて保存する。最初の PR は必ず `staging` 向けにします。
+   向き先を変えただけでは、自動のチェックはやり直されません。main 向けのときに走った赤いチェックが残るので、PR の下の「Close pull request」を押し、続けて「Reopen pull request」を押してください。チェックが staging 向け（名前の末尾に「 (staging)」が付く）でやり直されます
+6. PR の本文（テンプレート）を確かめる。「依頼した人」には自分の GitHub のユーザー名、区分にはあてはまるものを入れる。「公開を判断した人」は main 向けの PR のときに書く項目で、自分で判断して出すなら自分の名前を書く
 7. PR のコメント欄に `@codex review` と書いて「Comment」を押す。自動のレビューは付かないことがあるので、毎回自分でコメントします。デザイナーのコメントでも動くかは未検証です。レビューが付かなければ大久保へ連絡してください
 8. Codex のレビューの指摘が付いたら、一つずつ読む。直すなら Codex に直しを頼み、直したあとにもう一度 `@codex review` とコメントする。直さないなら、理由を返信する。どちらの場合も、最後に「Resolve conversation」を押す。理由を書かずに Resolve だけ押すことはしないでください
 9. 下の一覧のチェックがすべて緑になったことを確かめる（読み方は「7. 必須チェックの読み方」）
@@ -140,7 +141,7 @@ npx playwright install --with-deps chromium
 1. 確認が済んだら、GitHub のリポジトリの画面（https://github.com/kotaokubo/murata-corporate-site ）を開く
 2. 「Pull requests」タブの「New pull request」を押す
 3. 向き先の「base」に `main`、比べる側の「compare」に、さきほどと同じ `codex/...` の枝を選ぶ。`staging` を `main` にマージする PR は作らないでください
-4. 「Create pull request」を押し、PR の本文を埋める。「依頼した人」に自分の名前、「公開を判断した人」にも自分の名前（大久保や村田宝飾の方に判断を頼んだなら、その人の名前）を書く
+4. 「Create pull request」を押し、PR の本文を埋める。「依頼した人」に自分の GitHub のユーザー名、「公開を判断した人」にも自分の名前（大久保や村田宝飾の方に判断を頼んだなら、その人の名前）を書く
 5. PR のコメント欄に `@codex review` と書いて送る。ここでも、Codex の指摘には「直す、または理由を返信して Resolve」をします
 6. 必須チェックがすべて緑になったことを確かめる。`staging-verified` は、この枝の最新の変更が staging に入っていることを確かめるチェックです。赤いときは、直しを足したあとに staging へ出し直していないことがほとんどです
 7. 緑なら「Merge pull request」を押す。マージの方法は「Create a merge commit」を選ぶ
@@ -211,7 +212,7 @@ Figma のデザインを実装するときは、見た目が Figma どおりか�
 うまくいかなければ、大久保へ連絡してください。
 
 - Codex が使える ChatGPT のプラン（有料プランが要る見込み。最新は OpenAI のヘルプで確認する）
-- Codex の GitHub 連携で、このリポジトリを選べるか。GitHub App「ChatGPT Codex Connector」は、リポジトリの持ち主である大久保の側に入っている
+- Codex の GitHub 連携で、このリポジトリを選べるか。GitHub App「ChatGPT Codex Connector」は、リポジトリの持ち主である大久保の側に入っている見込み
 - Codex の Web 版が作る PR の向き先（base）の既定値。おそらく `main`
 - デザイナーのコメントで `@codex review` が動き、Codex のレビューが付いて `codex-review` が成功するか
 - デザイナーの区分 C の PR で、`scope` が成功し、`main-review` を無効にしたあと、大久保の承認なしに `main` へ入れられるか
