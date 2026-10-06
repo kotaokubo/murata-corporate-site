@@ -119,7 +119,7 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
       <p class="body body-pc">{t.wholesale.body}</p>
       <p class="body body-sp">{t.wholesale.sp?.body ?? t.wholesale.body}</p>
 
-      <ImageCarousel label={i18n(lang, 'wholesaleCarousel')} class="wholesale-carousel" lang={lang}>
+      <ImageCarousel label={i18n(lang, 'wholesaleCarousel')} class="wholesale-carousel" lang={lang} slideWidthPc={520}>
         {t.wholesale.slides.map((slide: { caption: string }, i: number) => (
           <figure class="slide">
             <div class="slide-img-wrap">
@@ -127,8 +127,8 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
                 src={wholesaleImages[i]}
                 alt={wholesaleAlts[i]}
                 class="slide-img"
-                widths={[342, 520, 1040, 1152]}
-                sizes="(max-width: 1099px) 100vw, 1120px"
+                widths={[342, 520, 1040]}
+                sizes="(max-width: 1099px) 100vw, 520px"
               />
             </div>
             <figcaption class="slide-caption">{slide.caption}</figcaption>
@@ -167,7 +167,7 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
           <p class="body">{t.repair.sp?.closing}</p>
         </div>
       </div>
-      <ImageCarousel label={i18n(lang, 'repairCarousel')} class="repair-carousel" lang={lang}>
+      <ImageCarousel label={i18n(lang, 'repairCarousel')} class="repair-carousel" lang={lang} slideWidthPc={520}>
         {repairSlidesPc.map((slide: { caption: string }, i: number) => (
           <figure class="slide">
             <div class="slide-img-wrap">
@@ -442,7 +442,7 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
     margin-top: 48px;
   }
 
-  .wholesale-carousel {
+  .section-wholesale :global(.wholesale-carousel) {
     margin-top: 48px;
   }
 
@@ -554,7 +554,7 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
     display: none;
   }
 
-  .repair-carousel .slide-img-wrap {
+  :global(.repair-carousel) .slide-img-wrap {
     border-radius: 12px 12px 0 0;
   }
 
@@ -1004,7 +1004,7 @@ const repairSlidesSp = t.repair.sp?.slides ?? t.repair.slides;
       margin-top: 30px;
     }
 
-    .wholesale-carousel {
+    .section-wholesale :global(.wholesale-carousel) {
       margin-top: 30px;
     }
 

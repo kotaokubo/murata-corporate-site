@@ -120,7 +120,7 @@ const dictionaries: Record<Lang, Dict> = {
     carouselPrev: '{label}の前へ',
     carouselNext: '{label}の次へ',
     carouselDots: '{label}の表示する写真',
-    carouselSlide: '{n}枚目',
+    carouselSlide: '写真の表示位置 {n}／{total}',
   },
   en: {
     siteName: 'Murata Jewelry',
@@ -199,7 +199,7 @@ const dictionaries: Record<Lang, Dict> = {
     carouselPrev: 'Previous {label}',
     carouselNext: 'Next {label}',
     carouselDots: 'Photos in {label}',
-    carouselSlide: 'Slide {n}',
+    carouselSlide: 'Photo position {n} of {total}',
   },
   zh: {
     siteName: '村田宝饰',
@@ -277,7 +277,7 @@ const dictionaries: Record<Lang, Dict> = {
     carouselPrev: '{label}上一张',
     carouselNext: '{label}下一张',
     carouselDots: '{label}中显示的照片',
-    carouselSlide: '第{n}张',
+    carouselSlide: '图片位置 {n}/{total}',
   },
 };
 
