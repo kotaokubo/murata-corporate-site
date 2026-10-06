@@ -34,6 +34,12 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined;
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Jost:wght@400&family=Shippori+Mincho:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     {isProduction && ga4Id && (
       <>
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>

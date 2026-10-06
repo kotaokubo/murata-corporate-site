@@ -23,19 +23,41 @@ export const company = {
 };
 
 export const nav = [
-  { href: '/company/', label: '村田宝飾について' },
+  { href: '/company/', label: '村田宝飾について', en: 'About Us' },
+  { href: '/business/', label: '事業内容', en: 'Our Business' },
+  // 【要確認】TJC の URL。HTTPS 化（DSplit 作業）が済んだら https に変える
+  { href: 'http://mns.murata-ibrain.jp/', label: 'オンラインショップ', en: 'Online Shop', external: true },
+  { href: '/news/', label: 'お知らせ', en: 'News & Topics' },
+  { href: '/recruit/', label: '採用情報', en: 'Recruit' },
+];
+
+// PC フッター（Figma の並び）
+export const footerNavPc = [
+  { href: '/company/', label: '会社概要' },
+  // 【要確認】TJC の URL。HTTPS 化（DSplit 作業）が済んだら https に変える
+  { href: 'http://mns.murata-ibrain.jp/', label: 'オンラインショップ', external: true },
+  { href: '/recruit/', label: '採用情報' },
+  { href: '/#faq', label: 'FAQ' },
+  { href: '#contact', label: 'お問い合わせ' },
+  { href: '/partners/', label: '新規取引をご希望の方' },
+  { href: '/privacy/', label: 'プライバシーポリシー' },
+];
+
+// SP フッター（Figma の並び）
+export const footerNavSp = [
+  { href: '/company/', label: '会社概要' },
   { href: '/business/', label: '事業内容' },
   // 【要確認】TJC の URL。HTTPS 化（DSplit 作業）が済んだら https に変える
   { href: 'http://mns.murata-ibrain.jp/', label: 'オンラインショップ', external: true },
   { href: '/news/', label: 'お知らせ' },
   { href: '/recruit/', label: '採用情報' },
-];
-
-export const footerNav = [
-  { href: '/company/', label: '会社概要' },
-  { href: '/history/', label: '会社の沿革' },
-  { href: '/recruit/', label: '採用情報' },
   { href: '/partners/', label: '新規取引をご希望の方' },
+  { href: '/#faq', label: 'FAQ' },
   { href: '#contact', label: 'お問い合わせ' },
   { href: '/privacy/', label: 'プライバシーポリシー' },
+];
+
+export const sns = [
+  { name: 'Instagram', href: 'https://www.instagram.com/muratajewelry/' },
+  { name: 'Facebook', href: 'https://www.facebook.com/muratajewelry/' },
 ];
