@@ -102,6 +102,7 @@ Codex は、頼まれた内容をまず3つに分けて、どれに当たるか�
 
 誤って公開してしまったときは、自分や Codex で直そうとせず、すぐに大久保へ連絡してください。
 大久保が Cloudflare で公開を元の状態に戻します。
+大久保向けの手順は [docs/procedures/rollback.md](docs/procedures/rollback.md) にあります。
 
 次の場合も、大久保へ連絡してください。
 
