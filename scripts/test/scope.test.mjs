@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { classify } from '../scope.mjs';
+import { classify, canChangeC } from '../scope.mjs';
 
 test('src/content/pages/entry.yml は区分 C', () => {
   assert.equal(classify('src/content/pages/entry.yml'), 'C');
@@ -8,4 +8,20 @@ test('src/content/pages/entry.yml は区分 C', () => {
 
 test('src/content/pages/home.yml は区分 A', () => {
   assert.equal(classify('src/content/pages/home.yml'), 'A');
+});
+
+test('canChangeC: kotaokubo は true', () => {
+  assert.equal(canChangeC('kotaokubo'), true);
+});
+
+test('canChangeC: someone は false', () => {
+  assert.equal(canChangeC('someone'), false);
+});
+
+test('canChangeC: 空文字は false', () => {
+  assert.equal(canChangeC(''), false);
+});
+
+test('canChangeC: undefined は false', () => {
+  assert.equal(canChangeC(undefined), false);
 });
